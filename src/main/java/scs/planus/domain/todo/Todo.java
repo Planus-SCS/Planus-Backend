@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "dtype")
 @Getter
 @AllArgsConstructor

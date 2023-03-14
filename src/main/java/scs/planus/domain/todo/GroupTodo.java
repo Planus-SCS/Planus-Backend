@@ -6,11 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import scs.planus.domain.Group;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
+@Entity
 @DiscriminatorValue("GT")
 @Getter
 @AllArgsConstructor
