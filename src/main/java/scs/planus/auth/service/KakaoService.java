@@ -24,7 +24,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class KakakoService{
+public class KakaoService {
 
     private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
