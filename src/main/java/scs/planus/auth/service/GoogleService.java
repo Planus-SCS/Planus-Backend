@@ -24,12 +24,11 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class GoogleService implements OAuthService {
+public class GoogleService{
 
     private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
 
-    @Override
     public OAuthLoginResponseDto login(String clientName, String code) {
         ClientRegistration client = clientRegistrations.findByRegistrationId(clientName);
 

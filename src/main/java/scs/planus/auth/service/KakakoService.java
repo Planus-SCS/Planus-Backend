@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,12 +24,11 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class KakakoService implements OAuthService{
+public class KakakoService{
 
     private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
 
-    @Transactional
     public OAuthLoginResponseDto login(String clientName, String code) {
         ClientRegistration client = clientRegistrations.findByRegistrationId(clientName);
 
@@ -66,7 +64,6 @@ public class KakakoService implements OAuthService{
     }
 
     // 카카오 - 유저 정보 받기
-    @Override
     public Map<String, Object> getUserAttributes(ClientRegistration client, OAuth2TokenResponseDto tokenResponse) {
         log.info("accessToken={}", tokenResponse.getAccessToken());
         return WebClient.create()
