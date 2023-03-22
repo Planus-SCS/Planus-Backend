@@ -42,4 +42,7 @@ public class Member extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
