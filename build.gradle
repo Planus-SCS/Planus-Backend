@@ -26,6 +26,10 @@ dependencies {
 	// 쿼리 파라미터 확인
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.0'
 
+	// 시큐리티, oauth 추가
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
