@@ -2,6 +2,7 @@ package scs.planus.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,4 +43,22 @@ public class Member extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Builder
+    public Member(String name, String nickname, String birth, String email, String password, String description,
+                  String profileImageUrl, SocialType socialType, Status status, Role role) {
+        this.name = name;
+        this.nickname = nickname;
+        this.birth = birth;
+        this.email = email;
+        this.password = password;
+        this.description = description;
+        this.profileImageUrl = profileImageUrl;
+        this.socialType = socialType;
+        this.status = status;
+        this.role = role;
+    }
 }
