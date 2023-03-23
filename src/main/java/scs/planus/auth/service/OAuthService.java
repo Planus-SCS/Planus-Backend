@@ -12,6 +12,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import scs.planus.auth.dto.OAuth2TokenResponseDto;
 import scs.planus.auth.dto.OAuthLoginResponseDto;
+import scs.planus.auth.jwt.JwtProvider;
+import scs.planus.auth.jwt.Token;
 import scs.planus.auth.userinfo.attribute.MemberProfile;
 import scs.planus.auth.userinfo.attribute.OAuthAttributes;
 import scs.planus.domain.Member;
@@ -27,12 +29,13 @@ import java.util.Map;
 public class OAuthService {
     private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
+    private final JwtProvider jwtProvider;
 
     public OAuthLoginResponseDto login(String providerName, String code) {
         ClientRegistration client = clientRegistrations.findByRegistrationId(providerName);
 
-        OAuth2TokenResponseDto token = getToken(client, code);
-        Map<String, Object> attributes = getUserAttributes(client, token);
+        OAuth2TokenResponseDto accessToken = getToken(client, code);
+        Map<String, Object> attributes = getUserAttributes(client, accessToken);
 
         MemberProfile profile = OAuthAttributes.extract(providerName, attributes);
 
@@ -42,8 +45,13 @@ public class OAuthService {
             memberRepository.save(member);
         }
 
-        log.info("member=[{}][{}][{}]", member.getId(),member.getEmail(), member.getSocialType());
-        return new OAuthLoginResponseDto(member.getEmail(), member.getNickname());
+        Token token = jwtProvider.generateToken(member.getEmail());
+
+        return OAuthLoginResponseDto.builder()
+                .memberId(member.getId())
+                .accessToken(token.getAccessToken())
+                .refreshToken(token.getRefreshToken())
+                .build();
     }
 
     public OAuth2TokenResponseDto getToken(ClientRegistration client, String code) {
