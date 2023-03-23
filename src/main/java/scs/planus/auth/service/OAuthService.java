@@ -28,13 +28,13 @@ public class OAuthService {
     private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
 
-    public OAuthLoginResponseDto login(String clientName, String code) {
-        ClientRegistration client = clientRegistrations.findByRegistrationId(clientName);
+    public OAuthLoginResponseDto login(String providerName, String code) {
+        ClientRegistration client = clientRegistrations.findByRegistrationId(providerName);
 
         OAuth2TokenResponseDto token = getToken(client, code);
         Map<String, Object> attributes = getUserAttributes(client, token);
 
-        MemberProfile profile = OAuthAttributes.extract(clientName, attributes);
+        MemberProfile profile = OAuthAttributes.extract(providerName, attributes);
 
         Member member = memberRepository.findByEmail(profile.getEmail()).orElse(null);
         if (member == null) {
