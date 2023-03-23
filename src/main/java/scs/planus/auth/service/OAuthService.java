@@ -37,12 +37,7 @@ public class OAuthService {
         Map<String, Object> attributes = getUserAttributes(client, code);
         MemberProfile profile = OAuthAttributes.extract(providerName, attributes);
 
-        Member member = memberRepository.findByEmail(profile.getEmail()).orElse(null);
-        if (member == null) {
-            member = profile.toEntity();
-            memberRepository.save(member);
-        }
-
+        Member member = saveMember(profile);
         Token token = jwtProvider.generateToken(member.getEmail());
 
         return OAuthLoginResponseDto.builder()
@@ -89,5 +84,13 @@ public class OAuthService {
         data.add("redirect_uri", client.getRedirectUri());
         data.add("grant_type", "authorization_code");
         return data;
+    }
+
+    private Member saveMember(MemberProfile profile) {
+        Member member = memberRepository.findByEmail(profile.getEmail()).orElse(null);
+        if (member == null) {
+            member = memberRepository.save(profile.toEntity());
+        }
+        return member;
     }
 }
