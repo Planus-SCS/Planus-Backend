@@ -3,6 +3,7 @@ package scs.planus.auth.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,9 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import scs.planus.common.exception.PlanusException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+
+import static scs.planus.common.response.CustomResponseStatus.UNAUTHORIZED_ACCESS_TOKEN;
 
 @Component
 @Getter
@@ -95,4 +99,20 @@ public class JwtProvider {
         }
         return false;
     }
+
+    public String getPayload(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody().getSubject();
+        } catch (ExpiredJwtException e) {
+            log.info("만료된 토큰입니다.");
+            return e.getClaims().getSubject();
+        } catch (JwtException e) {
+            throw new PlanusException(UNAUTHORIZED_ACCESS_TOKEN);
+        }
+    }
+
 }
