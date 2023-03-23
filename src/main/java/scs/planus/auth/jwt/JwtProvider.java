@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -12,14 +13,19 @@ import java.util.Date;
 
 @Component
 @Getter
+@RequiredArgsConstructor
 @Slf4j
 public class JwtProvider {
 
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String PREFIX_TOKEN = "Bearer ";
 
-    private long accessTokenExpiredIn = 1000L * 60 * 30; // 30분
-    private long refreshTokenExpiredIn = 1000L * 60 * 60 * 24 * 14; // 14일
+    @Value("${jwt.access-token.expired-in}")
+    private long accessTokenExpiredIn;
+
+    @Value("${jwt.refresh-token.expired-in}")
+    private long refreshTokenExpiredIn;
+
     @Value("${jwt.token.secret-key}")
     private String secretKey;
 
