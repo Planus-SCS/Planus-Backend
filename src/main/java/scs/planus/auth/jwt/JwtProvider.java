@@ -13,8 +13,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import scs.planus.auth.PrincipalDetails;
+import scs.planus.auth.PrincipalDetailsService;
 import scs.planus.common.exception.PlanusException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +34,8 @@ public class JwtProvider {
 
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String PREFIX_TOKEN = "Bearer ";
+
+    private final PrincipalDetailsService principalDetailsService;
 
     @Value("${jwt.access-token.expired-in}")
     private long accessTokenExpiredIn;
@@ -115,4 +121,8 @@ public class JwtProvider {
         }
     }
 
+    public Authentication getAuthentication(String email) {
+        PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
+    }
 }
