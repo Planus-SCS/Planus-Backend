@@ -7,29 +7,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.auth.dto.OAuthLoginResponseDto;
-import scs.planus.auth.service.GoogleService;
-import scs.planus.auth.service.KakaoService;
-import scs.planus.common.exception.PlanusException;
+import scs.planus.auth.service.OAuthService;
 import scs.planus.common.response.BaseResponse;
-import scs.planus.common.response.CustomResponseStatus;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
 public class OAuthController {
 
-    private final KakaoService kakaoService;
-    private final GoogleService googleService;
+    private final OAuthService oAuthService;
 
     @GetMapping("/oauth2/{socialType}")
     public BaseResponse<OAuthLoginResponseDto> socialLogin(@PathVariable String socialType,
                                                            @RequestParam String code) {
-        switch (socialType) {
-            case "google":
-                return new BaseResponse<>(googleService.login(socialType, code));
-            case "kakao":
-                return new BaseResponse<>(kakaoService.login(socialType, code));
-        }
-        throw new PlanusException(CustomResponseStatus.NONE_SOCIAL_TYPE);
+
+        OAuthLoginResponseDto loginResponseDto = oAuthService.login(socialType, code);
+        return new BaseResponse<>(loginResponseDto);
     }
 }
