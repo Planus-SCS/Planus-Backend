@@ -27,16 +27,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class OAuthService {
+
     private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
 
     public OAuthLoginResponseDto login(String providerName, String code) {
         ClientRegistration client = clientRegistrations.findByRegistrationId(providerName);
-
-        OAuth2TokenResponseDto accessToken = getToken(client, code);
-        Map<String, Object> attributes = getUserAttributes(client, accessToken);
-
+        Map<String, Object> attributes = getUserAttributes(client, code);
         MemberProfile profile = OAuthAttributes.extract(providerName, attributes);
 
         Member member = memberRepository.findByEmail(profile.getEmail()).orElse(null);
@@ -54,7 +52,21 @@ public class OAuthService {
                 .build();
     }
 
-    public OAuth2TokenResponseDto getToken(ClientRegistration client, String code) {
+    private Map<String, Object> getUserAttributes(ClientRegistration client, String code) {
+        OAuth2TokenResponseDto token = getToken(client, code);
+        return WebClient.create()
+                .post()
+                .uri(client.getProviderDetails().getUserInfoEndpoint().getUri())
+                .headers(header -> {
+                    header.setBearerAuth(token.getAccessToken());
+                })
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
+                })
+                .block();
+    }
+
+    private OAuth2TokenResponseDto getToken(ClientRegistration client, String code) {
         log.info("client=[{}], client.TokenUri=[{}]", client.getRegistrationId(), client.getProviderDetails().getTokenUri());
         return WebClient.create()
                 .post()
@@ -66,20 +78,6 @@ public class OAuthService {
                 .bodyValue(accessTokenRequest(client, code))
                 .retrieve()
                 .bodyToMono(OAuth2TokenResponseDto.class)
-                .block();
-    }
-
-    public Map<String, Object> getUserAttributes(ClientRegistration client, OAuth2TokenResponseDto tokenResponse) {
-        log.info("accessToken={}", tokenResponse.getAccessToken());
-        return WebClient.create()
-                .post()
-                .uri(client.getProviderDetails().getUserInfoEndpoint().getUri())
-                .headers(header -> {
-                    header.setBearerAuth(tokenResponse.getAccessToken());
-                })
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
                 .block();
     }
 
