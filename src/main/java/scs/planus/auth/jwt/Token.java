@@ -1,13 +1,12 @@
-package scs.planus.auth.dto;
+package scs.planus.auth.jwt;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class OAuthLoginResponseDto {
+public class Token {
 
-    private Long memberId;
     private String accessToken;
     private String refreshToken;
 }
