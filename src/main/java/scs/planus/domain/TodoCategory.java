@@ -1,9 +1,6 @@
 package scs.planus.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,4 +24,15 @@ public class TodoCategory extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     private Color color;
+
+    @Builder
+    public TodoCategory(String name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void change(String name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
 }
