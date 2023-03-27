@@ -58,7 +58,7 @@ public class CategoryService {
      * 카테고리 삭제
      */
     @Transactional
-    public void deleteTodo(Long categoryId) {
+    public void deleteCategory(Long categoryId) {
         categoryRepository.deleteById(categoryId);
     }
 }
