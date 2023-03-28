@@ -9,11 +9,9 @@ import scs.planus.domain.TodoCategory;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryResponseDto {
-    private String name;
-    private Color color;
+    private Long id;
 
     public CategoryResponseDto(TodoCategory todoCategory) {
-        this.name = todoCategory.getName();
-        this.color = todoCategory.getColor();
+        this.id = todoCategory.getId();
     }
 }
