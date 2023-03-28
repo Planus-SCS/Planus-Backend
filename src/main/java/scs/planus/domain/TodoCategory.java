@@ -23,6 +23,9 @@ public class TodoCategory extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     private Color color;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     @Builder
     public TodoCategory(Member member, String name, Color color) {
         this.member = member;
