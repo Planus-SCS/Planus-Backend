@@ -14,6 +14,7 @@ import scs.planus.auth.dto.OAuth2TokenResponseDto;
 import scs.planus.auth.dto.OAuthLoginResponseDto;
 import scs.planus.auth.jwt.JwtProvider;
 import scs.planus.auth.jwt.Token;
+import scs.planus.auth.jwt.redis.RedisService;
 import scs.planus.auth.userinfo.attribute.MemberProfile;
 import scs.planus.auth.userinfo.attribute.OAuthAttributes;
 import scs.planus.domain.Member;
@@ -31,6 +32,7 @@ public class OAuthService {
     private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final RedisService redisService;
 
     public OAuthLoginResponseDto login(String providerName, String code) {
         ClientRegistration client = clientRegistrations.findByRegistrationId(providerName);
@@ -39,6 +41,7 @@ public class OAuthService {
 
         Member member = saveMember(profile);
         Token token = jwtProvider.generateToken(member.getEmail());
+        redisService.saveValue(member.getEmail(), token);
 
         return OAuthLoginResponseDto.builder()
                 .memberId(member.getId())
