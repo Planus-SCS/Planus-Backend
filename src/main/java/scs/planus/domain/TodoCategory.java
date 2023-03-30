@@ -31,10 +31,15 @@ public class TodoCategory extends BaseTimeEntity{
         this.member = member;
         this.name = name;
         this.color = color;
+        this.status = Status.ACTIVE;
     }
 
     public void change(String name, Color color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void changeStatus() {
+        this.status = Status.INACTIVE;
     }
 }
