@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategoryCreateRequestDto {
+public class CategoryRequestDto {
     @NotBlank(message = "[request] 제목을 입력해 주세요.")
     @Size(min = 1, max = 10, message = "[request] 제목은 1 ~ 10 글자로 입력해 주세요.")
     private String name;
