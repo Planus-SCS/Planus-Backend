@@ -50,6 +50,7 @@ public class JwtProvider {
         return Token.builder()
                 .accessToken(generateAccessToken(payload))
                 .refreshToken(generateRefreshToken())
+                .refreshTokenExpiredIn(refreshTokenExpiredIn)
                 .build();
     }
 
