@@ -6,14 +6,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.common.exception.PlanusException;
 import scs.planus.common.response.CustomResponseStatus;
+import scs.planus.domain.Member;
 import scs.planus.domain.TodoCategory;
+import scs.planus.dto.todo.CategoryGetResponseDto;
 import scs.planus.dto.todo.CategoryResponseDto;
 import scs.planus.repository.CategoryRepository;
+import scs.planus.repository.MemberRepository;
 
-@Slf4j
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
+@Slf4j
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
@@ -25,18 +31,6 @@ public class CategoryService {
         TodoCategory saveCategory = categoryRepository.save(todoCategory);
 
         return new CategoryResponseDto(saveCategory);
-    }
-
-    /**
-     * 카테고리 id로 조회
-     */
-    public CategoryResponseDto findCategoryById(Long categoryId) {
-        TodoCategory category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> {
-                    throw new PlanusException(CustomResponseStatus.NOT_EXIST_CATEGORY);
-                });
-
-        return new CategoryResponseDto(category);
     }
 
     /**
