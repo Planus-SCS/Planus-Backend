@@ -22,6 +22,21 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final MemberRepository memberRepository;
+
+    /**
+     * 카테고리 조회
+     */
+    public List<CategoryGetResponseDto> findAll(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    throw new PlanusException(CustomResponseStatus.NONE_USER);
+                });
+
+        return member.getTodoCategories().stream()
+                .map(CategoryGetResponseDto::new)
+                .collect(Collectors.toList());
+    }
 
     /**
      * 새로운 카테고리 생성
@@ -45,14 +60,22 @@ public class CategoryService {
 
         findCategory.change(category.getName(), category.getColor());
 
-        return new CategoryResponseDto(category);
+        return new CategoryResponseDto(findCategory);
     }
 
     /**
      * 카테고리 삭제
      */
     @Transactional
-    public void deleteCategory(Long categoryId) {
-        categoryRepository.deleteById(categoryId);
+    public CategoryResponseDto deleteCategory(Long categoryId) {
+        TodoCategory findCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> {
+                    throw new PlanusException(CustomResponseStatus.NOT_EXIST_CATEGORY);
+                });
+
+        findCategory.changeStatus();
+
+        return new CategoryResponseDto(findCategory);
     }
+
 }
