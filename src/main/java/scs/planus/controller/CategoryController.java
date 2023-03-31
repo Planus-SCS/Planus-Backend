@@ -1,13 +1,19 @@
 package scs.planus.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import scs.planus.auth.PrincipalDetails;
 import scs.planus.common.response.BaseResponse;
-import scs.planus.dto.todo.CategoryChangeRequestDto;
-import scs.planus.dto.todo.CategoryCreateRequestDto;
+import scs.planus.domain.Member;
+import scs.planus.dto.todo.CategoryRequestDto;
+import scs.planus.dto.todo.CategoryGetResponseDto;
 import scs.planus.dto.todo.CategoryResponseDto;
-import scs.planus.service.MemberService;
 import scs.planus.service.CategoryService;
+import scs.planus.service.MemberService;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/app")
@@ -17,36 +23,37 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/categories")
-    public void getAllCategory() {
+    public BaseResponse<List<CategoryGetResponseDto>> getAllCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-    }
-
-    @PostMapping("/categories")
-    public BaseResponse<CategoryResponseDto> createCategory(@RequestBody CategoryCreateRequestDto requestDto){
-        CategoryResponseDto responseDto = categoryService.createCategory(requestDto.toEntity());
+        List<CategoryGetResponseDto> responseDto = categoryService.findAll(principalDetails.getId());
 
         return new BaseResponse<>(responseDto);
     }
 
-    @GetMapping("/categories/{categoryId}")
-    public BaseResponse<CategoryResponseDto> getCategory(@PathVariable(name = "categoryId") Long categoryId) {
-        CategoryResponseDto responseDto = categoryService.findCategoryById(categoryId);
+    @PostMapping("/categories")
+    public BaseResponse<CategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                            @Valid @RequestBody CategoryRequestDto requestDto){
+
+        Member member = memberService.getMemberById(principalDetails.getId());
+        CategoryResponseDto responseDto = categoryService.createCategory(requestDto.toEntity(member));
 
         return new BaseResponse<>(responseDto);
     }
 
     @PatchMapping("/categories/{categoryId}")
     public BaseResponse<CategoryResponseDto> changeCategory(@PathVariable(name = "categoryId") Long categoryId,
-                                                            @RequestBody CategoryChangeRequestDto requestDto) {
+                                                            @RequestBody CategoryRequestDto requestDto) {
+
         CategoryResponseDto responseDto = categoryService.changeCategory(categoryId, requestDto.toEntity());
 
         return new BaseResponse<>(responseDto);
     }
 
     @DeleteMapping("/categories/{categoryId}")
-    public BaseResponse<String> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
-        categoryService.deleteTodo(categoryId);
+    public BaseResponse<CategoryResponseDto> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
 
-        return new BaseResponse<>("삭제 완료");
+        CategoryResponseDto responseDto = categoryService.deleteCategory(categoryId);
+
+        return new BaseResponse<>(responseDto);
     }
 }
