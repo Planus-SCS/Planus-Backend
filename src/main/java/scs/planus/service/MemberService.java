@@ -5,24 +5,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.common.exception.PlanusException;
-import scs.planus.common.response.CustomResponseStatus;
 import scs.planus.domain.Member;
+import scs.planus.dto.member.MemberResponseDto;
 import scs.planus.repository.MemberRepository;
 
-@Slf4j
+import static scs.planus.common.response.CustomResponseStatus.NONE_USER;
+
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
+@Slf4j
 public class MemberService {
+
     private final MemberRepository memberRepository;
 
-    /**
-     * 멤버 조회
-     */
-    public Member getMemberById(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> {
-                    throw new PlanusException(CustomResponseStatus.NONE_USER);
-                });
+    public MemberResponseDto getDetail(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+        return MemberResponseDto.of(member);
     }
 }

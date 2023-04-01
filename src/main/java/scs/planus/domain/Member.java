@@ -60,4 +60,10 @@ public class Member extends BaseTimeEntity{
         this.status = status;
         this.role = role;
     }
+
+    public void updateProfile(String nickname, String description, String profileImageUrl) {
+        this.nickname = nickname;
+        this.description = description;
+        this.profileImageUrl = profileImageUrl;
+    }
 }
