@@ -22,15 +22,6 @@ public class CategoryRequestDto {
     @NotBlank(message = "[request] 색을 지정해 주세요.")
     private String color;
 
-    public TodoCategory toEntity(Member member) {
-        Color color = validateColor(this.color);
-        return TodoCategory.builder()
-                .member(member)
-                .name(this.name)
-                .color(color)
-                .build();
-    }
-
     public TodoCategory toEntity() {
         Color color = validateColor(this.color);
         return TodoCategory.builder()
