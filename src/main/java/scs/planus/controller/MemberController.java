@@ -22,7 +22,7 @@ public class MemberController {
     @GetMapping("/members")
     public BaseResponse<MemberResponseDto> showDetail(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
-        MemberResponseDto responseDto = memberService.findById(memberId);
+        MemberResponseDto responseDto = memberService.getDetail(memberId);
         return new BaseResponse<>(responseDto);
     }
 }

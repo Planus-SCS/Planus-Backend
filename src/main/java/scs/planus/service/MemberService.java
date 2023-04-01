@@ -19,7 +19,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public MemberResponseDto findById(Long memberId) {
+    public MemberResponseDto getDetail(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
         return MemberResponseDto.of(member);
