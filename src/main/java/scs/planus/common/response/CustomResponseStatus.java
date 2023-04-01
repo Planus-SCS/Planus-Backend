@@ -20,6 +20,9 @@ public enum CustomResponseStatus implements ResponseStatus {
 
     EXPIRED_REFRESH_TOKEN(BAD_REQUEST, 2302, "Refresh Token 이 만료되어 재로그인이 필요합니다."),
     INVALID_REFRESH_TOKEN(BAD_REQUEST, 2303, "잘못된 Refresh Token 입니다."),
+
+    // category exception
+    NOT_EXIST_CATEGORY(BAD_REQUEST, 2400, "존재하지 않는 카테고리 입니다.")
     ;
 
     private final HttpStatus httpStatus;
