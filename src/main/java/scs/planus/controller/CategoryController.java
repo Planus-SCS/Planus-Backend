@@ -19,7 +19,6 @@ import java.util.List;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 public class CategoryController {
-    private final MemberService memberService;
     private final CategoryService categoryService;
 
     @GetMapping("/categories")
@@ -34,8 +33,8 @@ public class CategoryController {
     public BaseResponse<CategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @Valid @RequestBody CategoryRequestDto requestDto){
 
-        Member member = memberService.getMemberById(principalDetails.getId());
-        CategoryResponseDto responseDto = categoryService.createCategory(requestDto.toEntity(member));
+        CategoryResponseDto responseDto = categoryService.createCategory( principalDetails.getId(),
+                                                                            requestDto.toEntity());
 
         return new BaseResponse<>(responseDto);
     }
@@ -44,7 +43,8 @@ public class CategoryController {
     public BaseResponse<CategoryResponseDto> changeCategory(@PathVariable(name = "categoryId") Long categoryId,
                                                             @RequestBody CategoryRequestDto requestDto) {
 
-        CategoryResponseDto responseDto = categoryService.changeCategory(categoryId, requestDto.toEntity());
+        CategoryResponseDto responseDto = categoryService.changeCategory( categoryId,
+                                                                            requestDto.toEntity());
 
         return new BaseResponse<>(responseDto);
     }
