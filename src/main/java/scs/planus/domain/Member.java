@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,8 +43,8 @@ public class Member extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<TodoCategory> todoCategories;
+    @OneToMany(mappedBy = "member")
+    private List<TodoCategory> todoCategories = new ArrayList<>();
 
     @Builder
     public Member(String name, String nickname, String birth, String email, String password, String description,
