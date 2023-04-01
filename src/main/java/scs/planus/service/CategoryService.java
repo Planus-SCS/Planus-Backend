@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import scs.planus.common.exception.PlanusException;
 import scs.planus.common.response.CustomResponseStatus;
 import scs.planus.domain.Member;
+import scs.planus.domain.Status;
 import scs.planus.domain.TodoCategory;
 import scs.planus.dto.todo.CategoryGetResponseDto;
 import scs.planus.dto.todo.CategoryResponseDto;
@@ -33,7 +34,9 @@ public class CategoryService {
                     throw new PlanusException(CustomResponseStatus.NONE_USER);
                 });
 
-        return member.getTodoCategories().stream()
+        List<TodoCategory> todoCategories = categoryRepository.findAllByStatus(Status.ACTIVE, member);
+
+        return todoCategories.stream()
                 .map(CategoryGetResponseDto::new)
                 .collect(Collectors.toList());
     }
@@ -42,7 +45,13 @@ public class CategoryService {
      * 새로운 카테고리 생성
      */
     @Transactional
-    public CategoryResponseDto createCategory(TodoCategory todoCategory) {
+    public CategoryResponseDto createCategory(Long memberId, TodoCategory todoCategory) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> {
+                    throw new PlanusException(CustomResponseStatus.NONE_USER);
+                });
+
+        todoCategory.setMember(member);
         TodoCategory saveCategory = categoryRepository.save(todoCategory);
 
         return new CategoryResponseDto(saveCategory);
@@ -73,7 +82,7 @@ public class CategoryService {
                     throw new PlanusException(CustomResponseStatus.NOT_EXIST_CATEGORY);
                 });
 
-        findCategory.changeStatus();
+        findCategory.changeStatusToInactive();
 
         return new CategoryResponseDto(findCategory);
     }
