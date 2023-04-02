@@ -1,8 +1,10 @@
 package scs.planus.infra;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,15 @@ public class AmazonS3Uploader {
             return upload(uploadFile, dirName);
         } catch (IOException e) {
             throw new PlanusException(CommonResponseStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 사진 업데이트시, 기존 파일 삭제
+    public void deleteImage(String fileName) {
+        if (fileName != null) {
+            AmazonS3URI amazonS3URI = new AmazonS3URI(fileName);
+            String s3URIKey = amazonS3URI.getKey();
+            amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, s3URIKey));
         }
     }
 

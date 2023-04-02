@@ -43,6 +43,7 @@ public class MemberService {
 
     private String updateProfileImage(MultipartFile multipartFile, String profileImageUrl) {
         if (multipartFile != null) {
+            s3Uploader.deleteImage(profileImageUrl); // 기존 프로필 s3에서 제거
             profileImageUrl = s3Uploader.upload(multipartFile, "profile");
         }
         return profileImageUrl;
