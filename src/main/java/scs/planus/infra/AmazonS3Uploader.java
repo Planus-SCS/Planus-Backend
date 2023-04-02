@@ -53,7 +53,7 @@ public class AmazonS3Uploader {
 
     // S3로 파일 업로드하기
     private String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();
+        String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName().replaceAll(" ", "");
         String uploadImageUrl = putS3(uploadFile, fileName);
         removeNewFile(uploadFile);
         return uploadImageUrl;
