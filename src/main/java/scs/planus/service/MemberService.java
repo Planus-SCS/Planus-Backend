@@ -35,11 +35,16 @@ public class MemberService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         String profileImageUrl = member.getProfileImageUrl();
-        if (multipartFile != null) {
-            profileImageUrl = s3Uploader.upload(multipartFile, "profile");
-        }
+        profileImageUrl = updateProfileImage(multipartFile, profileImageUrl);
 
         member.updateProfile(requestDto.getNickname(), requestDto.getDescription(), profileImageUrl);
         return MemberResponseDto.of(member);
+    }
+
+    private String updateProfileImage(MultipartFile multipartFile, String profileImageUrl) {
+        if (multipartFile != null) {
+            profileImageUrl = s3Uploader.upload(multipartFile, "profile");
+        }
+        return profileImageUrl;
     }
 }
