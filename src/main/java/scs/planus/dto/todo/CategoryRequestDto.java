@@ -1,8 +1,6 @@
 package scs.planus.dto.todo;
 
 import lombok.*;
-import scs.planus.common.exception.PlanusException;
-import scs.planus.common.response.CommonResponseStatus;
 import scs.planus.domain.Color;
 import scs.planus.domain.Member;
 import scs.planus.domain.TodoCategory;
@@ -22,21 +20,12 @@ public class CategoryRequestDto {
     @NotBlank(message = "[request] 색을 지정해 주세요.")
     private String color;
 
-    public TodoCategory toEntity() {
-        Color color = validateColor(this.color);
+    public TodoCategory toEntity(Member member) {
+        Color color = Color.isValid(this.color);
         return TodoCategory.builder()
+                .member(member)
                 .name(this.name)
                 .color(color)
                 .build();
     }
-
-    private Color validateColor(String color) throws PlanusException {
-        for (Color enumColor : Color.values()) {
-            if (enumColor.name().equals(color)) {
-                return enumColor;
-            }
-        }
-        throw new PlanusException(CommonResponseStatus.INVALID_PARAMETER);
-    }
-
 }

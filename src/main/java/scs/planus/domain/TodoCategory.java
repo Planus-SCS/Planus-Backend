@@ -26,14 +26,10 @@ public class TodoCategory extends BaseTimeEntity{
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    //== 연관관계 편의 메소드 ==//
-    public void setMember(Member member) {
-        this.member = member;
-        member.getTodoCategories().add(this);
-    }
-
     @Builder
-    public TodoCategory(String name, Color color) {
+    public TodoCategory(Member member, String name, Color color) {
+        this.member = member;
+        if (member != null) { member.getTodoCategories().add(this); }
         this.name = name;
         this.color = color;
         this.status = Status.ACTIVE;
