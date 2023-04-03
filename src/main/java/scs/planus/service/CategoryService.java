@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.common.exception.PlanusException;
 import scs.planus.common.response.CustomResponseStatus;
+import scs.planus.domain.Color;
 import scs.planus.domain.Member;
 import scs.planus.domain.Status;
 import scs.planus.domain.TodoCategory;
 import scs.planus.dto.todo.CategoryGetResponseDto;
+import scs.planus.dto.todo.CategoryRequestDto;
 import scs.planus.dto.todo.CategoryResponseDto;
 import scs.planus.repository.CategoryRepository;
 import scs.planus.repository.MemberRepository;
@@ -45,13 +47,13 @@ public class CategoryService {
      * 새로운 카테고리 생성
      */
     @Transactional
-    public CategoryResponseDto createCategory(Long memberId, TodoCategory todoCategory) {
+    public CategoryResponseDto createCategory(Long memberId, CategoryRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     throw new PlanusException(CustomResponseStatus.NONE_USER);
                 });
 
-        todoCategory.setMember(member);
+        TodoCategory todoCategory = requestDto.toEntity(member);
         TodoCategory saveCategory = categoryRepository.save(todoCategory);
 
         return new CategoryResponseDto(saveCategory);
@@ -61,13 +63,14 @@ public class CategoryService {
      * 카테고리 수정
      */
     @Transactional
-    public CategoryResponseDto changeCategory(Long categoryId, TodoCategory category) {
+    public CategoryResponseDto changeCategory(Long categoryId, CategoryRequestDto requestDto) {
         TodoCategory findCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> {
                     throw new PlanusException(CustomResponseStatus.NOT_EXIST_CATEGORY);
                 });
 
-        findCategory.change(category.getName(), category.getColor());
+        Color color = Color.isValid(requestDto.getColor());
+        findCategory.change(requestDto.getName(), color);
 
         return new CategoryResponseDto(findCategory);
     }

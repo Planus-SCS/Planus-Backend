@@ -32,9 +32,9 @@ public class CategoryController {
     @PostMapping("/categories")
     public BaseResponse<CategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @Valid @RequestBody CategoryRequestDto requestDto){
-
-        CategoryResponseDto responseDto = categoryService.createCategory( principalDetails.getId(),
-                                                                            requestDto.toEntity());
+        Long memberId = principalDetails.getId();
+        CategoryResponseDto responseDto = categoryService.createCategory( memberId,
+                                                                            requestDto);
 
         return new BaseResponse<>(responseDto);
     }
@@ -44,7 +44,7 @@ public class CategoryController {
                                                             @RequestBody CategoryRequestDto requestDto) {
 
         CategoryResponseDto responseDto = categoryService.changeCategory( categoryId,
-                                                                            requestDto.toEntity());
+                                                                            requestDto);
 
         return new BaseResponse<>(responseDto);
     }
