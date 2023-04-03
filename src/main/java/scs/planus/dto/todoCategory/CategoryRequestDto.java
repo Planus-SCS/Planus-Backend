@@ -1,4 +1,4 @@
-package scs.planus.dto.todo;
+package scs.planus.dto.todoCategory;
 
 import lombok.*;
 import scs.planus.domain.Color;

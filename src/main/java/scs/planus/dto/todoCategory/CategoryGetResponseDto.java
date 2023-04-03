@@ -1,4 +1,4 @@
-package scs.planus.dto.todo;
+package scs.planus.dto.todoCategory;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,10 +8,14 @@ import scs.planus.domain.TodoCategory;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CategoryResponseDto {
+public class CategoryGetResponseDto {
     private Long id;
+    private String name;
+    private Color color;
 
-    public CategoryResponseDto(TodoCategory todoCategory) {
+    public CategoryGetResponseDto(TodoCategory todoCategory) {
         this.id = todoCategory.getId();
+        this.name = todoCategory.getName();
+        this.color = todoCategory.getColor();
     }
 }

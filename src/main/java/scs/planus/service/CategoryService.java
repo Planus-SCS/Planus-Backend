@@ -10,9 +10,9 @@ import scs.planus.domain.Color;
 import scs.planus.domain.Member;
 import scs.planus.domain.Status;
 import scs.planus.domain.TodoCategory;
-import scs.planus.dto.todo.CategoryGetResponseDto;
-import scs.planus.dto.todo.CategoryRequestDto;
-import scs.planus.dto.todo.CategoryResponseDto;
+import scs.planus.dto.todoCategory.CategoryGetResponseDto;
+import scs.planus.dto.todoCategory.CategoryRequestDto;
+import scs.planus.dto.todoCategory.CategoryResponseDto;
 import scs.planus.repository.CategoryRepository;
 import scs.planus.repository.MemberRepository;
 

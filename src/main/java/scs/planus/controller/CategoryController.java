@@ -5,12 +5,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import scs.planus.auth.PrincipalDetails;
 import scs.planus.common.response.BaseResponse;
-import scs.planus.domain.Member;
-import scs.planus.dto.todo.CategoryRequestDto;
-import scs.planus.dto.todo.CategoryGetResponseDto;
-import scs.planus.dto.todo.CategoryResponseDto;
+import scs.planus.dto.todoCategory.CategoryRequestDto;
+import scs.planus.dto.todoCategory.CategoryGetResponseDto;
+import scs.planus.dto.todoCategory.CategoryResponseDto;
 import scs.planus.service.CategoryService;
-import scs.planus.service.MemberService;
 
 import javax.validation.Valid;
 import java.util.List;
