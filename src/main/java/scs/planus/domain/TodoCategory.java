@@ -1,17 +1,8 @@
 package scs.planus.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -23,8 +14,33 @@ public class TodoCategory extends BaseTimeEntity{
     @Column(name = "todo_category_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
     private String name;
 
     @Enumerated(EnumType.STRING)
     private Color color;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    @Builder
+    public TodoCategory(Member member, String name, Color color) {
+        this.member = member;
+        if (member != null) { member.getTodoCategories().add(this); }
+        this.name = name;
+        this.color = color;
+        this.status = Status.ACTIVE;
+    }
+
+    public void change(String name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void changeStatusToInactive() {
+        this.status = Status.INACTIVE;
+    }
 }
