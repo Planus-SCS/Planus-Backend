@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import scs.planus.auth.jwt.redis.RedisService;
 import scs.planus.common.exception.PlanusException;
 import scs.planus.domain.Member;
 import scs.planus.dto.member.MemberResponseDto;
@@ -20,6 +21,7 @@ import static scs.planus.common.response.CustomResponseStatus.NONE_USER;
 @Slf4j
 public class MemberService {
 
+    private final RedisService redisService;
     private final AmazonS3Uploader s3Uploader;
     private final MemberRepository memberRepository;
 
@@ -38,6 +40,15 @@ public class MemberService {
         profileImageUrl = updateProfileImage(multipartFile, profileImageUrl);
 
         member.updateProfile(requestDto.getNickname(), requestDto.getDescription(), profileImageUrl);
+        return MemberResponseDto.of(member);
+    }
+
+    @Transactional
+    public MemberResponseDto delete(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+        member.changeStatusToInactive();
+        redisService.delete(member.getEmail());
         return MemberResponseDto.of(member);
     }
 

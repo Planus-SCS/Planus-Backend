@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,6 +19,7 @@ import scs.planus.auth.jwt.redis.RedisService;
 import scs.planus.auth.userinfo.attribute.MemberProfile;
 import scs.planus.auth.userinfo.attribute.OAuthAttributes;
 import scs.planus.domain.Member;
+import scs.planus.domain.Status;
 import scs.planus.repository.MemberRepository;
 
 import java.nio.charset.StandardCharsets;
@@ -34,12 +36,13 @@ public class OAuthService {
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
 
+    @Transactional
     public OAuthLoginResponseDto login(String providerName, String code) {
         ClientRegistration client = clientRegistrations.findByRegistrationId(providerName);
         Map<String, Object> attributes = getUserAttributes(client, code);
         MemberProfile profile = OAuthAttributes.extract(providerName, attributes);
 
-        Member member = saveMember(profile);
+        Member member = saveOrGetMember(profile);
         Token token = jwtProvider.generateToken(member.getEmail());
         redisService.saveValue(member.getEmail(), token);
 
@@ -89,10 +92,15 @@ public class OAuthService {
         return data;
     }
 
-    private Member saveMember(MemberProfile profile) {
+    private Member saveOrGetMember(MemberProfile profile) {
         Member member = memberRepository.findByEmail(profile.getEmail()).orElse(null);
         if (member == null) {
             member = memberRepository.save(profile.toEntity());
+            return member;
+        }
+
+        if (member.getStatus().equals(Status.INACTIVE)) {
+            member.init(profile.getNickname());
         }
         return member;
     }
