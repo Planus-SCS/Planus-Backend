@@ -71,4 +71,12 @@ public class Member extends BaseTimeEntity{
     public void changeStatusToInactive() {
         this.status = Status.INACTIVE;
     }
+
+    // 탈퇴 후, 재가입시 정보 초기화 메서드
+    public void init(String nickname) {
+        this.nickname = nickname;
+        this.description = null;
+        this.profileImageUrl = null;
+        this.status = Status.ACTIVE;
+    }
 }
