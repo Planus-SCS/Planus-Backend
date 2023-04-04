@@ -22,7 +22,8 @@ public class CategoryController {
     @GetMapping("/categories")
     public BaseResponse<List<CategoryGetResponseDto>> getAllCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
-        List<CategoryGetResponseDto> responseDto = categoryService.findAll(principalDetails.getId());
+        Long memberId = principalDetails.getId();
+        List<CategoryGetResponseDto> responseDto = categoryService.findAll(memberId);
 
         return new BaseResponse<>(responseDto);
     }
