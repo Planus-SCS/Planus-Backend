@@ -67,4 +67,8 @@ public class Member extends BaseTimeEntity{
         this.description = description;
         this.profileImageUrl = profileImageUrl;
     }
+
+    public void changeStatusToInactive() {
+        this.status = Status.INACTIVE;
+    }
 }
