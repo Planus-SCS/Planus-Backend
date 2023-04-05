@@ -21,7 +21,7 @@ public class GroupController {
     private final GroupService groupService;
 
     @PostMapping("/groups")
-    public BaseResponse< GroupResponseDto > createCategory( @AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse< GroupResponseDto > createGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @RequestPart(value = "image", required = false) MultipartFile multipartFile,
                                                             @Valid @RequestPart(value = "groupCreateRequestDto") GroupCreateRequestDto requestDto ) {
         Long memberId = principalDetails.getId();
