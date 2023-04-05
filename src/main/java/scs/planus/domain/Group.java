@@ -1,18 +1,10 @@
 package scs.planus.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,4 +32,28 @@ public class Group extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupMember> groupMembers = new ArrayList<>();
+
+    @Builder
+    public Group(String name, String notice, String groupImageUrl, Long limitCount, GroupScope scope, Status status) {
+        this.name = name;
+        this.notice = notice;
+        this.groupImageUrl = groupImageUrl;
+        this.limitCount = limitCount;
+        this.scope = scope;
+        this.status = status;
+    }
+
+    public static Group creatGroup(String name, String notice, Long limitCount, String groupImageUrl) {
+        return Group.builder()
+                .name(name)
+                .notice(notice)
+                .limitCount(limitCount)
+                .groupImageUrl(groupImageUrl)
+                .scope(GroupScope.PUBLIC)
+                .status(Status.ACTIVE)
+                .build();
+    }
 }

@@ -1,18 +1,8 @@
 package scs.planus.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -30,6 +20,7 @@ public class GroupMember extends BaseTimeEntity{
 
     private boolean todoAuthority;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,4 +30,24 @@ public class GroupMember extends BaseTimeEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
+
+    @Builder
+    public GroupMember(boolean leader, boolean todoAuthority, Member member, Group group) {
+        this.onlineStatus = false;
+        this.leader = leader;
+        this.todoAuthority = todoAuthority;
+        this.status = Status.ACTIVE;
+        this.member = member;
+        this.group = group;
+        if (group != null) { group.getGroupMembers().add(this); }
+    }
+
+    public static GroupMember creatGroupMemberLeader(Member member, Group group ) {
+        return GroupMember.builder()
+                .leader(true)
+                .todoAuthority(true)
+                .member(member)
+                .group(group)
+                .build();
+    }
 }
