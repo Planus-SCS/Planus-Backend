@@ -14,8 +14,9 @@ import scs.planus.repository.CategoryRepository;
 import scs.planus.repository.MemberRepository;
 import scs.planus.repository.TodoRepository;
 
-import static scs.planus.common.response.CustomResponseStatus.NONE_USER;
-import static scs.planus.common.response.CustomResponseStatus.NOT_EXIST_CATEGORY;
+import java.time.LocalDate;
+
+import static scs.planus.common.response.CustomResponseStatus.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,8 +36,17 @@ public class TodoService {
         TodoCategory todoCategory = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
+        validateDate(requestDto.getStartDate(), requestDto.getEndDate());
         MemberTodo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
+    }
+
+    private void validateDate(LocalDate startDate, LocalDate endDate) {
+        if (endDate != null) {
+            if (startDate.isAfter(endDate)) {
+                throw new PlanusException(INVALID_DATE);
+            }
+        }
     }
 }
