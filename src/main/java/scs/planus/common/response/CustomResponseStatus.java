@@ -23,6 +23,9 @@ public enum CustomResponseStatus implements ResponseStatus {
     // category exception
     NOT_EXIST_CATEGORY(BAD_REQUEST, 2400, "존재하지 않는 카테고리 입니다."),
 
+    // to_do exception
+    INVALID_DATE(BAD_REQUEST, 2500, "시작 날짜가 끝 날짜보다 늦을 수 없습니다."),
+
     // s3 exception
     INVALID_FILE(BAD_REQUEST, 5000, "잘못되거나 존재하지 않는 파일입니다."),
     INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요.")
