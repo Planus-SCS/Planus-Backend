@@ -2,32 +2,30 @@ package scs.planus.domain.todo;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import scs.planus.domain.BaseTimeEntity;
+import scs.planus.domain.Group;
+import scs.planus.domain.Member;
 import scs.planus.domain.TodoCategory;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "dtype")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class Todo extends BaseTimeEntity {
+public class Todo extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "todo_id")
@@ -48,4 +46,26 @@ public abstract class Todo extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_category_id")
     private TodoCategory todoCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
+
+    @Builder
+    public Todo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate,
+                boolean showDDay, TodoCategory todoCategory, Member member, Group group) {
+        this.title = title;
+        this.description = description;
+        this.startTime = startTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.showDDay = showDDay;
+        this.todoCategory = todoCategory;
+        this.member = member;
+        this.group = group;
+    }
 }
