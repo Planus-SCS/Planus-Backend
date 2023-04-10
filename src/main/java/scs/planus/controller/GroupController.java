@@ -22,7 +22,7 @@ public class GroupController {
 
     @PostMapping("/groups")
     public BaseResponse<GroupResponseDto> createGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                         @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+                                                         @RequestPart(value = "image") MultipartFile multipartFile,
                                                          @Valid @RequestPart(value = "groupCreateRequestDto") GroupCreateRequestDto requestDto ) {
         Long memberId = principalDetails.getId();
         GroupResponseDto responseDto = groupService.createGroup( memberId, requestDto, multipartFile );
