@@ -9,6 +9,7 @@ import scs.planus.domain.Member;
 import scs.planus.domain.TodoCategory;
 import scs.planus.domain.todo.Todo;
 import scs.planus.dto.todo.TodoCreateRequestDto;
+import scs.planus.dto.todo.TodoDailyResponseDto;
 import scs.planus.dto.todo.TodoGetResponseDto;
 import scs.planus.dto.todo.TodoResponseDto;
 import scs.planus.repository.CategoryRepository;
@@ -55,14 +56,16 @@ public class TodoService {
         return TodoGetResponseDto.of(todo);
     }
 
-    public List<TodoGetResponseDto> getDailyTodos(Long memberId, LocalDate date) {
+    public List<TodoDailyResponseDto> getDailyTodos(Long memberId, LocalDate date) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         List<Todo> todos = todoRepository.findAllByMemberIdAndDate(member.getId(), date);
-        return todos.stream()
-                .map(TodoGetResponseDto::of)
+        List<TodoDailyResponseDto> responseDtos = todos.stream()
+                .map(TodoDailyResponseDto::of)
                 .collect(Collectors.toList());
+
+        return responseDtos;
     }
 
     private void validateDate(LocalDate startDate, LocalDate endDate) {
