@@ -36,6 +36,9 @@ public class Group extends BaseTimeEntity {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupMember> groupMembers = new ArrayList<>();
 
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GroupTag> groupTags = new ArrayList<>();
+
     @Builder
     public Group(String name, String notice, String groupImageUrl, Long limitCount, GroupScope scope, Status status) {
         this.name = name;
@@ -46,14 +49,14 @@ public class Group extends BaseTimeEntity {
         this.status = status;
     }
 
-    public static Group creatGroup(String name, String notice, Long limitCount, String groupImageUrl) {
+    public static Group creatGroup( String name, String notice, Long limitCount, String groupImageUrl ) {
         return Group.builder()
-                .name(name)
-                .notice(notice)
-                .limitCount(limitCount)
-                .groupImageUrl(groupImageUrl)
-                .scope(GroupScope.PUBLIC)
-                .status(Status.ACTIVE)
+                .name( name )
+                .notice( notice )
+                .limitCount( limitCount )
+                .groupImageUrl( groupImageUrl )
+                .scope( GroupScope.PUBLIC )
+                .status( Status.ACTIVE )
                 .build();
     }
 }
