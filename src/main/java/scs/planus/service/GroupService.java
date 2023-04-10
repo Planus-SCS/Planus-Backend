@@ -47,7 +47,7 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    public GroupGetResponseDto findById( Long groupId ) {
+    public GroupGetResponseDto getGroup(Long groupId ) {
         Group group = groupRepository.findById( groupId )
                 .orElseThrow( () -> {
                     throw new PlanusException( CustomResponseStatus.NOT_EXIST_GROUP );
