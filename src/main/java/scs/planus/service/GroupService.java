@@ -9,6 +9,7 @@ import scs.planus.common.exception.PlanusException;
 import scs.planus.common.response.CustomResponseStatus;
 import scs.planus.domain.*;
 import scs.planus.dto.group.GroupCreateRequestDto;
+import scs.planus.dto.group.GroupGetResponseDto;
 import scs.planus.dto.group.GroupResponseDto;
 import scs.planus.infra.AmazonS3Uploader;
 import scs.planus.repository.GroupRepository;
@@ -46,10 +47,18 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    private String createGroupImage(MultipartFile multipartFile) {
-        if (multipartFile != null) {
-            return s3Uploader.upload(multipartFile, "groups");
+    public GroupGetResponseDto findById( Long groupId ) {
+        Group group = groupRepository.findById( groupId )
+                .orElseThrow( () -> {
+                    throw new PlanusException( CustomResponseStatus.NOT_EXIST_GROUP );
+                });
+
+        return GroupGetResponseDto.of( group );
+    }
+    private String createGroupImage( MultipartFile multipartFile ) {
+        if ( multipartFile != null ) {
+            return s3Uploader.upload( multipartFile, "groups" );
         }
-        throw new PlanusException(CustomResponseStatus.INVALID_FILE);
+        throw new PlanusException( CustomResponseStatus.INVALID_FILE );
     }
 }
