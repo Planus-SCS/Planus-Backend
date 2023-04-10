@@ -25,6 +25,7 @@ public enum CustomResponseStatus implements ResponseStatus {
 
     // to_do exception
     INVALID_DATE(BAD_REQUEST, 2500, "시작 날짜가 끝 날짜보다 늦을 수 없습니다."),
+    NONE_TODO(BAD_REQUEST, 2501, "존재하지 않는 투두입니다."),
 
     // s3 exception
     INVALID_FILE(BAD_REQUEST, 5000, "잘못되거나 존재하지 않는 파일입니다."),
