@@ -16,6 +16,8 @@ import scs.planus.repository.MemberRepository;
 import scs.planus.repository.TodoRepository;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static scs.planus.common.response.CustomResponseStatus.*;
 
@@ -51,6 +53,16 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         return TodoGetResponseDto.of(todo);
+    }
+
+    public List<TodoGetResponseDto> getDailyTodos(Long memberId, LocalDate date) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        List<Todo> todos = todoRepository.findAllByMemberIdAndDate(member.getId(), date);
+        return todos.stream()
+                .map(TodoGetResponseDto::of)
+                .collect(Collectors.toList());
     }
 
     private void validateDate(LocalDate startDate, LocalDate endDate) {
