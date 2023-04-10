@@ -7,19 +7,11 @@ import scs.planus.domain.Group;
 @Getter
 @Builder
 public class GroupResponseDto {
-    private Long id;
-    private String name;
-    private String notice;
-    private String groupImageUrl;
-    private Long limitCount;
+    private Long groupId;
 
-    public static GroupResponseDto of(Group group) {
+    public static GroupResponseDto of(Group group ) {
         return GroupResponseDto.builder()
-                .id(group.getId())
-                .name(group.getName())
-                .notice(group.getNotice())
-                .limitCount(group.getLimitCount())
-                .groupImageUrl(group.getGroupImageUrl())
+                .groupId( group.getId() )
                 .build();
     }
 }
