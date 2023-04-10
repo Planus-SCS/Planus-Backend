@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import scs.planus.auth.PrincipalDetails;
 import scs.planus.common.response.BaseResponse;
 import scs.planus.dto.todo.TodoCreateRequestDto;
+import scs.planus.dto.todo.TodoDailyResponseDto;
 import scs.planus.dto.todo.TodoGetResponseDto;
 import scs.planus.dto.todo.TodoResponseDto;
 import scs.planus.service.TodoService;
@@ -42,17 +43,17 @@ public class TodoController {
 
     @GetMapping("/todos/{todoId}")
     public BaseResponse<TodoGetResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                       @PathVariable Long todoId) {
+                                                          @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
         TodoGetResponseDto responseDto = todoService.getOneTodo(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
 
     @GetMapping("/todos")
-    public BaseResponse<List<TodoGetResponseDto>> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public BaseResponse<List<TodoDailyResponseDto>> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         Long memberId = principalDetails.getId();
-        List<TodoGetResponseDto> responseDtos = todoService.getDailyTodos(memberId, date);
+        List<TodoDailyResponseDto> responseDtos = todoService.getDailyTodos(memberId, date);
         return new BaseResponse<>(responseDtos);
     }
 }
