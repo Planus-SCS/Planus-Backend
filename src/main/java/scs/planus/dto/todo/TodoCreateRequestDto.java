@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import scs.planus.domain.Member;
 import scs.planus.domain.TodoCategory;
-import scs.planus.domain.todo.MemberTodo;
+import scs.planus.domain.todo.Todo;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -30,8 +30,8 @@ public class TodoCreateRequestDto {
     @Size(max = 70, message = "투두 메모는 최대 70글자입니다.")
     private String description;
 
-    public MemberTodo toMemberTodoEntity(Member member, TodoCategory todoCategory) {
-        return MemberTodo.builder()
+    public Todo toMemberTodoEntity(Member member, TodoCategory todoCategory) {
+        return Todo.builder()
                 .title(title)
                 .todoCategory(todoCategory)
                 .startDate(startDate)
