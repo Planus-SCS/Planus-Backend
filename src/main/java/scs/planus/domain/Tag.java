@@ -1,9 +1,6 @@
 package scs.planus.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,4 +19,9 @@ public class Tag extends BaseTimeEntity{
     private Long id;
 
     private String name;
+
+    @Builder
+    public Tag(String name) {
+        this.name = name;
+    }
 }
