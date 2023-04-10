@@ -7,8 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import scs.planus.common.exception.PlanusException;
 import scs.planus.domain.Member;
 import scs.planus.domain.TodoCategory;
-import scs.planus.domain.todo.MemberTodo;
+import scs.planus.domain.todo.Todo;
 import scs.planus.dto.todo.TodoCreateRequestDto;
+import scs.planus.dto.todo.TodoGetResponseDto;
 import scs.planus.dto.todo.TodoResponseDto;
 import scs.planus.repository.CategoryRepository;
 import scs.planus.repository.MemberRepository;
@@ -37,9 +38,19 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         validateDate(requestDto.getStartDate(), requestDto.getEndDate());
-        MemberTodo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory);
+        Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
+    }
+
+    public TodoGetResponseDto getOneTodo(Long memberId, Long todoId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Todo todo = todoRepository.findByIdAndMemberId(todoId, member.getId())
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        return TodoGetResponseDto.of(todo);
     }
 
     private void validateDate(LocalDate startDate, LocalDate endDate) {
