@@ -63,6 +63,9 @@ public class Todo extends BaseTimeEntity {
         this.startTime = startTime;
         this.startDate = startDate;
         this.endDate = endDate;
+        if (endDate == null) {
+            this.endDate = startDate;
+        }
         this.showDDay = showDDay;
         this.todoCategory = todoCategory;
         this.member = member;
