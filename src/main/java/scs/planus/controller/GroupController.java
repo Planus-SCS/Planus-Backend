@@ -21,11 +21,11 @@ public class GroupController {
     private final GroupService groupService;
 
     @PostMapping("/groups")
-    public BaseResponse< GroupResponseDto > createGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
-                                                            @Valid @RequestPart(value = "groupCreateRequestDto") GroupCreateRequestDto requestDto ) {
+    public BaseResponse<GroupResponseDto> createGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                         @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+                                                         @Valid @RequestPart(value = "groupCreateRequestDto") GroupCreateRequestDto requestDto ) {
         Long memberId = principalDetails.getId();
-        GroupResponseDto responseDto = groupService.create(memberId, requestDto, multipartFile);
+        GroupResponseDto responseDto = groupService.createGroup( memberId, requestDto, multipartFile );
 
         return new BaseResponse<>(responseDto);
     }
