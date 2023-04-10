@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-
     Optional<Todo> findByIdAndMemberId(Long id, Long memberId);
 
     @Query("select t from Todo t " +
