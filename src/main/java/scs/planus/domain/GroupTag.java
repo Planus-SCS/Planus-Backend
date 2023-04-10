@@ -1,9 +1,6 @@
 package scs.planus.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -31,4 +30,20 @@ public class GroupTag extends BaseTimeEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
+
+    @Builder
+    public GroupTag( Group group, Tag tag ) {
+        this.group = group;
+        if (group != null) { group.getGroupTags().add(this); }
+        this.tag = tag;
+    }
+
+    public static List<GroupTag> create( Group group, List<Tag> tagList ) {
+        return tagList.stream()
+                .map( tag -> GroupTag.builder()
+                                .group( group )
+                                .tag( tag )
+                                .build() )
+                .collect( Collectors.toList() );
+    }
 }
