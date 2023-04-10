@@ -32,9 +32,10 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{groupId}")
-    public BaseResponse<GroupGetResponseDto> getGroup( @PathVariable("groupId") Long groupId ) {
+    public BaseResponse<GroupGetResponseDto> getGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                       @PathVariable("groupId") Long groupId ) {
 
-        GroupGetResponseDto responseDto = groupService.findById( groupId );
+        GroupGetResponseDto responseDto = groupService.getGroup( groupId );
 
         return new BaseResponse<>( responseDto );
     }
