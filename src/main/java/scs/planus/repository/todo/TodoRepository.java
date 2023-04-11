@@ -7,10 +7,8 @@ import scs.planus.domain.todo.Todo;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
-    Optional<Todo> findByIdAndMemberId(Long id, Long memberId);
 
     @Query("select t from Todo t " +
             "join fetch t.member m " +
