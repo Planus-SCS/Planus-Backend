@@ -70,6 +70,18 @@ public class TodoService {
         return responseDtos;
     }
 
+    @Transactional
+    public TodoResponseDto deleteTodo(Long memberId, Long todoId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        todoRepository.delete(todo);
+        return TodoResponseDto.of(todo);
+    }
+
     private void validateDate(LocalDate startDate, LocalDate endDate) {
         if (endDate != null) {
             if (startDate.isAfter(endDate)) {
