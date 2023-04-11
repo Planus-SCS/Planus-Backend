@@ -28,7 +28,7 @@ public class TodoDailyResponseDto {
                 .title(todo.getTitle())
                 .startTime(todo.getStartTime())
                 .isGroupMemberTodo(todo.getGroup() != null)
-                .isPeriodTodo(todo.getStartDate() != todo.getEndDate())
+                .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
                 .hasDescription(todo.getDescription() != null)
                 .build();
     }
