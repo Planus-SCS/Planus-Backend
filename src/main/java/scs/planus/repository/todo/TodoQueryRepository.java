@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import scs.planus.domain.todo.Todo;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static scs.planus.domain.QGroup.group;
@@ -29,6 +31,19 @@ public class TodoQueryRepository {
                 .join(todo.todoCategory, todoCategory).fetchJoin()
                 .where(todo.id.eq(todoId), memberIdEq(memberId))
                 .fetchOne());
+    }
+
+    public List<Todo> findDailyTodosByDate(Long memberId, LocalDate date) {
+        return queryFactory
+                .selectFrom(todo)
+                .join(todo.member, member)
+                .leftJoin(todo.group, group).fetchJoin()
+                .where(memberIdEq(memberId), dateBetween(date))
+                .fetch();
+    }
+
+    private BooleanExpression dateBetween(LocalDate date) {
+        return todo.startDate.loe(date).and(todo.endDate.goe(date));
     }
 
     private BooleanExpression memberIdEq(Long memberId) {
