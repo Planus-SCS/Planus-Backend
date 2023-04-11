@@ -14,7 +14,8 @@ import scs.planus.dto.todo.TodoGetResponseDto;
 import scs.planus.dto.todo.TodoResponseDto;
 import scs.planus.repository.CategoryRepository;
 import scs.planus.repository.MemberRepository;
-import scs.planus.repository.TodoRepository;
+import scs.planus.repository.todo.TodoQueryRepository;
+import scs.planus.repository.todo.TodoRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,6 +32,7 @@ public class TodoService {
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
     private final TodoRepository todoRepository;
+    private final TodoQueryRepository todoQueryRepository;
 
     @Transactional
     public TodoResponseDto createPrivateTodo(Long memberId, TodoCreateRequestDto requestDto) {
@@ -50,7 +52,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        Todo todo = todoRepository.findByIdAndMemberId(todoId, member.getId())
+        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         return TodoGetResponseDto.of(todo);
@@ -60,7 +62,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        List<Todo> todos = todoRepository.findAllByMemberIdAndDate(member.getId(), date);
+        List<Todo> todos = todoQueryRepository.findDailyTodosByDate(member.getId(), date);
         List<TodoDailyResponseDto> responseDtos = todos.stream()
                 .map(TodoDailyResponseDto::of)
                 .collect(Collectors.toList());
