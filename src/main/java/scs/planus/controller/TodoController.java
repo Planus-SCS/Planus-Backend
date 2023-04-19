@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,6 +57,15 @@ public class TodoController {
         Long memberId = principalDetails.getId();
         List<TodoDailyResponseDto> responseDtos = todoService.getDailyTodos(memberId, date);
         return new BaseResponse<>(responseDtos);
+    }
+
+    @PatchMapping("/todos/{todoId}")
+    public BaseResponse<TodoGetResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                             @PathVariable Long todoId,
+                                                             @RequestBody TodoCreateRequestDto requestDto) {
+        Long memberId = principalDetails.getId();
+        TodoGetResponseDto responseDto = todoService.updateTodo(memberId, todoId, requestDto);
+        return new BaseResponse<>(responseDto);
     }
 
     @DeleteMapping("/todos/{todoId}")
