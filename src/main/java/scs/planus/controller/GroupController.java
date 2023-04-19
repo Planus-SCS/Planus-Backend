@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import scs.planus.auth.PrincipalDetails;
 import scs.planus.common.response.BaseResponse;
 import scs.planus.dto.group.GroupCreateRequestDto;
+import scs.planus.dto.group.GroupGetResponseDto;
 import scs.planus.dto.group.GroupResponseDto;
 import scs.planus.service.GroupService;
 
@@ -28,5 +29,14 @@ public class GroupController {
         GroupResponseDto responseDto = groupService.createGroup( memberId, requestDto, multipartFile );
 
         return new BaseResponse<>(responseDto);
+    }
+
+    @GetMapping("/groups/{groupId}")
+    public BaseResponse<GroupGetResponseDto> getGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                       @PathVariable("groupId") Long groupId ) {
+
+        GroupGetResponseDto responseDto = groupService.getGroup( groupId );
+
+        return new BaseResponse<>( responseDto );
     }
 }

@@ -27,6 +27,10 @@ public enum CustomResponseStatus implements ResponseStatus {
     INVALID_DATE(BAD_REQUEST, 2500, "시작 날짜가 끝 날짜보다 늦을 수 없습니다."),
     NONE_TODO(BAD_REQUEST, 2501, "존재하지 않는 투두입니다."),
 
+    // group exception
+    NOT_EXIST_GROUP(BAD_REQUEST, 2600, "존재하지 않는 그룹 입니다."),
+    NOT_EXIST_LEADER(BAD_REQUEST, 2601, "해당 그룹에 그룹장이 존재하지 않습니다."),
+
     // s3 exception
     INVALID_FILE(BAD_REQUEST, 5000, "잘못되거나 존재하지 않는 파일입니다."),
     INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요.")
