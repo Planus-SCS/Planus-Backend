@@ -3,10 +3,11 @@ package scs.planus.common.response;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
-import static scs.planus.common.response.CommonResponseStatus.SUCCESS;
-
 @Getter
 public class BaseResponse<T> {
+
+    private static final int SUCCESS_CODE = 1000;
+    private static final String SUCCESS_MESSAGE = "요청에 성공하였습니다.";
 
     private final Boolean isSuccess;
     private final int code;
@@ -18,8 +19,8 @@ public class BaseResponse<T> {
     // 성공시 반환되는 Response
     public BaseResponse(T data) {
         this.isSuccess = true;
-        this.code = SUCCESS.getCode();
-        this.message = SUCCESS.getMessage();
+        this.code = SUCCESS_CODE;
+        this.message = SUCCESS_MESSAGE;
         this.data = data;
     }
 
