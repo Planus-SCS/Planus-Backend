@@ -50,4 +50,13 @@ public class GroupMember extends BaseTimeEntity{
                 .group(group)
                 .build();
     }
+
+    public static GroupMember creatGroupMember(Member member, Group group ) {
+        return GroupMember.builder()
+                .leader(false)
+                .todoAuthority(false)
+                .member(member)
+                .group(group)
+                .build();
+    }
 }
