@@ -25,6 +25,7 @@ public enum CustomResponseStatus implements ResponseStatus {
 
     // to_do exception
     INVALID_DATE(BAD_REQUEST, 2500, "시작 날짜가 끝 날짜보다 늦을 수 없습니다."),
+    NONE_TODO(BAD_REQUEST, 2501, "존재하지 않는 투두입니다."),
 
     // group exception
     NOT_EXIST_GROUP(BAD_REQUEST, 2600, "존재하지 않는 그룹 입니다."),
