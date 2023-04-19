@@ -2,17 +2,15 @@ package scs.planus.dto.group;
 
 import lombok.Builder;
 import lombok.Getter;
-import scs.planus.common.exception.PlanusException;
-import scs.planus.common.response.CustomResponseStatus;
+import lombok.extern.slf4j.Slf4j;
 import scs.planus.domain.Group;
-import scs.planus.domain.GroupMember;
 import scs.planus.dto.tag.GroupTagResponseDto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@Slf4j
 public class GroupGetResponseDto {
     private Long id;
     private String name;
@@ -23,14 +21,8 @@ public class GroupGetResponseDto {
     private String leaderName;
     private List<GroupTagResponseDto> groupTags;
 
-    public static GroupGetResponseDto of(Group group ) {
 
-        List<GroupTagResponseDto> groupTagNameList = group.getGroupTags().stream()
-                                                        .map( GroupTagResponseDto::of )
-                                                        .collect( Collectors.toList() );
-
-        String leaderName = findLeader(group);
-
+    public static GroupGetResponseDto of( Group group, String leaderName, List<GroupTagResponseDto> groupTagNameList ) {
         return GroupGetResponseDto.builder()
                 .id( group.getId() )
                 .name( group.getName() )
@@ -41,15 +33,5 @@ public class GroupGetResponseDto {
                 .leaderName( leaderName )
                 .groupTags( groupTagNameList )
                 .build();
-    }
-
-    private static String findLeader( Group group ) {
-        return group.getGroupMembers().stream()
-                .filter( GroupMember::isLeader )
-                .findFirst()
-                .map( gm -> gm.getMember().getNickname() )
-                .orElseThrow( () ->
-                        new PlanusException(CustomResponseStatus.NOT_EXIST_LEADER)
-                );
     }
 }
