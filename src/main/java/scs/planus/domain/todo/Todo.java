@@ -71,4 +71,18 @@ public class Todo extends BaseTimeEntity {
         this.member = member;
         this.group = group;
     }
+
+    public void update(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate,
+                       TodoCategory todoCategory, Group group) {
+        this.title = title;
+        this.description = description;
+        this.startTime = startTime;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        if (endDate == null) {
+            this.endDate = startDate;
+        }
+        this.todoCategory = todoCategory;
+        this.group = group;
+    }
 }
