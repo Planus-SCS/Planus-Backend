@@ -1,15 +1,22 @@
-package scs.planus.common.response;
+package scs.planus.common.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import scs.planus.common.response.ResponseStatus;
 
 import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @RequiredArgsConstructor
-public enum CustomResponseStatus implements ResponseStatus {
+public enum CustomExceptionStatus implements ResponseStatus {
 
+    // Common Exception
+    INVALID_PARAMETER(HttpStatus.BAD_REQUEST, 2000, "잘못된 요청이 존재합니다."),
+    INVALID_URL(HttpStatus.NOT_FOUND, 3000, "잘못된 URL 요청입니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 5000,"서버 내부 오류입니다."),
+
+    // user exception
     DUPLICATED_EMAIL(CONFLICT, 2100, "중복된 이메일이 존재합니다."),
     NONE_USER(BAD_REQUEST, 2110, "존재하지 않는 회원입니다."),
     NONE_SOCIAL_TYPE(BAD_REQUEST, 2200, "존재하지 않는 소셜 로그인 타입입니다."),
