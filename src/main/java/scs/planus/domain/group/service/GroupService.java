@@ -5,26 +5,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.entity.GroupMember;
-import scs.planus.domain.group.entity.GroupTag;
-import scs.planus.domain.member.entity.Member;
-import scs.planus.domain.tag.entity.Tag;
-import scs.planus.global.exception.PlanusException;
-import scs.planus.global.exception.CustomExceptionStatus;
 import scs.planus.domain.group.dto.GroupCreateRequestDto;
 import scs.planus.domain.group.dto.GroupGetResponseDto;
 import scs.planus.domain.group.dto.GroupResponseDto;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
-import scs.planus.infra.s3.AmazonS3Uploader;
+import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.entity.GroupMember;
+import scs.planus.domain.group.entity.GroupTag;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.group.repository.GroupTagRepository;
+import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.domain.tag.entity.Tag;
 import scs.planus.domain.tag.service.TagService;
+import scs.planus.global.exception.PlanusException;
+import scs.planus.infra.s3.AmazonS3Uploader;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,7 +43,7 @@ public class GroupService {
     public GroupResponseDto createGroup(Long memberId, GroupCreateRequestDto requestDto, MultipartFile multipartFile ) {
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> {
-                    throw new PlanusException( CustomExceptionStatus.NONE_USER );
+                    throw new PlanusException( NONE_USER );
                 });
 
         String groupImageUrl = createGroupImage( multipartFile );
@@ -58,42 +59,40 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    public GroupGetResponseDto getGroup(Long groupId ) {
-        Group group = groupRepository.findById( groupId )
-                .orElseThrow( () -> {
-                    throw new PlanusException( CustomExceptionStatus.NOT_EXIST_GROUP );
-                });
+    public GroupGetResponseDto getGroup( Long groupId ) {
+        Group group = groupRepository.findWithGroupMemberById( groupId )
+                .orElseThrow(() ->  new PlanusException(NOT_EXIST_GROUP));
 
-        GroupMember groupLeader = groupMemberRepository.findLeaderByGroup(group)
-                .orElseThrow(() -> {
-                    throw new PlanusException(CustomExceptionStatus.NOT_EXIST_LEADER);
-                });
+        // 그룹 리더 이름 조회
+        String leaderName = group.getLeaderName();
 
-        List<GroupTag> groupTags = groupTagRepository.findAllByGroupId(group);
-        List<GroupTagResponseDto> GroupTagResponseDtos = groupTags.stream()
-                                                            .map(GroupTagResponseDto::of)
-                                                            .collect(Collectors.toList());
+        // 그룹 테그 조회 후 List<dto>로 변경
+        List<GroupTag> groupTags = groupTagRepository.findAllByGroupId( group );
+        List<GroupTagResponseDto> groupTagResponseDtos =
+                groupTags.stream()
+                        .map( GroupTagResponseDto::of )
+                        .collect( Collectors.toList() );
 
-        return GroupGetResponseDto.of( group, groupLeader.getMember().getNickname(), GroupTagResponseDtos );
+        return GroupGetResponseDto.of( group, leaderName, groupTagResponseDtos );
     }
 
     private String createGroupImage( MultipartFile multipartFile ) {
         if ( multipartFile != null ) {
             return s3Uploader.upload( multipartFile, "groups" );
         }
-        throw new PlanusException( CustomExceptionStatus.INVALID_FILE );
+        throw new PlanusException(INVALID_FILE);
     }
 
     @Transactional
     public GroupResponseDto joinGroup(Long groupId, Long memberId) {
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> {
-                    throw new PlanusException(CustomExceptionStatus.NOT_EXIST_GROUP);
+                    throw new PlanusException(NOT_EXIST_GROUP);
                 });
 
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> {
-                    throw new PlanusException( CustomExceptionStatus.NONE_USER );
+                    throw new PlanusException(NONE_USER);
                 });
 
         GroupMember groupMember = GroupMember.creatGroupMember(member, group);
