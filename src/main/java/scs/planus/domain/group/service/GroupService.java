@@ -51,7 +51,7 @@ public class GroupService {
         List<Tag> tagList = tagService.transformToTag( requestDto.getTagList() );
         GroupTag.create( group, tagList );
 
-        GroupMember.creatGroupMemberLeader( member, group );
+        GroupMember.creatGroupLeader( member, group );
 
         Group saveGroup = groupRepository.save( group );
 
