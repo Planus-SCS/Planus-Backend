@@ -8,6 +8,9 @@ import scs.planus.domain.group.entity.Group;
 import java.util.Optional;
 
 public interface GroupRepository extends JpaRepository<Group, Long> {
-    @Query("select g from Group g join fetch g.groupMembers gm where g.id= :groupId")
+    @Query("select distinct g " +
+            "from Group g " +
+            "join fetch g.groupMembers gm " +
+            "where g.id= :groupId")
     Optional<Group> findWithGroupMemberById(@Param("groupId") Long groupId);
 }
