@@ -13,5 +13,5 @@ public interface GroupTagRepository extends JpaRepository<GroupTag, Long> {
             "from GroupTag gt " +
             "join fetch gt.tag t " +
             "where gt.group= :group ")
-    List<GroupTag> findAllByGroupId(@Param("group") Group group);
+    List<GroupTag> findAllByGroup(@Param("group") Group group);
 }

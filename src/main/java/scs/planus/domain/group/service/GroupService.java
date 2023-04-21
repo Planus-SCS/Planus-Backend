@@ -67,7 +67,7 @@ public class GroupService {
         String leaderName = group.getLeaderName();
 
         // 그룹 테그 조회 후 List<dto>로 변경
-        List<GroupTag> groupTags = groupTagRepository.findAllByGroupId( group );
+        List<GroupTag> groupTags = groupTagRepository.findAllByGroup( group );
         List<GroupTagResponseDto> groupTagResponseDtos =
                 groupTags.stream()
                         .map( GroupTagResponseDto::of )
