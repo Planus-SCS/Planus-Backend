@@ -4,20 +4,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import scs.planus.global.exception.PlanusException;
-import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.category.entity.TodoCategory;
-import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.category.repository.CategoryRepository;
+import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.repository.GroupRepository;
+import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.dto.TodoCreateRequestDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoGetResponseDto;
+import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
-import scs.planus.domain.category.repository.CategoryRepository;
-import scs.planus.domain.group.repository.GroupRepository;
-import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
+import scs.planus.global.exception.PlanusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -59,6 +60,18 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         return TodoGetResponseDto.of(todo);
+    }
+
+    public List<TodoPeriodResponseDto> getPeriodTodos(Long memberId, LocalDate from, LocalDate to) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        validateDate(from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodTodosByDate(member.getId(), from, to);
+        List<TodoPeriodResponseDto> responseDtos = todos.stream()
+                .map(TodoPeriodResponseDto::of)
+                .collect(Collectors.toList());
+        return responseDtos;
     }
 
     public List<TodoDailyResponseDto> getDailyTodos(Long memberId, LocalDate date) {
