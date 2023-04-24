@@ -56,7 +56,6 @@ public class TodoController {
     public BaseResponse<List<TodoPeriodResponseDto>> getPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
-        log.info("from~to={}~{}", from, to);
         Long memberId = principalDetails.getId();
         List<TodoPeriodResponseDto> responseDtos = todoService.getPeriodTodos(memberId, from, to);
         return new BaseResponse<>(responseDtos);
