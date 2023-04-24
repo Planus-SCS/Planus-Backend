@@ -12,6 +12,7 @@ import java.time.LocalTime;
 @Builder
 public class TodoGetResponseDto {
 
+    private Long id;
     private String title;
     private String categoryName;
     private String groupName;
@@ -26,6 +27,7 @@ public class TodoGetResponseDto {
 
     public static TodoGetResponseDto of(Todo todo) {
         return TodoGetResponseDto.builder()
+                .id(todo.getId())
                 .title(todo.getTitle())
                 .categoryName(todo.getTodoCategory().getName())
                 .groupName(todo.getGroup() == null ? null : todo.getGroup().getName())
