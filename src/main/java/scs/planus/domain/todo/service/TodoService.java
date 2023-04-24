@@ -11,7 +11,9 @@ import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.dto.TodoCreateRequestDto;
+import scs.planus.domain.todo.dto.TodoDailyDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
+import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.TodoGetResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
@@ -74,16 +76,15 @@ public class TodoService {
         return responseDtos;
     }
 
-    public List<TodoDailyResponseDto> getDailyTodos(Long memberId, LocalDate date) {
+    public TodoDailyResponseDto getDailyTodos(Long memberId, LocalDate date) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         List<Todo> todos = todoQueryRepository.findDailyTodosByDate(member.getId(), date);
-        List<TodoDailyResponseDto> responseDtos = todos.stream()
-                .map(TodoDailyResponseDto::of)
-                .collect(Collectors.toList());
+        List<TodoDailyScheduleDto> todoDailyScheduleDtos = getDailySchedules(todos);
+        List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
 
-        return responseDtos;
+        return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
     }
 
     @Transactional
@@ -124,6 +125,20 @@ public class TodoService {
                 throw new PlanusException(INVALID_DATE);
             }
         }
+    }
+
+    private List<TodoDailyScheduleDto> getDailySchedules(List<Todo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() != null)
+                .map(TodoDailyScheduleDto::of)
+                .collect(Collectors.toList());
+    }
+
+    private List<TodoDailyDto> getDailyTodos(List<Todo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() == null)
+                .map(TodoDailyDto::of)
+                .collect(Collectors.toList());
     }
 
     private Group getGroup(Long groupId) {
