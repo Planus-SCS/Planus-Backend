@@ -119,6 +119,6 @@ public class TodoService {
         }
         // TODO : 그룹 가입 이후, 현재 멤버가 해당 그룹에 가입했는지를 체크해야함. 아래 방식은 가입하지 않더라도 그룹 지정 가능한 방식
         return groupRepository.findById(groupId)
-                    .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
+                    .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
     }
 }
