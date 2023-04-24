@@ -11,10 +11,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static scs.planus.domain.QGroup.group;
-import static scs.planus.domain.QMember.member;
-import static scs.planus.domain.QTodoCategory.todoCategory;
-import static scs.planus.domain.todo.QTodo.todo;
+import static scs.planus.domain.category.entity.QTodoCategory.todoCategory;
+import static scs.planus.domain.group.entity.QGroup.group;
+import static scs.planus.domain.member.entity.QMember.member;
+import static scs.planus.domain.todo.entity.QTodo.todo;
 
 @Repository
 @RequiredArgsConstructor
