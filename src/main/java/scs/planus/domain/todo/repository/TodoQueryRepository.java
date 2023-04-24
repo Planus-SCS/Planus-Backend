@@ -48,6 +48,7 @@ public class TodoQueryRepository {
                 .join(todo.member, member)
                 .leftJoin(todo.group, group).fetchJoin()
                 .where(memberIdEq(memberId), dateBetween(date))
+                .orderBy(todo.startTime.asc())
                 .fetch();
     }
 
