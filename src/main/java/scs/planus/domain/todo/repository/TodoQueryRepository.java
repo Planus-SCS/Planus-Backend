@@ -23,7 +23,7 @@ public class TodoQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Optional<Todo> findOneTodoById(Long todoId, Long memberId){
+    public Optional<Todo> findOneTodoById(Long todoId, Long memberId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(todo)
                 .join(todo.member, member)
@@ -33,6 +33,15 @@ public class TodoQueryRepository {
                 .fetchOne());
     }
 
+    public List<Todo> findPeriodTodosByDate(Long memberId, LocalDate from, LocalDate to) {
+        return queryFactory
+                .selectFrom(todo)
+                .join(todo.member, member).fetchJoin()
+                .where(memberIdEq(memberId), periodBetween(from, to))
+                .orderBy(todo.startDate.asc())
+                .fetch();
+    }
+
     public List<Todo> findDailyTodosByDate(Long memberId, LocalDate date) {
         return queryFactory
                 .selectFrom(todo)
@@ -40,6 +49,10 @@ public class TodoQueryRepository {
                 .leftJoin(todo.group, group).fetchJoin()
                 .where(memberIdEq(memberId), dateBetween(date))
                 .fetch();
+    }
+
+    private BooleanExpression periodBetween(LocalDate from, LocalDate to) {
+        return todo.startDate.between(from, to).or(todo.endDate.between(from, to));
     }
 
     private BooleanExpression dateBetween(LocalDate date) {
