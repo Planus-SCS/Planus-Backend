@@ -43,6 +43,8 @@ public class Todo extends BaseTimeEntity {
 
     private boolean showDDay;
 
+    private boolean completion;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_category_id")
     private TodoCategory todoCategory;
