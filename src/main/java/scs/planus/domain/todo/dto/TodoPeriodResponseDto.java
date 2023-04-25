@@ -11,7 +11,8 @@ import java.time.LocalDate;
 @Builder
 public class TodoPeriodResponseDto {
 
-    private Long id;
+    private Long todoId;
+    private Long categoryId;
     private String title;
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate startDate;
@@ -20,7 +21,8 @@ public class TodoPeriodResponseDto {
 
     public static TodoPeriodResponseDto of(Todo todo) {
         return TodoPeriodResponseDto.builder()
-                .id(todo.getId())
+                .todoId(todo.getId())
+                .categoryId(todo.getTodoCategory().getId())
                 .title(todo.getTitle())
                 .startDate(todo.getStartDate())
                 .endDate(todo.getEndDate())
