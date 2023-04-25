@@ -63,7 +63,7 @@ public class TodoController {
 
     @GetMapping("/todos")
     public BaseResponse<TodoDailyResponseDto> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+                                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         Long memberId = principalDetails.getId();
         TodoDailyResponseDto responseDtos = todoService.getDailyTodos(memberId, date);
         return new BaseResponse<>(responseDtos);
