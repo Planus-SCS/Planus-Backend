@@ -3,10 +3,13 @@ package scs.planus.domain.group.entity;
 import lombok.*;
 import scs.planus.domain.BaseTimeEntity;
 import scs.planus.domain.Status;
+import scs.planus.global.exception.PlanusException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_LEADER;
 
 @Entity
 @Getter
@@ -60,5 +63,13 @@ public class Group extends BaseTimeEntity {
                 .scope( GroupScope.PUBLIC )
                 .status( Status.ACTIVE )
                 .build();
+    }
+
+    public String getLeaderName() {
+        return this.getGroupMembers().stream()
+                .filter( GroupMember::isLeader )
+                .findFirst()
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_LEADER))
+                .getMember().getNickname();
     }
 }
