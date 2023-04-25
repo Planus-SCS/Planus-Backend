@@ -85,4 +85,12 @@ public class TodoController {
         TodoResponseDto responseDto = todoService.deleteTodo(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
+
+    @PatchMapping("/todos/{todoId}/completion")
+    public BaseResponse<TodoResponseDto> completeTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                      @PathVariable Long todoId) {
+        Long memberId = principalDetails.getId();
+        TodoResponseDto responseDto = todoService.checkCompletion(memberId, todoId);
+        return new BaseResponse<>(responseDto);
+    }
 }
