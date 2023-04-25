@@ -37,6 +37,7 @@ public class TodoQueryRepository {
         return queryFactory
                 .selectFrom(todo)
                 .join(todo.member, member).fetchJoin()
+                .join(todo.todoCategory, todoCategory).fetchJoin()
                 .where(memberIdEq(memberId), periodBetween(from, to))
                 .orderBy(todo.startDate.asc())
                 .fetch();
@@ -47,6 +48,7 @@ public class TodoQueryRepository {
                 .selectFrom(todo)
                 .join(todo.member, member)
                 .leftJoin(todo.group, group).fetchJoin()
+                .join(todo.todoCategory, todoCategory).fetchJoin()
                 .where(memberIdEq(memberId), dateBetween(date))
                 .orderBy(todo.startTime.asc())
                 .fetch();
