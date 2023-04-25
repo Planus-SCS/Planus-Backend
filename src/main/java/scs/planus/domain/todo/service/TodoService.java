@@ -119,6 +119,18 @@ public class TodoService {
         return TodoResponseDto.of(todo);
     }
 
+    @Transactional
+    public TodoResponseDto checkCompletion(Long memberId, Long todoId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        todo.complete();
+        return TodoResponseDto.of(todo);
+    }
+
     private void validateDate(LocalDate startDate, LocalDate endDate) {
         if (endDate != null) {
             if (startDate.isAfter(endDate)) {
