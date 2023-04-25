@@ -86,7 +86,7 @@ public class TodoController {
         return new BaseResponse<>(responseDto);
     }
 
-    @PatchMapping("/todos/{todoId}/completion")
+    @PostMapping("/todos/{todoId}/completion")
     public BaseResponse<TodoResponseDto> completeTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                       @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
