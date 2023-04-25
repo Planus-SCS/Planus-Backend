@@ -10,7 +10,7 @@ import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.domain.todo.dto.TodoCreateRequestDto;
+import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoDailyDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
@@ -41,7 +41,7 @@ public class TodoService {
     private final TodoQueryRepository todoQueryRepository;
 
     @Transactional
-    public TodoResponseDto createPrivateTodo(Long memberId, TodoCreateRequestDto requestDto) {
+    public TodoResponseDto createPrivateTodo(Long memberId, TodoRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
                         .orElseThrow(() -> new PlanusException(NONE_USER));
 
@@ -88,7 +88,7 @@ public class TodoService {
     }
 
     @Transactional
-    public TodoGetResponseDto updateTodo(Long memberId, Long todoId, TodoCreateRequestDto requestDto) {
+    public TodoGetResponseDto updateTodo(Long memberId, Long todoId, TodoRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
