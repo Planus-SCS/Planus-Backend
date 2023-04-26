@@ -14,8 +14,8 @@ public class TodoGetResponseDto {
 
     private Long todoId;
     private String title;
-    private String categoryName;
-    private String groupName;
+    private Long categoryId;
+    private Long groupId;
 
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate startDate;
@@ -29,8 +29,8 @@ public class TodoGetResponseDto {
         return TodoGetResponseDto.builder()
                 .todoId(todo.getId())
                 .title(todo.getTitle())
-                .categoryName(todo.getTodoCategory().getName())
-                .groupName(todo.getGroup() == null ? null : todo.getGroup().getName())
+                .categoryId(todo.getTodoCategory().getId())
+                .groupId(todo.getGroup() == null ? null : todo.getGroup().getId())
                 .startDate(todo.getStartDate())
                 .endDate(todo.getEndDate())
                 .startTime(todo.getStartTime())
