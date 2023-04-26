@@ -87,6 +87,19 @@ public class TodoService {
         return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
     }
 
+    public List<TodoGetResponseDto> getPeriodDetailTodos(Long memberId, LocalDate from, LocalDate to) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        validateDate(from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodDetailTodosByDate(member.getId(), from, to);
+        List<TodoGetResponseDto> responseDtos = todos.stream()
+                .map(TodoGetResponseDto::of)
+                .collect(Collectors.toList());
+
+        return responseDtos;
+    }
+
     @Transactional
     public TodoGetResponseDto updateTodo(Long memberId, Long todoId, TodoRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
