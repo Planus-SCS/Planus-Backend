@@ -10,7 +10,7 @@ import java.time.LocalTime;
 
 @Getter
 @Builder
-public class TodoGetResponseDto {
+public class TodoDetailsResponseDto {
 
     private Long todoId;
     private String title;
@@ -25,8 +25,8 @@ public class TodoGetResponseDto {
     private LocalTime startTime;
     private String description;
 
-    public static TodoGetResponseDto of(Todo todo) {
-        return TodoGetResponseDto.builder()
+    public static TodoDetailsResponseDto of(Todo todo) {
+        return TodoDetailsResponseDto.builder()
                 .todoId(todo.getId())
                 .title(todo.getTitle())
                 .categoryId(todo.getTodoCategory().getId())

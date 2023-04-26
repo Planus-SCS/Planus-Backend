@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.TodoGetResponseDto;
+import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.service.TodoService;
@@ -45,10 +45,10 @@ public class TodoController {
     }
 
     @GetMapping("/todos/{todoId}")
-    public BaseResponse<TodoGetResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                          @PathVariable Long todoId) {
+    public BaseResponse<TodoDetailsResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                              @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
-        TodoGetResponseDto responseDto = todoService.getOneTodo(memberId, todoId);
+        TodoDetailsResponseDto responseDto = todoService.getOneTodo(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
 
@@ -70,20 +70,20 @@ public class TodoController {
     }
 
     @GetMapping("/todos")
-    public BaseResponse<List<TodoGetResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-                                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to){
+    public BaseResponse<List<TodoDetailsResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to){
         Long memberId = principalDetails.getId();
-        List<TodoGetResponseDto> responseDtos = todoService.getPeriodDetailTodos(memberId, from, to);
+        List<TodoDetailsResponseDto> responseDtos = todoService.getPeriodDetailTodos(memberId, from, to);
         return new BaseResponse<>(responseDtos);
     }
 
     @PatchMapping("/todos/{todoId}")
-    public BaseResponse<TodoGetResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                             @PathVariable Long todoId,
-                                                             @RequestBody TodoRequestDto requestDto) {
+    public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                 @PathVariable Long todoId,
+                                                                 @RequestBody TodoRequestDto requestDto) {
         Long memberId = principalDetails.getId();
-        TodoGetResponseDto responseDto = todoService.updateTodo(memberId, todoId, requestDto);
+        TodoDetailsResponseDto responseDto = todoService.updateTodo(memberId, todoId, requestDto);
         return new BaseResponse<>(responseDto);
     }
 

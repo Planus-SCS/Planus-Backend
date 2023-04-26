@@ -14,7 +14,7 @@ import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoDailyDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
-import scs.planus.domain.todo.dto.TodoGetResponseDto;
+import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.Todo;
@@ -54,14 +54,14 @@ public class TodoService {
         return TodoResponseDto.of(memberTodo);
     }
 
-    public TodoGetResponseDto getOneTodo(Long memberId, Long todoId) {
+    public TodoDetailsResponseDto getOneTodo(Long memberId, Long todoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
-        return TodoGetResponseDto.of(todo);
+        return TodoDetailsResponseDto.of(todo);
     }
 
     public List<TodoPeriodResponseDto> getPeriodTodos(Long memberId, LocalDate from, LocalDate to) {
@@ -87,21 +87,21 @@ public class TodoService {
         return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
     }
 
-    public List<TodoGetResponseDto> getPeriodDetailTodos(Long memberId, LocalDate from, LocalDate to) {
+    public List<TodoDetailsResponseDto> getPeriodDetailTodos(Long memberId, LocalDate from, LocalDate to) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         validateDate(from, to);
         List<Todo> todos = todoQueryRepository.findPeriodDetailTodosByDate(member.getId(), from, to);
-        List<TodoGetResponseDto> responseDtos = todos.stream()
-                .map(TodoGetResponseDto::of)
+        List<TodoDetailsResponseDto> responseDtos = todos.stream()
+                .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
 
         return responseDtos;
     }
 
     @Transactional
-    public TodoGetResponseDto updateTodo(Long memberId, Long todoId, TodoRequestDto requestDto) {
+    public TodoDetailsResponseDto updateTodo(Long memberId, Long todoId, TodoRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
@@ -117,7 +117,7 @@ public class TodoService {
         todo.update(requestDto.getTitle(), requestDto.getDescription(), requestDto.getStartTime(),
                 requestDto.getStartDate(), requestDto.getEndDate(), todoCategory, group);
 
-        return TodoGetResponseDto.of(todo);
+        return TodoDetailsResponseDto.of(todo);
     }
 
     @Transactional
