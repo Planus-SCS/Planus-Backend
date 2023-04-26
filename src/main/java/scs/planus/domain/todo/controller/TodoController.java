@@ -69,6 +69,15 @@ public class TodoController {
         return new BaseResponse<>(responseDtos);
     }
 
+    @GetMapping("/todos")
+    public BaseResponse<List<TodoGetResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                           @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to){
+        Long memberId = principalDetails.getId();
+        List<TodoGetResponseDto> responseDtos = todoService.getPeriodDetailTodos(memberId, from, to);
+        return new BaseResponse<>(responseDtos);
+    }
+
     @PatchMapping("/todos/{todoId}")
     public BaseResponse<TodoGetResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                              @PathVariable Long todoId,
