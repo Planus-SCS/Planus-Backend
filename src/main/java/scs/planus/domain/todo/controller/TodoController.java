@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import scs.planus.global.auth.entity.PrincipalDetails;
-import scs.planus.global.common.response.BaseResponse;
-import scs.planus.domain.todo.dto.TodoCreateRequestDto;
+import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.TodoGetResponseDto;
+import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
+import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.service.TodoService;
+import scs.planus.global.auth.entity.PrincipalDetails;
+import scs.planus.global.common.response.BaseResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,7 +35,7 @@ public class TodoController {
 
     @PostMapping("/todos")
     public BaseResponse<TodoResponseDto> createTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                    @RequestBody TodoCreateRequestDto requestDto) {
+                                                    @RequestBody TodoRequestDto requestDto) {
         Long memberId = principalDetails.getId();
         if (requestDto.getGroupId() == null) {
             TodoResponseDto responseDto = todoService.createPrivateTodo(memberId, requestDto);
@@ -44,27 +45,45 @@ public class TodoController {
     }
 
     @GetMapping("/todos/{todoId}")
-    public BaseResponse<TodoGetResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                          @PathVariable Long todoId) {
+    public BaseResponse<TodoDetailsResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                              @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
-        TodoGetResponseDto responseDto = todoService.getOneTodo(memberId, todoId);
+        TodoDetailsResponseDto responseDto = todoService.getOneTodo(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
 
-    @GetMapping("/todos")
-    public BaseResponse<List<TodoDailyResponseDto>> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                  @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    @GetMapping("/todos/period")
+    public BaseResponse<List<TodoPeriodResponseDto>> getPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         Long memberId = principalDetails.getId();
-        List<TodoDailyResponseDto> responseDtos = todoService.getDailyTodos(memberId, date);
+        List<TodoPeriodResponseDto> responseDtos = todoService.getPeriodTodos(memberId, from, to);
+        return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("/todos/daily")
+    public BaseResponse<TodoDailyResponseDto> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        Long memberId = principalDetails.getId();
+        TodoDailyResponseDto responseDtos = todoService.getDailyTodos(memberId, date);
+        return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("/todos")
+    public BaseResponse<List<TodoDetailsResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to){
+        Long memberId = principalDetails.getId();
+        List<TodoDetailsResponseDto> responseDtos = todoService.getPeriodDetailTodos(memberId, from, to);
         return new BaseResponse<>(responseDtos);
     }
 
     @PatchMapping("/todos/{todoId}")
-    public BaseResponse<TodoGetResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                             @PathVariable Long todoId,
-                                                             @RequestBody TodoCreateRequestDto requestDto) {
+    public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                 @PathVariable Long todoId,
+                                                                 @RequestBody TodoRequestDto requestDto) {
         Long memberId = principalDetails.getId();
-        TodoGetResponseDto responseDto = todoService.updateTodo(memberId, todoId, requestDto);
+        TodoDetailsResponseDto responseDto = todoService.updateTodo(memberId, todoId, requestDto);
         return new BaseResponse<>(responseDto);
     }
 
@@ -73,6 +92,14 @@ public class TodoController {
                                                     @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
         TodoResponseDto responseDto = todoService.deleteTodo(memberId, todoId);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @PatchMapping("/todos/{todoId}/completion")
+    public BaseResponse<TodoResponseDto> completeTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                      @PathVariable Long todoId) {
+        Long memberId = principalDetails.getId();
+        TodoResponseDto responseDto = todoService.checkCompletion(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
 }

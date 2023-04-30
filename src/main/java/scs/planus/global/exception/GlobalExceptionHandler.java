@@ -5,6 +5,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import scs.planus.global.common.response.BaseResponse;
 import scs.planus.global.common.response.ResponseStatus;
 
@@ -29,6 +30,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleJsonException() {
+        ResponseStatus status = INVALID_PARAMETER;
+        return ResponseEntity.status(status.getHttpStatus())
+                .body(new BaseResponse<>(status));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleInvalidQueryStringException() {
         ResponseStatus status = INVALID_PARAMETER;
         return ResponseEntity.status(status.getHttpStatus())
                 .body(new BaseResponse<>(status));

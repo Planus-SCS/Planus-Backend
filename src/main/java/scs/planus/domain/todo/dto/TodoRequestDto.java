@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
-public class TodoCreateRequestDto {
+public class TodoRequestDto {
 
     @NotBlank(message = "투두 제목을 입력해주세요.")
     @Size(max = 20, message = "투두 제목은 최대 20글자입니다.")

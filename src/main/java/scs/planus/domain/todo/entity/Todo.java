@@ -43,6 +43,8 @@ public class Todo extends BaseTimeEntity {
 
     private boolean showDDay;
 
+    private boolean completion;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_category_id")
     private TodoCategory todoCategory;
@@ -84,5 +86,9 @@ public class Todo extends BaseTimeEntity {
         }
         this.todoCategory = todoCategory;
         this.group = group;
+    }
+
+    public void changeCompletion() {
+        this.completion = !this.completion;
     }
 }
