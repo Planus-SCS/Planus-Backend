@@ -92,7 +92,7 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         validateDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodDetailTodosByDate(member.getId(), from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodTodosDetailByDate(member.getId(), from, to);
         List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
