@@ -88,7 +88,7 @@ public class Todo extends BaseTimeEntity {
         this.group = group;
     }
 
-    public void complete() {
+    public void changeCompletion() {
         this.completion = !this.completion;
     }
 }
