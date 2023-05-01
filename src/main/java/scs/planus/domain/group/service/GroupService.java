@@ -80,8 +80,11 @@ public class GroupService {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
 
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
         // 리더가 아니면 수정 불가능
-        validateLeaderPermission( memberId, group );
+        validateLeaderPermission( member, group );
 
         // 그룹 이미지 변경
         String groupImageUrl = group.getGroupImageUrl();
@@ -103,8 +106,11 @@ public class GroupService {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
 
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
         // 리더가 아니면 수정 불가능
-        validateLeaderPermission( memberId, group );
+        validateLeaderPermission( member, group );
 
         Group updateGroup = group.updateNotice( requestDto.getNotice() );
 
@@ -116,8 +122,11 @@ public class GroupService {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
 
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
         // 리더가 아니면 수정 불가능
-        validateLeaderPermission( memberId, group );
+        validateLeaderPermission( member, group );
 
         Group inactiveGroup = group.changeStatusToInactive();
 
@@ -157,12 +166,9 @@ public class GroupService {
         return GroupResponseDto.of( group );
     }
 
-    private void validateLeaderPermission( Long memberId, Group group ) {
+    private void validateLeaderPermission( Member member, Group group ) {
         GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
-
-        Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
         if ( !member.equals( groupLeader.getMember() ) )
             throw new PlanusException( NOT_GROUP_LEADER_PERMISSION );
