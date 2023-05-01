@@ -11,7 +11,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Query("select distinct g " +
             "from Group g " +
             "join fetch g.groupMembers gm " +
-            "where g.id= :groupId")
+            "where g.id= :groupId " +
+            "and g.status= 'ACTIVE'")
     Optional<Group> findWithGroupMemberById(@Param("groupId") Long groupId);
 
     @Query("select g " +
