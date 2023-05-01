@@ -42,7 +42,7 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
-        Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, null);
+        Todo memberTodo = requestDto.toEntity(member, todoCategory, null);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
     }
@@ -59,7 +59,7 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
 
         Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
-        Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, group);
+        Todo memberTodo = requestDto.toEntity(member, todoCategory, group);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
     }
