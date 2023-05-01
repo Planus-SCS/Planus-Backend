@@ -78,4 +78,9 @@ public class Group extends BaseTimeEntity {
         this.groupImageUrl = groupImageUrl;
         return this;
     }
+
+    public Group updateNotice( String notice ) {
+        this.notice = notice;
+        return this;
+    }
 }
