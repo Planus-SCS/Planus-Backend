@@ -73,19 +73,16 @@ public class Group extends BaseTimeEntity {
                 .getMember().getNickname();
     }
 
-    public Group updateDetail(Long limitCount, String groupImageUrl ) {
+    public void updateDetail(Long limitCount, String groupImageUrl ) {
         this.limitCount = limitCount;
         this.groupImageUrl = groupImageUrl;
-        return this;
     }
 
-    public Group updateNotice( String notice ) {
+    public void updateNotice( String notice ) {
         this.notice = notice;
-        return this;
     }
 
-    public Group changeStatusToInactive() {
+    public void changeStatusToInactive() {
         this.status = Status.INACTIVE;
-        return this;
     }
 }

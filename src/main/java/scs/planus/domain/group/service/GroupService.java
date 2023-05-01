@@ -96,9 +96,9 @@ public class GroupService {
         GroupTag.create( group, addTags );
 
         // 그 외 세부사항 수정
-        Group updateGroup = group.updateDetail( requestDto.getLimitCount(), newGroupImageUrl );
+        group.updateDetail( requestDto.getLimitCount(), newGroupImageUrl );
 
-        return GroupResponseDto.of( updateGroup );
+        return GroupResponseDto.of( group );
     }
 
     @Transactional
@@ -112,9 +112,9 @@ public class GroupService {
         // 리더가 아니면 수정 불가능
         validateLeaderPermission( member, group );
 
-        Group updateGroup = group.updateNotice( requestDto.getNotice() );
+        group.updateNotice( requestDto.getNotice() );
 
-        return GroupResponseDto.of( updateGroup );
+        return GroupResponseDto.of( group );
     }
 
     @Transactional
@@ -128,9 +128,9 @@ public class GroupService {
         // 리더가 아니면 수정 불가능
         validateLeaderPermission( member, group );
 
-        Group inactiveGroup = group.changeStatusToInactive();
+        group.changeStatusToInactive();
 
-        return GroupResponseDto.of( inactiveGroup );
+        return GroupResponseDto.of( group );
     }
 
     private String createGroupImage( MultipartFile multipartFile ) {
