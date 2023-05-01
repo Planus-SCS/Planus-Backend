@@ -60,6 +60,16 @@ public class GroupController {
         return new BaseResponse<>( responseDto );
     }
 
+    @DeleteMapping("/groups/{groupId}")
+    public BaseResponse<GroupResponseDto> softDeleteGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                          @PathVariable("groupId") Long groupId ){
+
+        Long memberId = principalDetails.getId();
+        GroupResponseDto responseDto = groupService.softDeleteGroup( memberId, groupId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
     @PostMapping("/groups/{groupId}")
     public BaseResponse<GroupResponseDto> joinGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @PathVariable("groupId") Long groupId ) {
