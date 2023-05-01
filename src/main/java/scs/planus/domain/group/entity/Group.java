@@ -72,4 +72,10 @@ public class Group extends BaseTimeEntity {
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_LEADER))
                 .getMember().getNickname();
     }
+
+    public Group updateDetail(Long limitCount, String groupImageUrl ) {
+        this.limitCount = limitCount;
+        this.groupImageUrl = groupImageUrl;
+        return this;
+    }
 }
