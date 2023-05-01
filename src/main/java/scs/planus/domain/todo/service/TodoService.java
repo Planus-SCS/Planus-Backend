@@ -10,12 +10,8 @@ import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.domain.todo.dto.TodoRequestDto;
-import scs.planus.domain.todo.dto.TodoDailyDto;
-import scs.planus.domain.todo.dto.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
-import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
+import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
@@ -23,8 +19,6 @@ import scs.planus.domain.todo.repository.TodoRepository;
 import scs.planus.global.exception.PlanusException;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
@@ -49,7 +43,24 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         validateDate(requestDto.getStartDate(), requestDto.getEndDate());
-        Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory);
+        Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, null);
+        todoRepository.save(memberTodo);
+        return TodoResponseDto.of(memberTodo);
+    }
+
+    @Transactional
+    public TodoResponseDto createGroupPrivateTodo(Long memberId, TodoRequestDto requestDto) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        TodoCategory todoCategory = categoryRepository.findById(requestDto.getCategoryId())
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
+
+        Group group = groupRepository.findById(requestDto.getGroupId())
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+
+        validateDate(requestDto.getStartDate(), requestDto.getEndDate());
+        Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, group);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
     }
@@ -62,42 +73,6 @@ public class TodoService {
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         return TodoDetailsResponseDto.of(todo);
-    }
-
-    public List<TodoPeriodResponseDto> getPeriodTodos(Long memberId, LocalDate from, LocalDate to) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        validateDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodTodosByDate(member.getId(), from, to);
-        List<TodoPeriodResponseDto> responseDtos = todos.stream()
-                .map(TodoPeriodResponseDto::of)
-                .collect(Collectors.toList());
-        return responseDtos;
-    }
-
-    public TodoDailyResponseDto getDailyTodos(Long memberId, LocalDate date) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        List<Todo> todos = todoQueryRepository.findDailyTodosByDate(member.getId(), date);
-        List<TodoDailyScheduleDto> todoDailyScheduleDtos = getDailySchedules(todos);
-        List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
-
-        return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
-    }
-
-    public List<TodoDetailsResponseDto> getPeriodDetailTodos(Long memberId, LocalDate from, LocalDate to) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        validateDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodTodosDetailByDate(member.getId(), from, to);
-        List<TodoDetailsResponseDto> responseDtos = todos.stream()
-                .map(TodoDetailsResponseDto::of)
-                .collect(Collectors.toList());
-
-        return responseDtos;
     }
 
     @Transactional
@@ -121,18 +96,6 @@ public class TodoService {
     }
 
     @Transactional
-    public TodoResponseDto deleteTodo(Long memberId, Long todoId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
-                .orElseThrow(() -> new PlanusException(NONE_TODO));
-
-        todoRepository.delete(todo);
-        return TodoResponseDto.of(todo);
-    }
-
-    @Transactional
     public TodoResponseDto checkCompletion(Long memberId, Long todoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
@@ -144,26 +107,24 @@ public class TodoService {
         return TodoResponseDto.of(todo);
     }
 
+    @Transactional
+    public TodoResponseDto deleteTodo(Long memberId, Long todoId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        todoRepository.delete(todo);
+        return TodoResponseDto.of(todo);
+    }
+
     private void validateDate(LocalDate startDate, LocalDate endDate) {
         if (endDate != null) {
             if (startDate.isAfter(endDate)) {
                 throw new PlanusException(INVALID_DATE);
             }
         }
-    }
-
-    private List<TodoDailyScheduleDto> getDailySchedules(List<Todo> todos) {
-        return todos.stream()
-                .filter(todo -> todo.getStartTime() != null)
-                .map(TodoDailyScheduleDto::of)
-                .collect(Collectors.toList());
-    }
-
-    private List<TodoDailyDto> getDailyTodos(List<Todo> todos) {
-        return todos.stream()
-                .filter(todo -> todo.getStartTime() == null)
-                .map(TodoDailyDto::of)
-                .collect(Collectors.toList());
     }
 
     private Group getGroup(Long groupId) {
