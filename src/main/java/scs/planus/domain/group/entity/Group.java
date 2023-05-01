@@ -83,4 +83,9 @@ public class Group extends BaseTimeEntity {
         this.notice = notice;
         return this;
     }
+
+    public Group changeStatusToInactive() {
+        this.status = Status.INACTIVE;
+        return this;
+    }
 }
