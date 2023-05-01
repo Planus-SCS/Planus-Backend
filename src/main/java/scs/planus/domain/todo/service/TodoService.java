@@ -17,8 +17,7 @@ import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
 import scs.planus.global.exception.PlanusException;
-
-import java.time.LocalDate;
+import scs.planus.global.util.validator.Validator;
 
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
@@ -42,7 +41,7 @@ public class TodoService {
         TodoCategory todoCategory = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
-        validateDate(requestDto.getStartDate(), requestDto.getEndDate());
+        Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
         Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, null);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
@@ -59,7 +58,7 @@ public class TodoService {
         Group group = groupRepository.findById(requestDto.getGroupId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
 
-        validateDate(requestDto.getStartDate(), requestDto.getEndDate());
+        Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
         Todo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, group);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
@@ -88,7 +87,7 @@ public class TodoService {
 
         Group group = getGroup(requestDto.getGroupId());
 
-        validateDate(requestDto.getStartDate(), requestDto.getEndDate());
+        Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
         todo.update(requestDto.getTitle(), requestDto.getDescription(), requestDto.getStartTime(),
                 requestDto.getStartDate(), requestDto.getEndDate(), todoCategory, group);
 
@@ -117,14 +116,6 @@ public class TodoService {
 
         todoRepository.delete(todo);
         return TodoResponseDto.of(todo);
-    }
-
-    private void validateDate(LocalDate startDate, LocalDate endDate) {
-        if (endDate != null) {
-            if (startDate.isAfter(endDate)) {
-                throw new PlanusException(INVALID_DATE);
-            }
-        }
     }
 
     private Group getGroup(Long groupId) {

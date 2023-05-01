@@ -14,12 +14,12 @@ import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
+import scs.planus.global.util.validator.Validator;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static scs.planus.global.exception.CustomExceptionStatus.INVALID_DATE;
 import static scs.planus.global.exception.CustomExceptionStatus.NONE_USER;
 
 @Service
@@ -35,7 +35,7 @@ public class TodoCalenderService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        validateDate(from, to);
+        Validator.validateStartDateBeforeEndDate(from, to);
         List<Todo> todos = todoQueryRepository.findPeriodTodosDetailByDate(member.getId(), from, to);
         List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
@@ -48,7 +48,7 @@ public class TodoCalenderService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        validateDate(from, to);
+        Validator.validateStartDateBeforeEndDate(from, to);
         List<Todo> todos = todoQueryRepository.findPeriodTodosByDate(member.getId(), from, to);
         List<TodoPeriodResponseDto> responseDtos = todos.stream()
                 .map(TodoPeriodResponseDto::of)
@@ -65,14 +65,6 @@ public class TodoCalenderService {
         List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
 
         return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
-    }
-
-    private void validateDate(LocalDate startDate, LocalDate endDate) {
-        if (endDate != null) {
-            if (startDate.isAfter(endDate)) {
-                throw new PlanusException(INVALID_DATE);
-            }
-        }
     }
 
     private List<TodoDailyScheduleDto> getDailySchedules(List<Todo> todos) {
