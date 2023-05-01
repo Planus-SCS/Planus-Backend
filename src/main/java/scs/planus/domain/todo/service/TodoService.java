@@ -140,7 +140,7 @@ public class TodoService {
         Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
-        todo.complete();
+        todo.changeCompletion();
         return TodoResponseDto.of(todo);
     }
 
