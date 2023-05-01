@@ -41,8 +41,9 @@ public class TodoService {
         TodoCategory todoCategory = categoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
+        Group group = getGroup(requestDto.getGroupId());
         Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
-        Todo memberTodo = requestDto.toEntity(member, todoCategory, null);
+        Todo memberTodo = requestDto.toEntity(member, todoCategory, group);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
     }
