@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import scs.planus.domain.group.dto.GroupCreateRequestDto;
-import scs.planus.domain.group.dto.GroupGetResponseDto;
-import scs.planus.domain.group.dto.GroupResponseDto;
-import scs.planus.domain.group.dto.GroupTagResponseDto;
+import scs.planus.domain.group.dto.*;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
@@ -17,6 +14,7 @@ import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.domain.tag.dto.TagCreateRequestDto;
 import scs.planus.domain.tag.entity.Tag;
 import scs.planus.domain.tag.service.TagService;
 import scs.planus.global.exception.PlanusException;
@@ -35,9 +33,10 @@ public class GroupService {
     private final AmazonS3Uploader s3Uploader;
     private final MemberRepository memberRepository;
     private final GroupRepository groupRepository;
-    private final TagService tagService;
     private final GroupMemberRepository groupMemberRepository;
     private final GroupTagRepository groupTagRepository;
+    private final GroupTagService groupTagService;
+    private final TagService tagService;
 
     @Transactional
     public GroupResponseDto createGroup(Long memberId, GroupCreateRequestDto requestDto, MultipartFile multipartFile ) {
@@ -76,11 +75,42 @@ public class GroupService {
         return GroupGetResponseDto.of( group, leaderName, groupTagResponseDtos );
     }
 
+    @Transactional
+    public GroupResponseDto updateGroupDetail( Long memberId, Long groupId, GroupDetailUpdateRequestDto requestDto, MultipartFile multipartFile ) {
+        Group group = groupRepository.findByIdAndStatus( groupId )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+
+        // 리더가 아니면 수정 불가능
+        validateLeaderPermission( memberId, group );
+
+        // 그룹 이미지 변경
+        String groupImageUrl = group.getGroupImageUrl();
+        groupImageUrl = updateGroupImage( multipartFile, groupImageUrl );
+
+        // 그룹 테그 수정.
+        List<TagCreateRequestDto> addTagDtos = groupTagService.update( group, requestDto.getTagList() );
+        List<Tag> addTags = tagService.transformToTag( addTagDtos );
+        GroupTag.create( group, addTags );
+
+        // 그 외 세부사항 수정
+        Group updateGroup = group.updateDetail( requestDto.getLimitCount(), groupImageUrl );
+
+        return GroupResponseDto.of( updateGroup );
+    }
+
     private String createGroupImage( MultipartFile multipartFile ) {
         if ( multipartFile != null ) {
             return s3Uploader.upload( multipartFile, "groups" );
         }
-        throw new PlanusException(INVALID_FILE);
+        throw new PlanusException( INVALID_FILE );
+    }
+
+    private String updateGroupImage( MultipartFile multipartFile, String groupImageUrl ) {
+        if (multipartFile != null) {
+            s3Uploader.deleteImage( groupImageUrl );
+            groupImageUrl = s3Uploader.upload( multipartFile, "groups" );
+        }
+        return groupImageUrl;
     }
 
     @Transactional
@@ -99,5 +129,16 @@ public class GroupService {
         groupMemberRepository.save(groupMember);
 
         return GroupResponseDto.of( group );
+    }
+
+    private void validateLeaderPermission( Long memberId, Group group ) {
+        GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
+
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        if ( !member.equals( groupLeader.getMember() ) )
+            throw new PlanusException( NOT_GROUP_LEADER_PERMISSION );
     }
 }
