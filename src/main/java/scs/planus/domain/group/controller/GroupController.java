@@ -5,12 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import scs.planus.domain.group.dto.*;
+import scs.planus.domain.group.service.GroupService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
-import scs.planus.domain.group.dto.GroupCreateRequestDto;
-import scs.planus.domain.group.dto.GroupGetResponseDto;
-import scs.planus.domain.group.dto.GroupResponseDto;
-import scs.planus.domain.group.service.GroupService;
 
 import javax.validation.Valid;
 
@@ -35,7 +33,39 @@ public class GroupController {
     public BaseResponse<GroupGetResponseDto> getGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
                                                        @PathVariable("groupId") Long groupId ) {
 
-        GroupGetResponseDto responseDto = groupService.getGroup( groupId );
+        GroupGetResponseDto responseDto = groupService.getGroupForNonMember( groupId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @PatchMapping("/groups/{groupId}")
+    public BaseResponse<GroupResponseDto> updateGroupDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                            @PathVariable("groupId") Long groupId,
+                                                            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+                                                            @Valid @RequestPart(value = "groupUpdateRequestDto", required = false) GroupDetailUpdateRequestDto requestDto  ) {
+        Long memberId = principalDetails.getId();
+        GroupResponseDto responseDto = groupService.updateGroupDetail( memberId, groupId, requestDto, multipartFile );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @PatchMapping("/groups/{groupId}/notice")
+    public BaseResponse<GroupResponseDto> updateGroupNotice(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                            @PathVariable("groupId") Long groupId,
+                                                            @Valid @RequestBody GroupNoticeUpdateRequestDto requestDto ) {
+
+        Long memberId = principalDetails.getId();
+        GroupResponseDto responseDto = groupService.updateGroupNotice( memberId, groupId, requestDto );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @DeleteMapping("/groups/{groupId}")
+    public BaseResponse<GroupResponseDto> softDeleteGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                          @PathVariable("groupId") Long groupId ){
+
+        Long memberId = principalDetails.getId();
+        GroupResponseDto responseDto = groupService.softDeleteGroup( memberId, groupId );
 
         return new BaseResponse<>( responseDto );
     }
