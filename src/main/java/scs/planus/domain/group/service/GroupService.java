@@ -87,8 +87,8 @@ public class GroupService {
         validateLeaderPermission( member, group );
 
         // 그룹 이미지 변경
-        String groupImageUrl = group.getGroupImageUrl();
-        groupImageUrl = updateGroupImage( multipartFile, groupImageUrl );
+        String oldGroupImageUrl = group.getGroupImageUrl();
+        String newGroupImageUrl = updateGroupImage(multipartFile, oldGroupImageUrl);
 
         // 그룹 테그 수정.
         List<TagCreateRequestDto> addTagDtos = groupTagService.update( group, requestDto.getTagList() );
@@ -96,7 +96,7 @@ public class GroupService {
         GroupTag.create( group, addTags );
 
         // 그 외 세부사항 수정
-        Group updateGroup = group.updateDetail( requestDto.getLimitCount(), groupImageUrl );
+        Group updateGroup = group.updateDetail( requestDto.getLimitCount(), newGroupImageUrl );
 
         return GroupResponseDto.of( updateGroup );
     }
