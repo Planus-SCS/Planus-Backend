@@ -49,6 +49,17 @@ public class GroupController {
         return new BaseResponse<>( responseDto );
     }
 
+    @PatchMapping("/groups/{groupId}/notice")
+    public BaseResponse<GroupResponseDto> updateGroupNotice(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                            @PathVariable("groupId") Long groupId,
+                                                            @Valid @RequestBody GroupNoticeUpdateRequestDto requestDto ) {
+
+        Long memberId = principalDetails.getId();
+        GroupResponseDto responseDto = groupService.updateGroupNotice( memberId, groupId, requestDto );
+
+        return new BaseResponse<>( responseDto );
+    }
+
     @PostMapping("/groups/{groupId}")
     public BaseResponse<GroupResponseDto> joinGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @PathVariable("groupId") Long groupId ) {
