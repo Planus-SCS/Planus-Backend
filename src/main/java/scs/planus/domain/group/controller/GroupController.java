@@ -33,7 +33,7 @@ public class GroupController {
     public BaseResponse<GroupGetResponseDto> getGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
                                                        @PathVariable("groupId") Long groupId ) {
 
-        GroupGetResponseDto responseDto = groupService.getGroup( groupId );
+        GroupGetResponseDto responseDto = groupService.getGroupForNonMember( groupId );
 
         return new BaseResponse<>( responseDto );
     }
