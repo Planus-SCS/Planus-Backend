@@ -48,23 +48,6 @@ public class TodoService {
         return TodoResponseDto.of(memberTodo);
     }
 
-    @Transactional
-    public TodoResponseDto createGroupPrivateTodo(Long memberId, TodoRequestDto requestDto) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        TodoCategory todoCategory = categoryRepository.findById(requestDto.getCategoryId())
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
-
-        Group group = groupRepository.findById(requestDto.getGroupId())
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
-
-        Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
-        Todo memberTodo = requestDto.toEntity(member, todoCategory, group);
-        todoRepository.save(memberTodo);
-        return TodoResponseDto.of(memberTodo);
-    }
-
     public TodoDetailsResponseDto getOneTodo(Long memberId, Long todoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
