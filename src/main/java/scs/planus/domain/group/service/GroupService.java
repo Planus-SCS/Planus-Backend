@@ -98,6 +98,19 @@ public class GroupService {
         return GroupResponseDto.of( updateGroup );
     }
 
+    @Transactional
+    public GroupResponseDto updateGroupNotice( Long memberId, Long groupId, GroupNoticeUpdateRequestDto requestDto ) {
+        Group group = groupRepository.findByIdAndStatus( groupId )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+
+        // 리더가 아니면 수정 불가능
+        validateLeaderPermission( memberId, group );
+
+        Group updateGroup = group.updateNotice( requestDto.getNotice() );
+
+        return GroupResponseDto.of( updateGroup );
+    }
+
     private String createGroupImage( MultipartFile multipartFile ) {
         if ( multipartFile != null ) {
             return s3Uploader.upload( multipartFile, "groups" );
