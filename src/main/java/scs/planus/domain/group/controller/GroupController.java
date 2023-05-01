@@ -5,12 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import scs.planus.domain.group.dto.*;
+import scs.planus.domain.group.service.GroupService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
-import scs.planus.domain.group.dto.GroupCreateRequestDto;
-import scs.planus.domain.group.dto.GroupGetResponseDto;
-import scs.planus.domain.group.dto.GroupResponseDto;
-import scs.planus.domain.group.service.GroupService;
 
 import javax.validation.Valid;
 
@@ -36,6 +34,17 @@ public class GroupController {
                                                        @PathVariable("groupId") Long groupId ) {
 
         GroupGetResponseDto responseDto = groupService.getGroup( groupId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @PatchMapping("/groups/{groupId}")
+    public BaseResponse<GroupResponseDto> updateGroupDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                            @PathVariable("groupId") Long groupId,
+                                                            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+                                                            @Valid @RequestPart(value = "groupUpdateRequestDto", required = false) GroupDetailUpdateRequestDto requestDto  ) {
+        Long memberId = principalDetails.getId();
+        GroupResponseDto responseDto = groupService.updateGroupDetail( memberId, groupId, requestDto, multipartFile );
 
         return new BaseResponse<>( responseDto );
     }
