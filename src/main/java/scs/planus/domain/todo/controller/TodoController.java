@@ -30,11 +30,8 @@ public class TodoController {
     public BaseResponse<TodoResponseDto> createTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @RequestBody TodoRequestDto requestDto) {
         Long memberId = principalDetails.getId();
-        if (requestDto.getGroupId() == null) {
-            TodoResponseDto responseDto = todoService.createPrivateTodo(memberId, requestDto);
-            return new BaseResponse<>(responseDto);
-        }
-        return null;
+        TodoResponseDto responseDto = todoService.createPrivateTodo(memberId, requestDto);
+        return new BaseResponse<>(responseDto);
     }
 
     @GetMapping("/todos/{todoId}")
