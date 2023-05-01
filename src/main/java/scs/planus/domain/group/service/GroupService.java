@@ -111,6 +111,19 @@ public class GroupService {
         return GroupResponseDto.of( updateGroup );
     }
 
+    @Transactional
+    public GroupResponseDto softDeleteGroup( Long memberId, Long groupId ) {
+        Group group = groupRepository.findByIdAndStatus( groupId )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+
+        // 리더가 아니면 수정 불가능
+        validateLeaderPermission( memberId, group );
+
+        Group inactiveGroup = group.changeStatusToInactive();
+
+        return GroupResponseDto.of( inactiveGroup );
+    }
+
     private String createGroupImage( MultipartFile multipartFile ) {
         if ( multipartFile != null ) {
             return s3Uploader.upload( multipartFile, "groups" );
