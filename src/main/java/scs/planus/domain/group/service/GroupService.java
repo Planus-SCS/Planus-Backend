@@ -75,6 +75,17 @@ public class GroupService {
         return GroupGetResponseDto.of( group, leaderName, groupTagResponseDtos );
     }
 
+    public List<GroupGetMemberResponseDto> getGroupMemberForNonMember(Long groupId) {
+        Group group = groupRepository.findByIdAndStatus( groupId )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroup(group);
+
+        return allGroupMembers.stream()
+                .map( gm -> GroupGetMemberResponseDto.of( gm.getMember(), gm.isLeader() ) )
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public GroupResponseDto updateGroupDetail( Long memberId, Long groupId, GroupDetailUpdateRequestDto requestDto, MultipartFile multipartFile ) {
         Group group = groupRepository.findByIdAndStatus( groupId )
