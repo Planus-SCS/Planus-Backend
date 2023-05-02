@@ -58,7 +58,7 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    public GroupGetResponseDto getGroupForNonMember(Long groupId ) {
+    public GroupGetResponseDto getGroupDetailForNonMember(Long groupId ) {
         Group group = groupRepository.findWithGroupMemberById( groupId )
                 .orElseThrow(() ->  new PlanusException(NOT_EXIST_GROUP));
 
