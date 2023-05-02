@@ -26,7 +26,7 @@ public class TodoCalendarController {
 
     private final TodoCalendarService todoCalendarService;
 
-    @GetMapping("/todos")
+    @GetMapping("/todos/calendar")
     public BaseResponse<List<TodoDetailsResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to){
@@ -35,7 +35,7 @@ public class TodoCalendarController {
         return new BaseResponse<>(responseDtos);
     }
 
-    @GetMapping("/todos/period")
+    @GetMapping("/todos//calendar/period")
     public BaseResponse<List<TodoPeriodResponseDto>> getPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
@@ -44,7 +44,7 @@ public class TodoCalendarController {
         return new BaseResponse<>(responseDtos);
     }
 
-    @GetMapping("/todos/daily")
+    @GetMapping("/todos/calendar/daily")
     public BaseResponse<TodoDailyResponseDto> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         Long memberId = principalDetails.getId();
