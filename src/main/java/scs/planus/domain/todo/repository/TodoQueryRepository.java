@@ -87,19 +87,19 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
-    private BooleanExpression periodBetween(LocalDate from, LocalDate to) {
-        return todo.startDate.between(from, to).or(todo.endDate.between(from, to));
-    }
-
-    private BooleanExpression dateBetween(LocalDate date) {
-        return todo.startDate.loe(date).and(todo.endDate.goe(date));
-    }
-
     private BooleanExpression memberIdEq(Long memberId) {
         return member.id.eq(memberId);
     }
 
     private BooleanExpression groupIdEq(Long groupId) {
         return group.id.eq(groupId);
+    }
+
+    private BooleanExpression dateBetween(LocalDate date) {
+        return todo.startDate.loe(date).and(todo.endDate.goe(date));
+    }
+
+    private BooleanExpression periodBetween(LocalDate from, LocalDate to) {
+        return todo.startDate.between(from, to).or(todo.endDate.between(from, to));
     }
 }
