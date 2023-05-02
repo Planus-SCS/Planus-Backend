@@ -42,7 +42,7 @@ public class TodoCalendarService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodTodosDetailByDate(member.getId(), from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodGroupTodosDetailByDate(member.getId(), from, to);
         List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
@@ -92,7 +92,7 @@ public class TodoCalendarService {
         }
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodTodosDetailByDate(member.getId(), groupId, from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodGroupTodosDetailByDate(member.getId(), groupId, from, to);
         List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());

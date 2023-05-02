@@ -54,7 +54,7 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
-    public List<Todo> findPeriodTodosDetailByDate(Long memberId, LocalDate from, LocalDate to) {
+    public List<Todo> findPeriodGroupTodosDetailByDate(Long memberId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(todo)
                 .join(todo.member, member)
@@ -65,7 +65,7 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
-    public List<Todo> findPeriodTodosDetailByDate(Long memberId, Long groupId, LocalDate from, LocalDate to) {
+    public List<Todo> findPeriodGroupTodosDetailByDate(Long memberId, Long groupId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(todo)
                 .join(todo.member, member)
