@@ -74,10 +74,7 @@ public class TodoCalendarService {
     }
 
     public List<GroupBelongInResponseDto> getAllMyGroup(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        List<GroupBelongInResponseDto> responseDtos = groupService.getMyGroups(member.getId());
+        List<GroupBelongInResponseDto> responseDtos = groupService.getMyGroups(memberId);
         return responseDtos;
     }
 
