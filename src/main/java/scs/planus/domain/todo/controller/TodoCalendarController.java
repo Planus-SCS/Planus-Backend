@@ -36,7 +36,7 @@ public class TodoCalendarController {
         return new BaseResponse<>(responseDtos);
     }
 
-    @GetMapping("/todos//calendar/period")
+    @GetMapping("/todos/calendar/period")
     public BaseResponse<List<TodoPeriodResponseDto>> getPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
