@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.group.dto.GroupBelongInResponseDto;
+import scs.planus.domain.group.repository.GroupMemberQueryRepository;
 import scs.planus.domain.group.service.GroupService;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static scs.planus.global.exception.CustomExceptionStatus.NONE_USER;
+import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_GROUP;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,6 +34,7 @@ public class TodoCalendarService {
 
     private final GroupService groupService;
     private final MemberRepository memberRepository;
+    private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final TodoQueryRepository todoQueryRepository;
 
     public List<TodoDetailsResponseDto> getPeriodDetailTodos(Long memberId, LocalDate from, LocalDate to) {
@@ -75,6 +78,25 @@ public class TodoCalendarService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         List<GroupBelongInResponseDto> responseDtos = groupService.getMyGroups(member.getId());
+        return responseDtos;
+    }
+
+    public List<TodoDetailsResponseDto> getPeriodDetailGroupTodos(Long memberId, Long groupId, LocalDate from, LocalDate to) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
+
+        if (isJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        Validator.validateStartDateBeforeEndDate(from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodTodosDetailByDate(member.getId(), groupId, from, to);
+        List<TodoDetailsResponseDto> responseDtos = todos.stream()
+                .map(TodoDetailsResponseDto::of)
+                .collect(Collectors.toList());
+
         return responseDtos;
     }
 
