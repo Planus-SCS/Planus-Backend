@@ -70,4 +70,14 @@ public class TodoCalendarController {
         List<TodoDetailsResponseDto> responseDtos = todoCalendarService.getPeriodDetailGroupTodos(memberId, groupId, from, to);
         return new BaseResponse<>(responseDtos);
     }
+
+    @GetMapping("/todos/calendar/my-groups/{groupId}/period")
+    public BaseResponse<List<TodoPeriodResponseDto>> getPeriodGroupTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                         @PathVariable Long groupId,
+                                                                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                                         @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        Long memberId = principalDetails.getId();
+        List<TodoPeriodResponseDto> responseDtos = todoCalendarService.getPeriodGroupTodos(memberId, groupId, from, to);
+        return new BaseResponse<>(responseDtos);
+    }
 }
