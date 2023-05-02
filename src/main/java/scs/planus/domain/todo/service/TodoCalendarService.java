@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import scs.planus.domain.group.dto.GroupBelongInResponseDto;
+import scs.planus.domain.group.service.GroupService;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.dto.TodoDailyDto;
@@ -28,6 +30,7 @@ import static scs.planus.global.exception.CustomExceptionStatus.NONE_USER;
 @Slf4j
 public class TodoCalendarService {
 
+    private final GroupService groupService;
     private final MemberRepository memberRepository;
     private final TodoQueryRepository todoQueryRepository;
 
@@ -65,6 +68,14 @@ public class TodoCalendarService {
         List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
 
         return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
+    }
+
+    public List<GroupBelongInResponseDto> getAllMyGroup(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        List<GroupBelongInResponseDto> responseDtos = groupService.getMyGroups(member.getId());
+        return responseDtos;
     }
 
     private List<TodoDailyScheduleDto> getDailySchedules(List<Todo> todos) {
