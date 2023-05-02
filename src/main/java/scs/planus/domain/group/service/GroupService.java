@@ -175,7 +175,11 @@ public class GroupService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        List<Group> groups = groupRepository.findAllMyGroupByMemberId(member.getId());
+        List<GroupMember> groupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
+        List<Group> groups = groupMembers.stream()
+                .map(GroupMember::getGroup)
+                .collect(Collectors.toList());
+
         List<GroupBelongInResponseDto> responseDtos = groups.stream()
                 .map(GroupBelongInResponseDto::of)
                 .collect(Collectors.toList());
