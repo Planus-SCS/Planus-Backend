@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import scs.planus.domain.group.dto.GroupBelongInResponseDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
@@ -49,6 +50,13 @@ public class TodoCalendarController {
                                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         Long memberId = principalDetails.getId();
         TodoDailyResponseDto responseDtos = todoCalendarService.getDailyTodos(memberId, date);
+        return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("/todos/calendar/my-groups")
+    public BaseResponse<List<GroupBelongInResponseDto>> getMyGroups(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        Long memberId = principalDetails.getId();
+        List<GroupBelongInResponseDto> responseDtos = todoCalendarService.getAllMyGroup(memberId);
         return new BaseResponse<>(responseDtos);
     }
 }
