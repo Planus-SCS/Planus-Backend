@@ -97,6 +97,25 @@ public class TodoCalendarService {
         return responseDtos;
     }
 
+    public List<TodoPeriodResponseDto> getPeriodGroupTodos(Long memberId, Long groupId, LocalDate from, LocalDate to) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
+
+        if (!isJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        Validator.validateStartDateBeforeEndDate(from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodGroupTodosByDate(member.getId(), groupId, from, to);
+        List<TodoPeriodResponseDto> responseDtos = todos.stream()
+                .map(TodoPeriodResponseDto::of)
+                .collect(Collectors.toList());
+
+        return responseDtos;
+    }
+
     private List<TodoDailyScheduleDto> getDailySchedules(List<Todo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() != null)
