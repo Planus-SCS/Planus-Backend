@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
-import scs.planus.domain.todo.service.TodoCalenderService;
+import scs.planus.domain.todo.service.TodoCalendarService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 
@@ -22,16 +22,16 @@ import java.util.List;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
-public class TodoCalenderController {
+public class TodoCalendarController {
 
-    private final TodoCalenderService todoCalenderService;
+    private final TodoCalendarService todoCalendarService;
 
     @GetMapping("/todos")
     public BaseResponse<List<TodoDetailsResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to){
         Long memberId = principalDetails.getId();
-        List<TodoDetailsResponseDto> responseDtos = todoCalenderService.getPeriodDetailTodos(memberId, from, to);
+        List<TodoDetailsResponseDto> responseDtos = todoCalendarService.getPeriodDetailTodos(memberId, from, to);
         return new BaseResponse<>(responseDtos);
     }
 
@@ -40,7 +40,7 @@ public class TodoCalenderController {
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         Long memberId = principalDetails.getId();
-        List<TodoPeriodResponseDto> responseDtos = todoCalenderService.getPeriodTodos(memberId, from, to);
+        List<TodoPeriodResponseDto> responseDtos = todoCalendarService.getPeriodTodos(memberId, from, to);
         return new BaseResponse<>(responseDtos);
     }
 
@@ -48,7 +48,7 @@ public class TodoCalenderController {
     public BaseResponse<TodoDailyResponseDto> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         Long memberId = principalDetails.getId();
-        TodoDailyResponseDto responseDtos = todoCalenderService.getDailyTodos(memberId, date);
+        TodoDailyResponseDto responseDtos = todoCalendarService.getDailyTodos(memberId, date);
         return new BaseResponse<>(responseDtos);
     }
 }

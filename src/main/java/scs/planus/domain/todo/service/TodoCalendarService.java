@@ -26,7 +26,7 @@ import static scs.planus.global.exception.CustomExceptionStatus.NONE_USER;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class TodoCalenderService {
+public class TodoCalendarService {
 
     private final MemberRepository memberRepository;
     private final TodoQueryRepository todoQueryRepository;
