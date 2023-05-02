@@ -84,7 +84,7 @@ public class TodoCalendarService {
 
         boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
 
-        if (isJoined) {
+        if (!isJoined) {
             throw new PlanusException(NOT_JOINED_GROUP);
         }
 
