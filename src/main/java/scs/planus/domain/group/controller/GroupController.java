@@ -30,7 +30,7 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{groupId}")
-    public BaseResponse<GroupGetResponseDto> getGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<GroupGetResponseDto> getGroupForNonMember( @AuthenticationPrincipal PrincipalDetails principalDetails,
                                                        @PathVariable("groupId") Long groupId ) {
 
         GroupGetResponseDto responseDto = groupService.getGroupForNonMember( groupId );
