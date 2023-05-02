@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +31,7 @@ public class TodoCalendarController {
     @GetMapping("/todos/calendar")
     public BaseResponse<List<TodoDetailsResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to){
+                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         Long memberId = principalDetails.getId();
         List<TodoDetailsResponseDto> responseDtos = todoCalendarService.getPeriodDetailTodos(memberId, from, to);
         return new BaseResponse<>(responseDtos);
@@ -57,6 +58,16 @@ public class TodoCalendarController {
     public BaseResponse<List<GroupBelongInResponseDto>> getMyGroups(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
         List<GroupBelongInResponseDto> responseDtos = todoCalendarService.getAllMyGroup(memberId);
+        return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("/todos/calendar/my-groups/{groupId}")
+    public BaseResponse<List<TodoDetailsResponseDto>> getGroupTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                    @PathVariable Long groupId,
+                                                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                                    @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+        Long memberId = principalDetails.getId();
+        List<TodoDetailsResponseDto> responseDtos = todoCalendarService.getPeriodDetailGroupTodos(memberId, groupId, from, to);
         return new BaseResponse<>(responseDtos);
     }
 }
