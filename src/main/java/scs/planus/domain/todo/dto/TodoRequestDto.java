@@ -2,8 +2,9 @@ package scs.planus.domain.todo.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
-import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.category.entity.TodoCategory;
+import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.todo.entity.Todo;
 
 import javax.validation.constraints.NotBlank;
@@ -30,7 +31,7 @@ public class TodoRequestDto {
     @Size(max = 70, message = "투두 메모는 최대 70글자입니다.")
     private String description;
 
-    public Todo toMemberTodoEntity(Member member, TodoCategory todoCategory) {
+    public Todo toEntity(Member member, TodoCategory todoCategory, Group group) {
         return Todo.builder()
                 .title(title)
                 .todoCategory(todoCategory)
@@ -39,6 +40,7 @@ public class TodoRequestDto {
                 .startTime(startTime)
                 .description(description)
                 .member(member)
+                .group(group)
                 .build();
     }
 }

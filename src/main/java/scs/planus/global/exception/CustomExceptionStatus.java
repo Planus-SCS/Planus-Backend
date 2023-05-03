@@ -39,6 +39,9 @@ public enum CustomExceptionStatus implements ResponseStatus {
     NOT_EXIST_LEADER(BAD_REQUEST, 2601, "해당 그룹에 그룹장이 존재하지 않습니다."),
     NOT_GROUP_LEADER_PERMISSION(BAD_REQUEST, 2602, "그룹을 수정할 권한이 없습니다."),
 
+    // groupMember excepion
+    NOT_JOINED_GROUP(BAD_REQUEST, 2700, "가입하지 않은 그룹 입니다."),
+
     // s3 exception
     INVALID_FILE(BAD_REQUEST, 5000, "잘못되거나 존재하지 않는 파일입니다."),
     INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요.")
