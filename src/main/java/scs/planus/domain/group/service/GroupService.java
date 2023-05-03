@@ -5,6 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import scs.planus.domain.group.dto.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.GroupCreateRequestDto;
+import scs.planus.domain.group.dto.GroupGetResponseDto;
+import scs.planus.domain.group.dto.GroupResponseDto;
+import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.*;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
@@ -164,6 +169,22 @@ public class GroupService {
         groupMemberRepository.save(groupMember);
 
         return GroupResponseDto.of( group );
+    }
+
+    public List<GroupBelongInResponseDto> getMyGroups(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        List<GroupMember> groupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
+        List<Group> groups = groupMembers.stream()
+                .map(GroupMember::getGroup)
+                .collect(Collectors.toList());
+
+        List<GroupBelongInResponseDto> responseDtos = groups.stream()
+                .map(GroupBelongInResponseDto::of)
+                .collect(Collectors.toList());
+
+        return responseDtos;
     }
 
     private void validateLeaderPermission( Member member, Group group ) {
