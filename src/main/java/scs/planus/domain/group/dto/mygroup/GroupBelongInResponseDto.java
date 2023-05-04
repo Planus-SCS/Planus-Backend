@@ -1,4 +1,4 @@
-package scs.planus.domain.group.dto;
+package scs.planus.domain.group.dto.mygroup;
 
 import lombok.Builder;
 import lombok.Getter;
