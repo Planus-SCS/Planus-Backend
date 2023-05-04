@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import scs.planus.domain.group.dto.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
 import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
