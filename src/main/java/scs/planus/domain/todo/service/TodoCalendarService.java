@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import scs.planus.domain.group.dto.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
 import scs.planus.domain.group.repository.GroupMemberQueryRepository;
-import scs.planus.domain.group.service.GroupService;
+import scs.planus.domain.group.service.MyGroupService;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.dto.TodoDailyDto;
@@ -32,7 +32,7 @@ import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_GROUP
 @Slf4j
 public class TodoCalendarService {
 
-    private final GroupService groupService;
+    private final MyGroupService myGroupService;
     private final MemberRepository memberRepository;
     private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final TodoQueryRepository todoQueryRepository;
@@ -74,7 +74,7 @@ public class TodoCalendarService {
     }
 
     public List<GroupBelongInResponseDto> getAllMyGroup(Long memberId) {
-        List<GroupBelongInResponseDto> responseDtos = groupService.getMyGroups(memberId);
+        List<GroupBelongInResponseDto> responseDtos = myGroupService.getMyGroupsInDropDown(memberId);
         return responseDtos;
     }
 
