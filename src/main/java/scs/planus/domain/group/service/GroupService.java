@@ -171,17 +171,13 @@ public class GroupService {
         return GroupResponseDto.of( group );
     }
 
-    public List<GroupBelongInResponseDto> getMyGroups(Long memberId) {
+    public List<GroupBelongInResponseDto> getMyGroupsInDropDown(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         List<GroupMember> groupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
-        List<Group> groups = groupMembers.stream()
-                .map(GroupMember::getGroup)
-                .collect(Collectors.toList());
-
-        List<GroupBelongInResponseDto> responseDtos = groups.stream()
-                .map(GroupBelongInResponseDto::of)
+        List<GroupBelongInResponseDto> responseDtos = groupMembers.stream()
+                .map(groupMember -> GroupBelongInResponseDto.of(groupMember.getGroup()))
                 .collect(Collectors.toList());
 
         return responseDtos;

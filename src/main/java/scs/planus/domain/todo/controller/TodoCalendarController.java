@@ -55,7 +55,7 @@ public class TodoCalendarController {
     }
 
     @GetMapping("/todos/calendar/my-groups")
-    public BaseResponse<List<GroupBelongInResponseDto>> getMyGroups(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public BaseResponse<List<GroupBelongInResponseDto>> getMyGroupsInDropDown(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
         List<GroupBelongInResponseDto> responseDtos = todoCalendarService.getAllMyGroup(memberId);
         return new BaseResponse<>(responseDtos);

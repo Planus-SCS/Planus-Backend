@@ -74,7 +74,7 @@ public class TodoCalendarService {
     }
 
     public List<GroupBelongInResponseDto> getAllMyGroup(Long memberId) {
-        List<GroupBelongInResponseDto> responseDtos = groupService.getMyGroups(memberId);
+        List<GroupBelongInResponseDto> responseDtos = groupService.getMyGroupsInDropDown(memberId);
         return responseDtos;
     }
 
