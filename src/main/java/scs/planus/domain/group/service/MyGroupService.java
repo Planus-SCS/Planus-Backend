@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.entity.Group;
@@ -62,8 +63,9 @@ public class MyGroupService {
         List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(myGroups);
 
         List<MyGroupResponseDto> responseDtos = myGroups.stream().map(group -> {
-                    List<GroupTag> eachGroupTags = allGroupTags.stream()
+                    List<GroupTagResponseDto> eachGroupTagDtos = allGroupTags.stream()
                             .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
+                            .map(GroupTagResponseDto::of)
                             .collect(Collectors.toList());
                     List<GroupMember> eachGroupMembers = allGroupMembers.stream()
                             .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
@@ -73,7 +75,7 @@ public class MyGroupService {
                             .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
                     long onlineCount = eachGroupMembers.stream().filter(GroupMember::isOnlineStatus).count();
 
-                    return MyGroupResponseDto.of(group, eachGroupTags, onlineStatus, onlineCount);
+                    return MyGroupResponseDto.of(group, eachGroupTagDtos, onlineStatus, onlineCount);
                 })
                 .collect(Collectors.toList());
 

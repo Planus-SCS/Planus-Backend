@@ -4,10 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.entity.GroupTag;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -23,11 +21,7 @@ public class MyGroupResponseDto {
     private String leaderName;
     private List<GroupTagResponseDto> groupTags;
 
-    public static MyGroupResponseDto of(Group group, List<GroupTag> groupTags, Boolean onlineStatus, Long onlineCount) {
-        List<GroupTagResponseDto> groupTagDtos = groupTags.stream()
-                .map(GroupTagResponseDto::of)
-                .collect(Collectors.toList());
-
+    public static MyGroupResponseDto of(Group group, List<GroupTagResponseDto> eachGroupTagDtos, Boolean onlineStatus, Long onlineCount) {
         return MyGroupResponseDto.builder()
                 .groupId(group.getId())
                 .groupImageUrl(group.getGroupImageUrl())
@@ -37,7 +31,7 @@ public class MyGroupResponseDto {
                 .totalCount((long) group.getGroupMembers().size())
                 .limitCount(group.getLimitCount())
                 .leaderName(group.getLeaderName())
-                .groupTags(groupTagDtos)
+                .groupTags(eachGroupTagDtos)
                 .build();
     }
 }
