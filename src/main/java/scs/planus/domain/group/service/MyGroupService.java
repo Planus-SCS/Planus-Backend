@@ -5,7 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
+import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
+import scs.planus.domain.group.entity.GroupTag;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.entity.Member;
@@ -34,6 +37,23 @@ public class MyGroupService {
         List<GroupMember> groupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
         List<GroupBelongInResponseDto> responseDtos = groupMembers.stream()
                 .map(gm -> GroupBelongInResponseDto.of(gm.getGroup()))
+                .collect(Collectors.toList());
+
+        return responseDtos;
+    }
+
+    public List<MyGroupResponseDto> getMyGroups(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        List<GroupMember> groupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
+
+        List<MyGroupResponseDto> responseDtos = groupMembers.stream()
+                .map(groupMember -> {
+                    Group group = groupMember.getGroup();
+                    List<GroupTag> groupTags = groupTagRepository.findAllByGroup(group);
+                    return MyGroupResponseDto.of(group, groupTags);
+                })
                 .collect(Collectors.toList());
 
         return responseDtos;
