@@ -14,25 +14,29 @@ import java.util.stream.Collectors;
 public class MyGroupResponseDto {
 
     private Long groupId;
+    private String groupImageUrl;
     private String groupName;
+    private Boolean isOnline;
+    private Long onlineCount;
     private Long totalCount;
     private Long limitCount;
-    private Long onlineCount;
     private String leaderName;
-    private Boolean isOnline;
     private List<GroupTagResponseDto> groupTags;
 
-    public static MyGroupResponseDto of(Group group, List<GroupTag> groupTags) {
+    public static MyGroupResponseDto of(Group group, List<GroupTag> groupTags, Boolean onlineStatus, Long onlineCount) {
         List<GroupTagResponseDto> groupTagDtos = groupTags.stream()
                 .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
 
         return MyGroupResponseDto.builder()
                 .groupId(group.getId())
+                .groupImageUrl(group.getGroupImageUrl())
                 .groupName(group.getName())
+                .isOnline(onlineStatus)
+                .onlineCount(onlineCount)
+                .totalCount((long) group.getGroupMembers().size())
                 .limitCount(group.getLimitCount())
                 .leaderName(group.getLeaderName())
-                .totalCount((long) group.getGroupMembers().size())
                 .groupTags(groupTagDtos)
                 .build();
     }
