@@ -34,7 +34,8 @@ public class GroupController {
     public BaseResponse<GroupGetResponseDto> getGroupDetailForNonMember( @AuthenticationPrincipal PrincipalDetails principalDetails,
                                                        @PathVariable("groupId") Long groupId ) {
 
-        GroupGetResponseDto responseDto = groupService.getGroupDetailForNonMember( groupId );
+        Long memberId = principalDetails.getId();
+        GroupGetResponseDto responseDto = groupService.getGroupDetailForNonMember( memberId, groupId );
 
         return new BaseResponse<>( responseDto );
     }
