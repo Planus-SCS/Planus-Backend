@@ -81,12 +81,12 @@ public class GroupController {
         return new BaseResponse<>( responseDto );
     }
 
-    @PostMapping("/groups/{groupId}")
-    public BaseResponse<GroupResponseDto> joinGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                    @PathVariable("groupId") Long groupId ) {
+    @PostMapping("/groups/{groupId}/joins")
+    public BaseResponse<GroupJoinResponseDto> joinGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                        @PathVariable("groupId") Long groupId ) {
         Long memberId = principalDetails.getId();
-        GroupResponseDto responseDto = groupService.joinGroup( groupId, memberId );
+        GroupJoinResponseDto responseDto = groupService.joinGroup( memberId, groupId );
 
-        return new BaseResponse<>(responseDto);
+        return new BaseResponse<>( responseDto );
     }
 }

@@ -35,6 +35,7 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupTagRepository groupTagRepository;
+    private final GroupJoinRepository groupJoinRepository;
     private final GroupTagService groupTagService;
     private final TagService tagService;
 
@@ -163,21 +164,26 @@ public class GroupService {
     }
 
     @Transactional
-    public GroupResponseDto joinGroup(Long groupId, Long memberId) {
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> {
-                    throw new PlanusException(NOT_EXIST_GROUP);
-                });
+    public GroupJoinResponseDto joinGroup( Long memberId, Long groupId ) {
+        Group group = groupRepository.findByIdAndStatus(groupId)
+                .orElseThrow(() -> { throw new PlanusException( NOT_EXIST_GROUP ); });
 
         Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> {
-                    throw new PlanusException(NONE_USER);
-                });
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
-        GroupMember groupMember = GroupMember.creatGroupMember(member, group);
-        groupMemberRepository.save(groupMember);
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroup( group );
 
-        return GroupResponseDto.of( group );
+        // 제한 인원 초과 검증
+        validateExceedLimit( group, allGroupMembers );
+
+        // 가입 여부 검증
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
+        if (isJoined) {throw new PlanusException( ALREADY_JOINED_GROUP );}
+
+        GroupJoin groupJoin = GroupJoin.createGroupJoin( member, group );
+        GroupJoin saveGroupJoin = groupJoinRepository.save( groupJoin );
+
+        return GroupJoinResponseDto.of( saveGroupJoin );
     }
 
     private void validateLeaderPermission( Member member, Group group ) {
@@ -186,5 +192,12 @@ public class GroupService {
 
         if ( !member.equals( groupLeader.getMember() ) )
             throw new PlanusException( NOT_GROUP_LEADER_PERMISSION );
+    }
+
+    private void validateExceedLimit( Group group, List<GroupMember> allGroupMembers ) {
+        // 제한 인원을 초과하지 않았는지
+        if ( allGroupMembers.size() >= group.getLimitCount() ) {
+            throw new PlanusException( EXCEED_GROUP_LIMIT_COUNT );
+        }
     }
 }
