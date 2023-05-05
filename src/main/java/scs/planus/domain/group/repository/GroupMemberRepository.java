@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
+import scs.planus.domain.member.entity.Member;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
             "join fetch gm.member " +
             "where gm.group= :group " +
             "and gm.leader= true")
-    Optional<GroupMember> findWithGroupAndLeaderByGroup(@Param("group") Group group);
+    Optional<GroupMember> findWithGroupAndLeaderByGroup(@Param("group") Group group );
 
     @Query("select gm from GroupMember gm " +
             "join fetch gm.group g " +
@@ -24,6 +25,12 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
             "where m.id = :memberId and g.id = :groupId")
     Optional<GroupMember> findByMemberIdAndGroupId(@Param("memberId") Long memberId,
                                                    @Param("groupId") Long groupId);
+
+    @Query("select gm " +
+            "from GroupMember gm " +
+            "join fetch gm.member " +
+            "where gm.group= :group ")
+    List<GroupMember> findAllWithMemberByGroup(@Param("group") Group group );
 
     @Query("select gm from GroupMember gm " +
             "join fetch gm.group g " +

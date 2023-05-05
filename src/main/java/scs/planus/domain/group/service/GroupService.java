@@ -5,19 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import scs.planus.domain.group.dto.GroupCreateRequestDto;
-import scs.planus.domain.group.dto.GroupDetailUpdateRequestDto;
-import scs.planus.domain.group.dto.GroupGetResponseDto;
-import scs.planus.domain.group.dto.GroupNoticeUpdateRequestDto;
-import scs.planus.domain.group.dto.GroupResponseDto;
-import scs.planus.domain.group.dto.GroupTagResponseDto;
-import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.*;
 import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.entity.GroupJoin;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
-import scs.planus.domain.group.repository.GroupMemberRepository;
-import scs.planus.domain.group.repository.GroupRepository;
-import scs.planus.domain.group.repository.GroupTagRepository;
+import scs.planus.domain.group.repository.*;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.tag.dto.TagCreateRequestDto;
@@ -40,6 +33,7 @@ public class GroupService {
     private final MemberRepository memberRepository;
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupTagRepository groupTagRepository;
     private final GroupTagService groupTagService;
     private final TagService tagService;
@@ -64,12 +58,15 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    public GroupGetResponseDto getGroupForNonMember(Long groupId ) {
+    public GroupGetResponseDto getGroupDetailForNonMember( Long memberId, Long groupId ) {
         Group group = groupRepository.findWithGroupMemberById( groupId )
-                .orElseThrow(() ->  new PlanusException(NOT_EXIST_GROUP));
+                .orElseThrow(() ->  new PlanusException( NOT_EXIST_GROUP ));
 
-        // 그룹 리더 이름 조회
-        String leaderName = group.getLeaderName();
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> new PlanusException( NONE_USER ));
+
+        // 가입한 그룹인지 검증
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
 
         // 그룹 테그 조회 후 List<dto>로 변경
         List<GroupTag> groupTags = groupTagRepository.findAllByGroup( group );
@@ -78,7 +75,18 @@ public class GroupService {
                         .map( GroupTagResponseDto::of )
                         .collect( Collectors.toList() );
 
-        return GroupGetResponseDto.of( group, leaderName, groupTagResponseDtos );
+        return GroupGetResponseDto.of( group, groupTagResponseDtos, isJoined );
+    }
+
+    public List<GroupGetMemberResponseDto> getGroupMemberForNonMember(Long groupId) {
+        Group group = groupRepository.findByIdAndStatus( groupId )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroup(group);
+
+        return allGroupMembers.stream()
+                .map( gm -> GroupGetMemberResponseDto.of( gm.getMember(), gm.isLeader() ) )
+                .collect(Collectors.toList());
     }
 
     @Transactional

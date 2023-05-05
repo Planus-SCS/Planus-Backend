@@ -11,6 +11,7 @@ import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/app")
@@ -30,10 +31,20 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{groupId}")
-    public BaseResponse<GroupGetResponseDto> getGroup( @AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<GroupGetResponseDto> getGroupDetailForNonMember( @AuthenticationPrincipal PrincipalDetails principalDetails,
                                                        @PathVariable("groupId") Long groupId ) {
 
-        GroupGetResponseDto responseDto = groupService.getGroupForNonMember( groupId );
+        Long memberId = principalDetails.getId();
+        GroupGetResponseDto responseDto = groupService.getGroupDetailForNonMember( memberId, groupId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @GetMapping("/groups/{groupId}/members")
+    public BaseResponse<List<GroupGetMemberResponseDto>> getGroupMemberForNonMember( @AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                                     @PathVariable("groupId") Long groupId ) {
+
+        List<GroupGetMemberResponseDto> responseDto = groupService.getGroupMemberForNonMember( groupId );
 
         return new BaseResponse<>( responseDto );
     }
