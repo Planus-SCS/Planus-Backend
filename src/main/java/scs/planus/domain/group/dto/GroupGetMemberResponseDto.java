@@ -9,15 +9,15 @@ import scs.planus.domain.member.entity.Member;
 public class GroupGetMemberResponseDto {
     private Long memberId;
     private String nickname;
-    private boolean leader;
+    private Boolean isLeader;
     private String description;
     private String profileImageUrl;
 
-    public static GroupGetMemberResponseDto of( Member member, boolean isLeader ) {
+    public static GroupGetMemberResponseDto of( Member member, Boolean isLeader ) {
         return GroupGetMemberResponseDto.builder()
                 .memberId( member.getId() )
                 .nickname( member.getNickname() )
-                .leader( isLeader )
+                .isLeader( isLeader )
                 .description( member.getDescription() )
                 .profileImageUrl( member.getProfileImageUrl() )
                 .build();
