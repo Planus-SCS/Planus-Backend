@@ -62,4 +62,8 @@ public class GroupMember extends BaseTimeEntity {
                 .group(group)
                 .build();
     }
+
+    public void changeOnlineStatus() {
+        this.onlineStatus = !this.onlineStatus;
+    }
 }
