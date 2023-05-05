@@ -177,7 +177,7 @@ public class GroupService {
         validateExceedLimit( group, allGroupMembers );
 
         // 가입 여부 검증
-        boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
         if (isJoined) {throw new PlanusException( ALREADY_JOINED_GROUP );}
 
         GroupJoin groupJoin = GroupJoin.createGroupJoin( member, group );
