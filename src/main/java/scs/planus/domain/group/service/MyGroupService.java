@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
@@ -19,8 +20,7 @@ import scs.planus.global.exception.PlanusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static scs.planus.global.exception.CustomExceptionStatus.INTERNAL_SERVER_ERROR;
-import static scs.planus.global.exception.CustomExceptionStatus.NONE_USER;
+import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -52,6 +52,19 @@ public class MyGroupService {
         List<MyGroupResponseDto> responseDtos = getMyGroupResponseDtos(myGroupMembers);
 
         return responseDtos;
+    }
+
+    @Transactional
+    public MyGroupOnlineStatusResponseDto changeOnlineStatus(Long memberId, Long groupId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(member.getId(), groupId)
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+
+        groupMember.changeOnlineStatus();
+
+        return MyGroupOnlineStatusResponseDto.of(groupMember);
     }
 
     private List<MyGroupResponseDto> getMyGroupResponseDtos(List<GroupMember> myGroupMembers) {
