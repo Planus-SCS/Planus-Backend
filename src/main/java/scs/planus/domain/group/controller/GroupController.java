@@ -81,7 +81,7 @@ public class GroupController {
         return new BaseResponse<>( responseDto );
     }
 
-    @PostMapping("/group-joins/{groupId}")
+    @PostMapping("/groups/{groupId}/joins")
     public BaseResponse<GroupJoinResponseDto> joinGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                         @PathVariable("groupId") Long groupId ) {
         Long memberId = principalDetails.getId();
