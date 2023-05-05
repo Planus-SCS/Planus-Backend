@@ -80,13 +80,16 @@ public class MyGroupService {
                             .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
                             .map(GroupTagResponseDto::of)
                             .collect(Collectors.toList());
-                    List<GroupMember> eachGroupMembers = allGroupMembers.stream()
+
+                    Boolean onlineStatus = myGroupMembers.stream()
                             .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
-                            .collect(Collectors.toList());
-                    Boolean onlineStatus = myGroupMembers.stream().filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
                             .map(GroupMember::isOnlineStatus)
                             .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
-                    long onlineCount = eachGroupMembers.stream().filter(GroupMember::isOnlineStatus).count();
+
+                    long onlineCount = allGroupMembers.stream()
+                            .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
+                            .filter(GroupMember::isOnlineStatus)
+                            .count();
 
                     return MyGroupResponseDto.of(group, eachGroupTagDtos, onlineStatus, onlineCount);
                 })
