@@ -180,7 +180,7 @@ public class GroupService {
         boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
         if (isJoined) {throw new PlanusException( ALREADY_JOINED_GROUP );}
 
-        GroupJoin groupJoin = GroupJoin.createJoinForm( member, group );
+        GroupJoin groupJoin = GroupJoin.createGroupJoin( member, group );
         GroupJoin saveGroupJoin = groupJoinRepository.save( groupJoin );
 
         return GroupJoinResponseDto.of( saveGroupJoin );
