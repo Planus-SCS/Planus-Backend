@@ -43,4 +43,12 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
             "join fetch gm.member m " +
             "where g in :groups")
     List<GroupMember> findAllGroupMemberInGroups(@Param("groups") List<Group> groups);
+
+    @Query("select gm " +
+            "from GroupMember gm " +
+            "join fetch gm.group " +
+            "join fetch gm.member " +
+            "where gm.member= :member " +
+            "and gm.leader= true")
+    List<GroupMember> findWithGroupByLeaderMember(@Param("member") Member member);
 }
