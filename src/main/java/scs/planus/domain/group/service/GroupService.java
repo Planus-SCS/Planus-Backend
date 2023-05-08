@@ -237,6 +237,27 @@ public class GroupService {
         return GroupJoinResponseDto.of( groupJoin );
     }
 
+    @Transactional
+    public GroupMemberResponseDto killGroupMember(Long leaderId, Long memberId, Long groupId) {
+        Member leader = memberRepository.findById( leaderId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        Member killMember = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        Group group = groupRepository.findByIdAndStatus( groupId )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+
+        GroupMember killGroupMember = groupMemberRepository.findByMemberIdAndGroupId( killMember.getId(), group.getId() )
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+
+        validateLeaderPermission( leader, group );
+
+        killGroupMember.changeStatusToInactive();
+
+        return GroupMemberResponseDto.of( killGroupMember );
+    }
+
     private void validateLeaderPermission( Member member, Group group ) {
         GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
