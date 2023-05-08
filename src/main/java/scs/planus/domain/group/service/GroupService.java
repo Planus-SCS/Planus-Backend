@@ -204,6 +204,24 @@ public class GroupService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public GroupMemberResponseDto acceptGroupJoin( Long memberId, Long groupJoinId ) {
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
+                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
+
+        validateLeaderPermission( member, groupJoin.getGroup() );
+
+        GroupMember groupMember = GroupMember.creatGroupMember( groupJoin.getMember(), groupJoin.getGroup() );
+        GroupMember saveGroupMember = groupMemberRepository.save( groupMember );
+
+        groupJoinRepository.delete( groupJoin );
+
+        return GroupMemberResponseDto.of( saveGroupMember );
+    }
+
     private void validateLeaderPermission( Member member, Group group ) {
         GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
