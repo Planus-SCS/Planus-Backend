@@ -7,6 +7,7 @@ import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupJoin;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GroupJoinRepository extends JpaRepository<GroupJoin, Long> {
 
@@ -16,4 +17,11 @@ public interface GroupJoinRepository extends JpaRepository<GroupJoin, Long> {
             "join fetch gj.member " +
             "where gj.group in :groups ")
     List<GroupJoin> findAllByGroupIn(@Param("groups") List<Group> groups);
+
+    @Query("select gj from GroupJoin gj " +
+            "join fetch gj.group " +
+            "join fetch gj.member " +
+            "where gj.id= :groupJoinId " +
+            "and gj.status = 'INACTIVE'")
+    Optional<GroupJoin> findWithGroupById(@Param("groupJoinId") Long groupJoinId );
 }
