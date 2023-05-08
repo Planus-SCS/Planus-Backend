@@ -186,6 +186,24 @@ public class GroupService {
         return GroupJoinResponseDto.of( saveGroupJoin );
     }
 
+    public List<GroupJoinGetResponseDto> getAllGroupJoin(Long memberId ) {
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        // 내가 리더인 그룹들 조회
+        List<GroupMember> groupMembers = groupMemberRepository.findWithGroupByLeaderMember(member);
+        List<Group> groups = groupMembers.stream()
+                .map(GroupMember::getGroup)
+                .collect(Collectors.toList());
+
+        // 내가 리더인 그룹에 들어온 가입 신청 조회
+        List<GroupJoin> allGroupJoinsOfGroups = groupJoinRepository.findAllByGroupIn(groups);
+
+        return allGroupJoinsOfGroups.stream()
+                .map(GroupJoinGetResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
     private void validateLeaderPermission( Member member, Group group ) {
         GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
