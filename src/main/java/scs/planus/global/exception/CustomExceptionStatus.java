@@ -40,6 +40,7 @@ public enum CustomExceptionStatus implements ResponseStatus {
     NOT_GROUP_LEADER_PERMISSION(BAD_REQUEST, 2602, "그룹을 수정할 권한이 없습니다."),
     EXCEED_GROUP_LIMIT_COUNT(BAD_REQUEST, 2603, "그룹 제한 인원을 초과하였습니다."),
     ALREADY_JOINED_GROUP(BAD_REQUEST, 2604, "이미 가입된 그룹입니다."),
+    NOT_EXIST_GROUP_JOIN(BAD_REQUEST, 2605, "존재 하지 않는 그룹 가입 신청서 입니다."),
 
     // groupMember excepion
     NOT_JOINED_GROUP(BAD_REQUEST, 2700, "가입하지 않은 그룹 입니다."),
