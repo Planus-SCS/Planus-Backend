@@ -66,4 +66,8 @@ public class GroupMember extends BaseTimeEntity {
     public void changeOnlineStatus() {
         this.onlineStatus = !this.onlineStatus;
     }
+
+    public void changeStatusToInactive() {
+        this.status = Status.INACTIVE;
+    }
 }
