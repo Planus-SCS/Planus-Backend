@@ -89,4 +89,14 @@ public class GroupController {
 
         return new BaseResponse<>( responseDto );
     }
+
+    @GetMapping("/groups/joins")
+    public BaseResponse<List<GroupJoinGetResponseDto>> getAllGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        Long memberId = principalDetails.getId();
+        List<GroupJoinGetResponseDto> responseDto = groupService.getAllGroupJoin( memberId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
 }
