@@ -222,6 +222,21 @@ public class GroupService {
         return GroupMemberResponseDto.of( saveGroupMember );
     }
 
+    @Transactional
+    public GroupJoinResponseDto rejectGroupJoin( Long memberId, Long groupJoinId ) {
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
+                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
+
+        validateLeaderPermission( member, groupJoin.getGroup() );
+
+        groupJoinRepository.delete( groupJoin );
+
+        return GroupJoinResponseDto.of( groupJoin );
+    }
+
     private void validateLeaderPermission( Member member, Group group ) {
         GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
