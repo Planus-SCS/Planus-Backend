@@ -83,7 +83,7 @@ public class GroupService {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
 
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroup(group);
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
 
         return allGroupMembers.stream()
                 .map( gm -> GroupGetMemberResponseDto.of( gm.getMember(), gm.isLeader() ) )
@@ -171,7 +171,7 @@ public class GroupService {
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroup( group );
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus( group );
 
         // 제한 인원 초과 검증
         validateExceedLimit( group, allGroupMembers );
