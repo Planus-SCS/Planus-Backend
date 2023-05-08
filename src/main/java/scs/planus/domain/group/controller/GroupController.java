@@ -99,4 +99,14 @@ public class GroupController {
         return new BaseResponse<>( responseDto );
     }
 
+    @PostMapping("/groups/joins/{groupJoinId}/accept")
+    public BaseResponse<GroupMemberResponseDto> acceptGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                @PathVariable("groupJoinId") Long groupJoinId ){
+
+        Long memberId = principalDetails.getId();
+        GroupMemberResponseDto responseDto = groupService.acceptGroupJoin( memberId, groupJoinId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
 }
