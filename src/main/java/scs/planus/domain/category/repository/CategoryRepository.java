@@ -9,6 +9,7 @@ import scs.planus.domain.category.entity.TodoCategory;
 import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<TodoCategory, Long> {
-    @Query("select c from TodoCategory c where c.status= 'ACTIVE' and c.member= :member")
+    @Query("select c from TodoCategory c " +
+            "where c.member= :member")
     List<TodoCategory> findAllByStatus(@Param("member") Member member);
 }
