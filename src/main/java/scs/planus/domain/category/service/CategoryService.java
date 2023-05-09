@@ -35,7 +35,7 @@ public class CategoryService {
                     throw new PlanusException(CustomExceptionStatus.NONE_USER);
                 });
 
-        List<TodoCategory> todoCategories = categoryRepository.findAllByStatus(member);
+        List<TodoCategory> todoCategories = categoryRepository.findAllByMember(member);
 
         return todoCategories.stream()
                 .map(CategoryGetResponseDto::of)

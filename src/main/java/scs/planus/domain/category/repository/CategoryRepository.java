@@ -11,5 +11,5 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<TodoCategory, Long> {
     @Query("select c from TodoCategory c " +
             "where c.member= :member")
-    List<TodoCategory> findAllByStatus(@Param("member") Member member);
+    List<TodoCategory> findAllByMember(@Param("member") Member member);
 }
