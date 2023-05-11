@@ -28,8 +28,9 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
 
     @Query("select gm " +
             "from GroupMember gm " +
-            "join fetch gm.member " +
-            "where gm.group= :group " +
+            "join fetch gm.group g " +
+            "join fetch gm.member m " +
+            "where g = :group " +
             "and gm.status= 'ACTIVE'")
     List<GroupMember> findAllWithMemberByGroupAndStatus(@Param("group") Group group );
 
