@@ -11,7 +11,9 @@ import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
+import scs.planus.domain.group.repository.GroupMemberQueryRepository;
 import scs.planus.domain.group.repository.GroupMemberRepository;
+import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
@@ -29,7 +31,9 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 public class MyGroupService {
 
     private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupTagRepository groupTagRepository;
 
     public List<GroupBelongInResponseDto> getMyGroupsInDropDown(Long memberId) {
@@ -86,7 +90,7 @@ public class MyGroupService {
                             .map(GroupMember::isOnlineStatus)
                             .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
 
-                    long onlineCount = allGroupMembers.stream()
+                    int onlineCount = (int) allGroupMembers.stream()
                             .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
                             .filter(GroupMember::isOnlineStatus)
                             .count();
