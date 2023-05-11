@@ -238,24 +238,24 @@ public class GroupService {
     }
 
     @Transactional
-    public GroupMemberResponseDto killGroupMember(Long leaderId, Long memberId, Long groupId) {
+    public GroupMemberResponseDto withdrawGroupMember(Long leaderId, Long memberId, Long groupId) {
         Member leader = memberRepository.findById( leaderId )
                 .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
-        Member killMember = memberRepository.findById( memberId )
+        Member withdrawMember = memberRepository.findById( memberId )
                 .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
 
-        GroupMember killGroupMember = groupMemberRepository.findByMemberIdAndGroupId( killMember.getId(), group.getId() )
+        GroupMember withdrawGroupMember = groupMemberRepository.findByMemberIdAndGroupId( withdrawMember.getId(), group.getId() )
                 .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
 
         validateLeaderPermission( leader, group );
 
-        killGroupMember.changeStatusToInactive();
+        withdrawGroupMember.changeStatusToInactive();
 
-        return GroupMemberResponseDto.of( killGroupMember );
+        return GroupMemberResponseDto.of( withdrawGroupMember );
     }
 
     private void validateLeaderPermission( Member member, Group group ) {

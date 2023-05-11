@@ -125,7 +125,7 @@ public class GroupController {
                                                                 @PathVariable("memberId") Long memberId ){
 
         Long leaderId = principalDetails.getId();
-        GroupMemberResponseDto responseDto = groupService.killGroupMember( leaderId, memberId, groupId );
+        GroupMemberResponseDto responseDto = groupService.withdrawGroupMember( leaderId, memberId, groupId );
 
         return new BaseResponse<>( responseDto );
     }
