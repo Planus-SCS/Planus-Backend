@@ -89,4 +89,45 @@ public class GroupController {
 
         return new BaseResponse<>( responseDto );
     }
+
+    @GetMapping("/groups/joins")
+    public BaseResponse<List<GroupJoinGetResponseDto>> getAllGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        Long memberId = principalDetails.getId();
+        List<GroupJoinGetResponseDto> responseDto = groupService.getAllGroupJoin( memberId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @PostMapping("/groups/joins/{groupJoinId}/accept")
+    public BaseResponse<GroupMemberResponseDto> acceptGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                @PathVariable("groupJoinId") Long groupJoinId ){
+
+        Long memberId = principalDetails.getId();
+        GroupMemberResponseDto responseDto = groupService.acceptGroupJoin( memberId, groupJoinId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @PostMapping("/groups/joins/{groupJoinId}/reject")
+    public BaseResponse<GroupJoinResponseDto> rejectGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                              @PathVariable("groupJoinId") Long groupJoinId ){
+
+        Long memberId = principalDetails.getId();
+        GroupJoinResponseDto responseDto = groupService.rejectGroupJoin( memberId, groupJoinId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
+    @DeleteMapping("/groups/{groupId}/members/{memberId}")
+    public BaseResponse<GroupMemberResponseDto> withdrawGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                @PathVariable("groupId") Long groupId,
+                                                                @PathVariable("memberId") Long memberId ){
+
+        Long leaderId = principalDetails.getId();
+        GroupMemberResponseDto responseDto = groupService.withdrawGroupMember( leaderId, memberId, groupId );
+
+        return new BaseResponse<>( responseDto );
+    }
+
 }

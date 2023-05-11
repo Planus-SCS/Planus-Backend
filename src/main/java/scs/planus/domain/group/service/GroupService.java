@@ -83,7 +83,7 @@ public class GroupService {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
 
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroup(group);
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
 
         return allGroupMembers.stream()
                 .map( gm -> GroupGetMemberResponseDto.of( gm.getMember(), gm.isLeader() ) )
@@ -171,7 +171,7 @@ public class GroupService {
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroup( group );
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus( group );
 
         // 제한 인원 초과 검증
         validateExceedLimit( group, allGroupMembers );
@@ -184,6 +184,78 @@ public class GroupService {
         GroupJoin saveGroupJoin = groupJoinRepository.save( groupJoin );
 
         return GroupJoinResponseDto.of( saveGroupJoin );
+    }
+
+    public List<GroupJoinGetResponseDto> getAllGroupJoin(Long memberId ) {
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        // 내가 리더인 그룹들 조회
+        List<GroupMember> groupMembers = groupMemberRepository.findWithGroupByLeaderMember(member);
+        List<Group> groups = groupMembers.stream()
+                .map(GroupMember::getGroup)
+                .collect(Collectors.toList());
+
+        // 내가 리더인 그룹에 들어온 가입 신청 조회
+        List<GroupJoin> allGroupJoinsOfGroups = groupJoinRepository.findAllByGroupIn(groups);
+
+        return allGroupJoinsOfGroups.stream()
+                .map(GroupJoinGetResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public GroupMemberResponseDto acceptGroupJoin( Long memberId, Long groupJoinId ) {
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
+                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
+
+        validateLeaderPermission( member, groupJoin.getGroup() );
+
+        GroupMember groupMember = GroupMember.creatGroupMember( groupJoin.getMember(), groupJoin.getGroup() );
+        GroupMember saveGroupMember = groupMemberRepository.save( groupMember );
+
+        groupJoinRepository.delete( groupJoin );
+
+        return GroupMemberResponseDto.of( saveGroupMember );
+    }
+
+    @Transactional
+    public GroupJoinResponseDto rejectGroupJoin( Long memberId, Long groupJoinId ) {
+        Member member = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
+                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
+
+        validateLeaderPermission( member, groupJoin.getGroup() );
+
+        groupJoinRepository.delete( groupJoin );
+
+        return GroupJoinResponseDto.of( groupJoin );
+    }
+
+    @Transactional
+    public GroupMemberResponseDto withdrawGroupMember(Long leaderId, Long memberId, Long groupId) {
+        Member leader = memberRepository.findById( leaderId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        Member withdrawMember = memberRepository.findById( memberId )
+                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+
+        Group group = groupRepository.findByIdAndStatus( groupId )
+                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+
+        GroupMember withdrawGroupMember = groupMemberRepository.findByMemberIdAndGroupId( withdrawMember.getId(), group.getId() )
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+
+        validateLeaderPermission( leader, group );
+
+        withdrawGroupMember.changeStatusToInactive();
+
+        return GroupMemberResponseDto.of( withdrawGroupMember );
     }
 
     private void validateLeaderPermission( Member member, Group group ) {

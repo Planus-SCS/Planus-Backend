@@ -5,14 +5,7 @@ import scs.planus.domain.BaseTimeEntity;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.Status;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -24,6 +17,7 @@ public class GroupJoin extends BaseTimeEntity {
     @Column(name = "group_join_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToOne(fetch = FetchType.LAZY)
