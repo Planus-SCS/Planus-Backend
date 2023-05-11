@@ -16,8 +16,8 @@ public class GroupGetResponseDto {
     private Boolean isJoined;
     private String notice;
     private String groupImageUrl;
-    private Integer memberCount;
-    private Long limitCount;
+    private int memberCount;
+    private int limitCount;
     private String leaderName;
     private List<GroupTagResponseDto> groupTags;
 

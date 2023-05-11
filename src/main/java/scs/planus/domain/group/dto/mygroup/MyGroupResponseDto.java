@@ -15,22 +15,22 @@ public class MyGroupResponseDto {
     private String groupImageUrl;
     private String groupName;
     private Boolean isOnline;
-    private Long onlineCount;
-    private Long totalCount;
-    private Long limitCount;
+    private int onlineCount;
+    private int memberCount;
+    private int limitCount;
     private String leaderName;
     private List<GroupTagResponseDto> groupTags;
 
-    public static MyGroupResponseDto of(Group group, List<GroupTagResponseDto> eachGroupTagDtos, Boolean onlineStatus, Long onlineCount) {
+    public static MyGroupResponseDto of(Group group, List<GroupTagResponseDto> eachGroupTagDtos, Boolean onlineStatus, int onlineCount) {
         return MyGroupResponseDto.builder()
                 .groupId(group.getId())
                 .groupImageUrl(group.getGroupImageUrl())
                 .groupName(group.getName())
                 .isOnline(onlineStatus)
                 .onlineCount(onlineCount)
-                .totalCount((long) group.getGroupMembers().size())
+                .memberCount(group.getGroupMembers().size()) // 추가쿼리 발생
                 .limitCount(group.getLimitCount())
-                .leaderName(group.getLeaderName())
+                .leaderName(group.getLeaderName()) // 추가쿼리 발생
                 .groupTags(eachGroupTagDtos)
                 .build();
     }
