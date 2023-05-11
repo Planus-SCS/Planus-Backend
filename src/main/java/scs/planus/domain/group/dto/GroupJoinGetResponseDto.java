@@ -14,7 +14,6 @@ public class GroupJoinGetResponseDto {
     private String memberName;
     private String memberDescription;
     private String memberProfileImageUrl;
-    private String acceptStatus;
 
     public static GroupJoinGetResponseDto of( GroupJoin groupJoin ) {
         return GroupJoinGetResponseDto.builder()
@@ -25,7 +24,6 @@ public class GroupJoinGetResponseDto {
                 .memberName( groupJoin.getMember().getNickname() )
                 .memberDescription( groupJoin.getMember().getDescription() )
                 .memberProfileImageUrl( groupJoin.getMember().getProfileImageUrl() )
-                .acceptStatus( groupJoin.getStatus().toString() )
                 .build();
     }
 }
