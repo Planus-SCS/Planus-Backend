@@ -120,7 +120,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/groups/{groupId}/members/{memberId}")
-    public BaseResponse<GroupMemberResponseDto> killGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<GroupMemberResponseDto> withdrawGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                 @PathVariable("groupId") Long groupId,
                                                                 @PathVariable("memberId") Long memberId ){
 
