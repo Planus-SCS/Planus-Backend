@@ -120,12 +120,12 @@ public class GroupController {
     }
 
     @DeleteMapping("/groups/{groupId}/members/{memberId}")
-    public BaseResponse<GroupMemberResponseDto> killGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<GroupMemberResponseDto> withdrawGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                 @PathVariable("groupId") Long groupId,
                                                                 @PathVariable("memberId") Long memberId ){
 
         Long leaderId = principalDetails.getId();
-        GroupMemberResponseDto responseDto = groupService.killGroupMember( leaderId, memberId, groupId );
+        GroupMemberResponseDto responseDto = groupService.withdrawGroupMember( leaderId, memberId, groupId );
 
         return new BaseResponse<>( responseDto );
     }
