@@ -54,6 +54,17 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
+    public List<Todo> findDailyTodosByDate(Long memberId, Long groupId, LocalDate date) {
+        return queryFactory
+                .selectFrom(todo)
+                .join(todo.member, member)
+                .leftJoin(todo.group, group).fetchJoin()
+                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .where(memberIdEq(memberId), groupIdEq(groupId), dateBetween(date))
+                .orderBy(todo.startTime.asc())
+                .fetch();
+    }
+
     public List<Todo> findPeriodGroupTodosDetailByDate(Long memberId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(todo)
