@@ -15,6 +15,7 @@ import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.service.MyGroupService;
+import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
@@ -61,6 +62,16 @@ public class MyGroupController {
                                                                                 @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         Long loginId = principalDetails.getId();
         List<TodoDetailsResponseDto> responseDtos = myGroupService.getGroupMemberPeriodTodos(loginId, groupId, memberId, from, to);
+        return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("/my-groups/{groupId}/members/{memberId}/calendar/daily")
+    public BaseResponse<TodoDailyResponseDto> getGroupMemberPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                                @PathVariable Long groupId,
+                                                                                @PathVariable Long memberId,
+                                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        Long loginId = principalDetails.getId();
+        TodoDailyResponseDto responseDtos = myGroupService.getGroupMemberDailyTodos(loginId, groupId, memberId, date);
         return new BaseResponse<>(responseDtos);
     }
 
