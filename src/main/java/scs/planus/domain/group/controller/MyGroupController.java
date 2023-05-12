@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.service.MyGroupService;
@@ -37,6 +38,14 @@ public class MyGroupController {
                                                                  @PathVariable Long groupId) {
         Long memberId = principalDetails.getId();
         MyGroupDetailResponseDto responseDto = myGroupService.getMyEachGroupDetail(memberId, groupId);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @GetMapping("/my-groups/{groupId}/members")
+    public BaseResponse<List<MyGroupGetMemberResponseDto>> getGroupMembersForMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                                    @PathVariable("groupId") Long groupId ) {
+        Long memberId = principalDetails.getId();
+        List<MyGroupGetMemberResponseDto> responseDto = myGroupService.getGroupMembersForMember(memberId, groupId);
         return new BaseResponse<>(responseDto);
     }
 
