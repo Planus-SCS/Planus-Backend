@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.entity.Group;
@@ -48,7 +49,7 @@ public class MyGroupService {
         return responseDtos;
     }
 
-    public List<MyGroupResponseDto> getMyGroups(Long memberId) {
+    public List<MyGroupResponseDto> getMyAllGroups(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
@@ -72,7 +73,7 @@ public class MyGroupService {
         return responseDtos;
     }
 
-    public MyGroupResponseDto getEachGroup(Long memberId, Long groupId) {
+    public MyGroupDetailResponseDto getMyEachGroupDetail(Long memberId, Long groupId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
@@ -86,6 +87,7 @@ public class MyGroupService {
 
         List<GroupMember> myGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
         List<GroupTag> groupTags = groupTagRepository.findAllByGroup(group);
+
         List<GroupTagResponseDto> groupTagResponseDtos = groupTags.stream()
                 .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
@@ -93,7 +95,7 @@ public class MyGroupService {
         Boolean onlineStatus = isOnlineStatus(myGroupMembers, member);
         int onlineCount = getOnlineCount(myGroupMembers, group);
 
-        return MyGroupResponseDto.of(group,groupTagResponseDtos, onlineStatus, onlineCount);
+        return MyGroupDetailResponseDto.of(group,groupTagResponseDtos, onlineStatus, onlineCount);
     }
 
     @Transactional

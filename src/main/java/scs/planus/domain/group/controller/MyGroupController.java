@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.service.MyGroupService;
@@ -27,8 +28,16 @@ public class MyGroupController {
     @GetMapping("/my-groups")
     public BaseResponse<List<MyGroupResponseDto>> getMyGroups(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
-        List<MyGroupResponseDto> responseDtos = myGroupService.getMyGroups(memberId);
+        List<MyGroupResponseDto> responseDtos = myGroupService.getMyAllGroups(memberId);
         return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("/my-groups/{groupId}")
+    public BaseResponse<MyGroupDetailResponseDto> getMyEachGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                 @PathVariable Long groupId) {
+        Long memberId = principalDetails.getId();
+        MyGroupDetailResponseDto responseDto = myGroupService.getMyEachGroupDetail(memberId, groupId);
+        return new BaseResponse<>(responseDto);
     }
 
     @PatchMapping("/my-groups/{groupId}/online-status")
