@@ -20,6 +20,9 @@ import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.dto.MemberResponseDto;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.domain.todo.dto.TodoDailyDto;
+import scs.planus.domain.todo.dto.TodoDailyResponseDto;
+import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
@@ -152,11 +155,35 @@ public class MyGroupService {
         }
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<Todo> periodGroupTodos = todoQueryRepository.findPeriodGroupTodosByDate(memberId, groupId, from, to);
-        List<TodoDetailsResponseDto> responseDtos = periodGroupTodos.stream()
+        List<Todo> todos = todoQueryRepository.findPeriodGroupTodosByDate(memberId, groupId, from, to);
+        List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
         return responseDtos;
+    }
+
+    public TodoDailyResponseDto getGroupMemberDailyTodos(Long loginId, Long groupId, Long memberId, LocalDate date) {
+        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
+        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
+
+        if (!isLoginMemberJoined || !isMemberJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        List<Todo> todos = todoQueryRepository.findDailyTodosByDate(memberId, groupId, date);
+
+        // TODO -> 리팩토링 필요. TodoCalendarService에서 구현된 메서드
+        List<TodoDailyScheduleDto> dailySchedules = todos.stream()
+                .filter(todo -> todo.getStartTime() != null)
+                .map(TodoDailyScheduleDto::of)
+                .collect(Collectors.toList());
+
+        List<TodoDailyDto> dailyTodos = todos.stream()
+                .filter(todo -> todo.getStartTime() == null)
+                .map(TodoDailyDto::of)
+                .collect(Collectors.toList());
+
+        return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
     }
 
     @Transactional
