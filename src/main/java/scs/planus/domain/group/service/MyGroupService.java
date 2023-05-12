@@ -17,6 +17,7 @@ import scs.planus.domain.group.repository.GroupMemberQueryRepository;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.group.repository.GroupTagRepository;
+import scs.planus.domain.member.dto.MemberResponseDto;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.global.exception.PlanusException;
@@ -100,6 +101,7 @@ public class MyGroupService {
         // TODO 파라미터가 너무 많음 -> 리팩토링 필요
         return MyGroupDetailResponseDto.of(group, groupTagResponseDtos, isLeader, onlineStatus, onlineCount);
     }
+
     public List<MyGroupGetMemberResponseDto> getGroupMembersForMember(Long memberId, Long groupId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
@@ -118,6 +120,20 @@ public class MyGroupService {
                 .collect(Collectors.toList());
 
         return responseDtos;
+    }
+
+    public MemberResponseDto getGroupMemberDetail(Long loginId, Long groupId, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
+        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
+
+        if (!isLoginMemberJoined || !isMemberJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        return MemberResponseDto.of(member);
     }
 
     @Transactional
