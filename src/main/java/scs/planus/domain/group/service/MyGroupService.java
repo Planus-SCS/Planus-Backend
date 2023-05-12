@@ -61,7 +61,7 @@ public class MyGroupService {
         List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(myGroups);
 
         List<MyGroupResponseDto> responseDtos = myGroups.stream().map(group -> {
-                    List<GroupTagResponseDto> eachGroupTagDtos = getGroupTags(allGroupTags, group);
+                    List<GroupTagResponseDto> eachGroupTagDtos = getEachGroupTags(allGroupTags, group);
                     Boolean onlineStatus = isOnlineStatus(myGroupMembers, member);
                     int onlineCount = getOnlineCount(allGroupMembers, group);
 
@@ -70,6 +70,30 @@ public class MyGroupService {
                 .collect(Collectors.toList());
 
         return responseDtos;
+    }
+
+    public MyGroupResponseDto getEachGroup(Long memberId, Long groupId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
+        if (!isJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        List<GroupMember> myGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
+        List<GroupTag> groupTags = groupTagRepository.findAllByGroup(group);
+        List<GroupTagResponseDto> groupTagResponseDtos = groupTags.stream()
+                .map(GroupTagResponseDto::of)
+                .collect(Collectors.toList());
+
+        Boolean onlineStatus = isOnlineStatus(myGroupMembers, member);
+        int onlineCount = getOnlineCount(myGroupMembers, group);
+
+        return MyGroupResponseDto.of(group,groupTagResponseDtos, onlineStatus, onlineCount);
     }
 
     @Transactional
@@ -85,7 +109,7 @@ public class MyGroupService {
         return MyGroupOnlineStatusResponseDto.of(groupMember);
     }
 
-    private List<GroupTagResponseDto> getGroupTags(List<GroupTag> allGroupTags, Group group) {
+    private List<GroupTagResponseDto> getEachGroupTags(List<GroupTag> allGroupTags, Group group) {
         return allGroupTags.stream()
                 .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
                 .map(GroupTagResponseDto::of)
