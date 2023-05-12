@@ -20,8 +20,13 @@ import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.dto.MemberResponseDto;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
+import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
+import scs.planus.global.util.validator.Validator;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +43,7 @@ public class MyGroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupTagRepository groupTagRepository;
+    private final TodoQueryRepository todoQueryRepository;
 
     public List<GroupBelongInResponseDto> getMyGroupsInDropDown(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -134,6 +140,23 @@ public class MyGroupService {
         }
 
         return MemberResponseDto.of(member);
+    }
+
+    public List<TodoDetailsResponseDto> getGroupMemberPeriodTodos(Long loginId, Long groupId, Long memberId,
+                                                                 LocalDate from, LocalDate to) {
+        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
+        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
+
+        if (!isLoginMemberJoined || !isMemberJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        Validator.validateStartDateBeforeEndDate(from, to);
+        List<Todo> periodGroupTodos = todoQueryRepository.findPeriodGroupTodosByDate(memberId, groupId, from, to);
+        List<TodoDetailsResponseDto> responseDtos = periodGroupTodos.stream()
+                .map(TodoDetailsResponseDto::of)
+                .collect(Collectors.toList());
+        return responseDtos;
     }
 
     @Transactional
