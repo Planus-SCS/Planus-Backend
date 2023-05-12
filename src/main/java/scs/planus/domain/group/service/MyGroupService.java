@@ -53,7 +53,21 @@ public class MyGroupService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         List<GroupMember> myGroupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
-        List<MyGroupResponseDto> responseDtos = getMyGroupResponseDtos(myGroupMembers);
+        List<Group> myGroups = myGroupMembers.stream()
+                .map(GroupMember::getGroup)
+                .collect(Collectors.toList());
+
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllGroupMemberInGroups(myGroups);
+        List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(myGroups);
+
+        List<MyGroupResponseDto> responseDtos = myGroups.stream().map(group -> {
+                    List<GroupTagResponseDto> eachGroupTagDtos = getGroupTags(allGroupTags, group);
+                    Boolean onlineStatus = isOnlineStatus(myGroupMembers, member);
+                    int onlineCount = getOnlineCount(allGroupMembers, group);
+
+                    return MyGroupResponseDto.of(group, eachGroupTagDtos, onlineStatus, onlineCount);
+                })
+                .collect(Collectors.toList());
 
         return responseDtos;
     }
@@ -71,34 +85,24 @@ public class MyGroupService {
         return MyGroupOnlineStatusResponseDto.of(groupMember);
     }
 
-    private List<MyGroupResponseDto> getMyGroupResponseDtos(List<GroupMember> myGroupMembers) {
-        List<Group> myGroups = myGroupMembers.stream()
-                .map(GroupMember::getGroup)
+    private List<GroupTagResponseDto> getGroupTags(List<GroupTag> allGroupTags, Group group) {
+        return allGroupTags.stream()
+                .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
+                .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
+    }
 
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllGroupMemberInGroups(myGroups);
-        List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(myGroups);
+    private Boolean isOnlineStatus(List<GroupMember> myGroupMembers, Member member) {
+        return myGroupMembers.stream()
+                .filter(groupMember -> groupMember.getMember().getId().equals(member.getId()))
+                .map(GroupMember::isOnlineStatus)
+                .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
+    }
 
-        List<MyGroupResponseDto> responseDtos = myGroups.stream().map(group -> {
-                    List<GroupTagResponseDto> eachGroupTagDtos = allGroupTags.stream()
-                            .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
-                            .map(GroupTagResponseDto::of)
-                            .collect(Collectors.toList());
-
-                    Boolean onlineStatus = myGroupMembers.stream()
-                            .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
-                            .map(GroupMember::isOnlineStatus)
-                            .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
-
-                    int onlineCount = (int) allGroupMembers.stream()
-                            .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
-                            .filter(GroupMember::isOnlineStatus)
-                            .count();
-
-                    return MyGroupResponseDto.of(group, eachGroupTagDtos, onlineStatus, onlineCount);
-                })
-                .collect(Collectors.toList());
-
-        return responseDtos;
+    private int getOnlineCount(List<GroupMember> allGroupMembers, Group group) {
+        return (int) allGroupMembers.stream()
+                .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
+                .filter(GroupMember::isOnlineStatus)
+                .count();
     }
 }
