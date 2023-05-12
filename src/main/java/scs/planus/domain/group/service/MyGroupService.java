@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.entity.Group;
@@ -96,6 +97,26 @@ public class MyGroupService {
         int onlineCount = getOnlineCount(myGroupMembers, group);
 
         return MyGroupDetailResponseDto.of(group,groupTagResponseDtos, onlineStatus, onlineCount);
+    }
+
+    public List<MyGroupGetMemberResponseDto> getGroupMembersForMember(Long memberId, Long groupId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Group group = groupRepository.findWithGroupMemberById(groupId)
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
+        if (!isJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        List<GroupMember> groupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
+        List<MyGroupGetMemberResponseDto> responseDtos = groupMembers.stream()
+                .map(gm -> MyGroupGetMemberResponseDto.of(gm.getMember(), gm.isLeader(), gm.isOnlineStatus()))
+                .collect(Collectors.toList());
+
+        return responseDtos;
     }
 
     @Transactional
