@@ -13,6 +13,7 @@ import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.service.MyGroupService;
+import scs.planus.domain.member.dto.MemberResponseDto;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 
@@ -46,6 +47,15 @@ public class MyGroupController {
                                                                                     @PathVariable("groupId") Long groupId ) {
         Long memberId = principalDetails.getId();
         List<MyGroupGetMemberResponseDto> responseDto = myGroupService.getGroupMembersForMember(memberId, groupId);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @GetMapping("/my-groups/{groupId}/members/{memberId}")
+    public BaseResponse<MemberResponseDto> getGroupMemberInfo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                              @PathVariable Long groupId,
+                                                              @PathVariable Long memberId) {
+        Long loginId = principalDetails.getId();
+        MemberResponseDto responseDto = myGroupService.getGroupMemberDetail(loginId, groupId, memberId);
         return new BaseResponse<>(responseDto);
     }
 
