@@ -63,9 +63,9 @@ public class MyGroupService {
         List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(myGroups);
 
         List<MyGroupResponseDto> responseDtos = myGroups.stream().map(group -> {
-                    List<GroupTagResponseDto> eachGroupTagDtos = getEachGroupTags(allGroupTags, group);
-                    Boolean onlineStatus = isOnlineStatus(myGroupMembers, member);
-                    int onlineCount = getOnlineCount(allGroupMembers, group);
+                    List<GroupTagResponseDto> eachGroupTagDtos = getEachGroupTags(group, allGroupTags);
+                    Boolean onlineStatus = isOnlineStatus(member, myGroupMembers);
+                    int onlineCount = getOnlineCount(group, allGroupMembers);
 
                     return MyGroupResponseDto.of(group, eachGroupTagDtos, onlineStatus, onlineCount);
                 })
@@ -93,12 +93,13 @@ public class MyGroupService {
                 .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
 
-        Boolean onlineStatus = isOnlineStatus(myGroupMembers, member);
-        int onlineCount = getOnlineCount(myGroupMembers, group);
+        Boolean isLeader = isGroupLeader(member, myGroupMembers);
+        Boolean onlineStatus = isOnlineStatus(member, myGroupMembers);
+        int onlineCount = getOnlineCount(group, myGroupMembers);
 
-        return MyGroupDetailResponseDto.of(group,groupTagResponseDtos, onlineStatus, onlineCount);
+        // TODO 파라미터가 너무 많음 -> 리팩토링 필요
+        return MyGroupDetailResponseDto.of(group, groupTagResponseDtos, isLeader, onlineStatus, onlineCount);
     }
-
     public List<MyGroupGetMemberResponseDto> getGroupMembersForMember(Long memberId, Long groupId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
@@ -132,21 +133,27 @@ public class MyGroupService {
         return MyGroupOnlineStatusResponseDto.of(groupMember);
     }
 
-    private List<GroupTagResponseDto> getEachGroupTags(List<GroupTag> allGroupTags, Group group) {
+    private Boolean isGroupLeader(Member member, List<GroupMember> myGroupMembers) {
+        return myGroupMembers.stream().filter(groupMember -> groupMember.getMember().getId().equals(member.getId()))
+                .map(GroupMember::isLeader)
+                .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
+    }
+
+    private List<GroupTagResponseDto> getEachGroupTags(Group group, List<GroupTag> allGroupTags) {
         return allGroupTags.stream()
                 .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
                 .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
     }
 
-    private Boolean isOnlineStatus(List<GroupMember> myGroupMembers, Member member) {
+    private Boolean isOnlineStatus(Member member, List<GroupMember> myGroupMembers) {
         return myGroupMembers.stream()
                 .filter(groupMember -> groupMember.getMember().getId().equals(member.getId()))
                 .map(GroupMember::isOnlineStatus)
                 .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
     }
 
-    private int getOnlineCount(List<GroupMember> allGroupMembers, Group group) {
+    private int getOnlineCount(Group group, List<GroupMember> allGroupMembers) {
         return (int) allGroupMembers.stream()
                 .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
                 .filter(GroupMember::isOnlineStatus)
