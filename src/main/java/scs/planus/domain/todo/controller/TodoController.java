@@ -1,5 +1,7 @@
 package scs.planus.domain.todo.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,11 +24,13 @@ import scs.planus.global.common.response.BaseResponse;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Todo", description = "Todo API Document")
 public class TodoController {
 
     private final TodoService todoService;
 
     @PostMapping("/todos")
+    @Operation(summary = "Todo 생성 API")
     public BaseResponse<TodoResponseDto> createTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @RequestBody TodoRequestDto requestDto) {
         Long memberId = principalDetails.getId();
@@ -35,6 +39,7 @@ public class TodoController {
     }
 
     @GetMapping("/todos/{todoId}")
+    @Operation(summary = "Todo 조회 API")
     public BaseResponse<TodoDetailsResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                               @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
@@ -43,6 +48,7 @@ public class TodoController {
     }
 
     @PatchMapping("/todos/{todoId}")
+    @Operation(summary = "Todo 변경 API")
     public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                  @PathVariable Long todoId,
                                                                  @RequestBody TodoRequestDto requestDto) {
@@ -52,6 +58,7 @@ public class TodoController {
     }
 
     @PatchMapping("/todos/{todoId}/completion")
+    @Operation(summary = "Todo 완료 API")
     public BaseResponse<TodoResponseDto> completeTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                       @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
@@ -60,6 +67,7 @@ public class TodoController {
     }
 
     @DeleteMapping("/todos/{todoId}")
+    @Operation(summary = "Todo 삭제 API")
     public BaseResponse<TodoResponseDto> deleteTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
