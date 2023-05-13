@@ -32,9 +32,9 @@ public class TodoController {
     @PostMapping("/todos")
     @Operation(summary = "Todo 생성 API")
     public BaseResponse<TodoResponseDto> createTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                    @RequestBody TodoRequestDto requestDto) {
+                                                    @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
-        TodoResponseDto responseDto = todoService.createPrivateTodo(memberId, requestDto);
+        TodoResponseDto responseDto = todoService.createPrivateTodo(memberId, todoRequestDto);
         return new BaseResponse<>(responseDto);
     }
 
@@ -51,9 +51,9 @@ public class TodoController {
     @Operation(summary = "Todo 변경 API")
     public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                  @PathVariable Long todoId,
-                                                                 @RequestBody TodoRequestDto requestDto) {
+                                                                 @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
-        TodoDetailsResponseDto responseDto = todoService.updateTodo(memberId, todoId, requestDto);
+        TodoDetailsResponseDto responseDto = todoService.updateTodo(memberId, todoId, todoRequestDto);
         return new BaseResponse<>(responseDto);
     }
 
