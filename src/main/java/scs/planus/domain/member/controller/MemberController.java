@@ -1,5 +1,7 @@
 package scs.planus.domain.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,11 +24,13 @@ import javax.validation.Valid;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Member", description = "Member API Document")
 public class MemberController {
 
     private final MemberService memberService;
 
     @GetMapping("/members")
+    @Operation(summary = "Member 조회 API")
     public BaseResponse<MemberResponseDto> showDetail(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
         MemberResponseDto responseDto = memberService.getDetail(memberId);
@@ -34,6 +38,7 @@ public class MemberController {
     }
 
     @PatchMapping("/members")
+    @Operation(summary = "Member 변경 API")
     public BaseResponse<MemberResponseDto> updateProfile(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                          @RequestPart(value = "image", required = false) MultipartFile multipartFile,
                                                          @Valid @RequestPart(value = "updateRequestDto") MemberUpdateRequestDto memberUpdateRequestDto) {
@@ -43,6 +48,7 @@ public class MemberController {
     }
 
     @DeleteMapping("/members")
+    @Operation(summary = "Member 삭제 API")
     public BaseResponse<MemberResponseDto> delete(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
         MemberResponseDto responseDto = memberService.delete(memberId);
