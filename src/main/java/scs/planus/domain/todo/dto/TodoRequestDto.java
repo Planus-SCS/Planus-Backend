@@ -1,6 +1,7 @@
 package scs.planus.domain.todo.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.group.entity.Group;
@@ -21,11 +22,15 @@ public class TodoRequestDto {
     private Long categoryId;
     private Long groupId;
 
+    @NotBlank(message = "시작 날짜를 선택해주세요.")
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate startDate;
+
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate endDate;
+
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
+    @Schema(defaultValue = "23:30")
     private LocalTime startTime;
 
     @Size(max = 70, message = "투두 메모는 최대 70글자입니다.")
