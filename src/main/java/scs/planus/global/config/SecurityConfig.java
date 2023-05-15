@@ -29,8 +29,10 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/app/oauth/**", "/app/auth/**").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/", "/app/oauth/**", "/app/auth/**",
+                        "/swagger-ui/**", "/api-docs/**").permitAll()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
