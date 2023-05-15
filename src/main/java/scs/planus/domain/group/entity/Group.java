@@ -26,8 +26,10 @@ public class Group extends BaseTimeEntity {
 
     private String introduction;
 
+    @Column(columnDefinition = "TEXT")
     private String notice;
 
+    @Column(columnDefinition = "TEXT")
     private String groupImageUrl;
 
     private int limitCount;
