@@ -1,5 +1,7 @@
 package scs.planus.domain.category.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/app")
 @RequiredArgsConstructor
+@Tag(name = "Category", description = "Category API Document")
 public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/categories")
+    @Operation(summary = "전체 Category 조회 API")
     public BaseResponse<List<CategoryGetResponseDto>> getAllCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         Long memberId = principalDetails.getId();
@@ -29,6 +33,7 @@ public class CategoryController {
     }
 
     @PostMapping("/categories")
+    @Operation(summary = "Category 생성 API")
     public BaseResponse<CategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @Valid @RequestBody CategoryRequestDto requestDto){
         Long memberId = principalDetails.getId();
@@ -39,6 +44,7 @@ public class CategoryController {
     }
 
     @PatchMapping("/categories/{categoryId}")
+    @Operation(summary = "Category 변경 API")
     public BaseResponse<CategoryResponseDto> changeCategory(@PathVariable(name = "categoryId") Long categoryId,
                                                             @RequestBody CategoryRequestDto requestDto) {
 
@@ -49,6 +55,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/categories/{categoryId}")
+    @Operation(summary = "Category 삭제 API")
     public BaseResponse<CategoryResponseDto> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
 
         CategoryResponseDto responseDto = categoryService.deleteCategory(categoryId);

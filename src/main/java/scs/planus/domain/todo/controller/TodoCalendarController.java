@@ -1,5 +1,7 @@
 package scs.planus.domain.todo.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,11 +26,13 @@ import java.util.List;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Todo Calendar", description = "Todo Calendar API Document")
 public class TodoCalendarController {
 
     private final TodoCalendarService todoCalendarService;
 
     @GetMapping("/todos/calendar")
+    @Operation(summary = "월별 Todo Calendar 상세 조회 API - Todo 내용 전체 출력")
     public BaseResponse<List<TodoDetailsResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
@@ -38,6 +42,7 @@ public class TodoCalendarController {
     }
 
     @GetMapping("/todos/calendar/period")
+    @Operation(summary = "월별 Todo Calendar 조회 API - 화면 출력용")
     public BaseResponse<List<TodoPeriodResponseDto>> getPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
@@ -47,6 +52,7 @@ public class TodoCalendarController {
     }
 
     @GetMapping("/todos/calendar/daily")
+    @Operation(summary = "일별 Todo/Schedule 조회 API")
     public BaseResponse<TodoDailyResponseDto> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         Long memberId = principalDetails.getId();
@@ -55,6 +61,7 @@ public class TodoCalendarController {
     }
 
     @GetMapping("/todos/calendar/my-groups")
+    @Operation(summary = "그룹 드롭다운 조회 API")
     public BaseResponse<List<GroupBelongInResponseDto>> getMyGroupsInDropDown(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
         List<GroupBelongInResponseDto> responseDtos = todoCalendarService.getAllMyGroup(memberId);
@@ -62,6 +69,7 @@ public class TodoCalendarController {
     }
 
     @GetMapping("/todos/calendar/my-groups/{groupId}")
+    @Operation(summary = "월별 그룹 Todo Calendar 조회 API - Todo 내용 전체 출력")
     public BaseResponse<List<TodoDetailsResponseDto>> getGroupTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                     @PathVariable Long groupId,
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
@@ -72,6 +80,7 @@ public class TodoCalendarController {
     }
 
     @GetMapping("/todos/calendar/my-groups/{groupId}/period")
+    @Operation(summary = "월별 그룹 Todo Calendar 조회 API - 화면 출력용")
     public BaseResponse<List<TodoPeriodResponseDto>> getPeriodGroupTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                          @PathVariable Long groupId,
                                                                          @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
