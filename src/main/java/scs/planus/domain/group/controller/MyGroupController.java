@@ -1,5 +1,7 @@
 package scs.planus.domain.group.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,11 +29,13 @@ import java.util.List;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "MyGroup", description = "MyGroup API Document")
 public class MyGroupController {
 
     private final MyGroupService myGroupService;
 
     @GetMapping("/my-groups")
+    @Operation(summary = "전체 MyGroup 조회 API")
     public BaseResponse<List<MyGroupResponseDto>> getMyGroups(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         Long memberId = principalDetails.getId();
         List<MyGroupResponseDto> responseDtos = myGroupService.getMyAllGroups(memberId);
@@ -39,6 +43,7 @@ public class MyGroupController {
     }
 
     @GetMapping("/my-groups/{groupId}")
+    @Operation(summary = "개별 MyGroup 조회 API")
     public BaseResponse<MyGroupDetailResponseDto> getMyEachGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                  @PathVariable Long groupId) {
         Long memberId = principalDetails.getId();
@@ -47,6 +52,7 @@ public class MyGroupController {
     }
 
     @GetMapping("/my-groups/{groupId}/members")
+    @Operation(summary = "MyGroup에 속한 그룹원 조회 API")
     public BaseResponse<List<MyGroupGetMemberResponseDto>> getGroupMembersForMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                                     @PathVariable("groupId") Long groupId ) {
         Long memberId = principalDetails.getId();
@@ -55,6 +61,7 @@ public class MyGroupController {
     }
 
     @GetMapping("/my-groups/{groupId}/members/{memberId}/calendar")
+    @Operation(summary = "MyGroup에 속한 그룹원 캘린더 조회 API")
     public BaseResponse<List<TodoDetailsResponseDto>> getGroupMemberPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                                 @PathVariable Long groupId,
                                                                                 @PathVariable Long memberId,
@@ -66,6 +73,7 @@ public class MyGroupController {
     }
 
     @GetMapping("/my-groups/{groupId}/members/{memberId}/calendar/daily")
+    @Operation(summary = "MyGroup에 속한 그룹원 일별 Todo/Schedule 조회 API")
     public BaseResponse<TodoDailyResponseDto> getGroupMemberPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                                 @PathVariable Long groupId,
                                                                                 @PathVariable Long memberId,
@@ -76,6 +84,7 @@ public class MyGroupController {
     }
 
     @PatchMapping("/my-groups/{groupId}/online-status")
+    @Operation(summary = "OnlineStatus 변경 API")
     public BaseResponse<MyGroupOnlineStatusResponseDto> updateOnlineStatus(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                            @PathVariable Long groupId) {
         Long memberId = principalDetails.getId();
