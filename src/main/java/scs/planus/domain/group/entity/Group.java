@@ -30,7 +30,7 @@ public class Group extends BaseTimeEntity {
 
     private String groupImageUrl;
 
-    private Long limitCount;
+    private int limitCount;
 
     @Enumerated(EnumType.STRING)
     private GroupScope scope;
@@ -45,7 +45,7 @@ public class Group extends BaseTimeEntity {
     private List<GroupTag> groupTags = new ArrayList<>();
 
     @Builder
-    public Group(String name, String notice, String groupImageUrl, Long limitCount, GroupScope scope, Status status) {
+    public Group(String name, String notice, String groupImageUrl, int limitCount, GroupScope scope, Status status) {
         this.name = name;
         this.notice = notice;
         this.groupImageUrl = groupImageUrl;
@@ -54,7 +54,7 @@ public class Group extends BaseTimeEntity {
         this.status = status;
     }
 
-    public static Group creatGroup( String name, String notice, Long limitCount, String groupImageUrl ) {
+    public static Group creatGroup( String name, String notice, int limitCount, String groupImageUrl ) {
         return Group.builder()
                 .name( name )
                 .notice( notice )
@@ -73,7 +73,7 @@ public class Group extends BaseTimeEntity {
                 .getMember().getNickname();
     }
 
-    public void updateDetail(Long limitCount, String groupImageUrl ) {
+    public void updateDetail(int limitCount, String groupImageUrl ) {
         this.limitCount = limitCount;
         this.groupImageUrl = groupImageUrl;
     }

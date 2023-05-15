@@ -6,17 +6,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
+import scs.planus.domain.group.repository.GroupMemberQueryRepository;
 import scs.planus.domain.group.repository.GroupMemberRepository;
+import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.group.repository.GroupTagRepository;
+import scs.planus.domain.member.dto.MemberResponseDto;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.domain.todo.dto.TodoDailyDto;
+import scs.planus.domain.todo.dto.TodoDailyResponseDto;
+import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
+import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
+import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
+import scs.planus.global.util.validator.Validator;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +42,11 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 public class MyGroupService {
 
     private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupTagRepository groupTagRepository;
+    private final TodoQueryRepository todoQueryRepository;
 
     public List<GroupBelongInResponseDto> getMyGroupsInDropDown(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -44,14 +60,130 @@ public class MyGroupService {
         return responseDtos;
     }
 
-    public List<MyGroupResponseDto> getMyGroups(Long memberId) {
+    public List<MyGroupResponseDto> getMyAllGroups(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         List<GroupMember> myGroupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
-        List<MyGroupResponseDto> responseDtos = getMyGroupResponseDtos(myGroupMembers);
+        List<Group> myGroups = myGroupMembers.stream()
+                .map(GroupMember::getGroup)
+                .collect(Collectors.toList());
+
+        List<GroupMember> allGroupMembers = groupMemberRepository.findAllGroupMemberInGroups(myGroups);
+        List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(myGroups);
+
+        List<MyGroupResponseDto> responseDtos = myGroups.stream().map(group -> {
+                    List<GroupTagResponseDto> eachGroupTagDtos = getEachGroupTags(group, allGroupTags);
+                    Boolean onlineStatus = isOnlineStatus(member, myGroupMembers);
+                    int onlineCount = getOnlineCount(group, allGroupMembers);
+
+                    return MyGroupResponseDto.of(group, eachGroupTagDtos, onlineStatus, onlineCount);
+                })
+                .collect(Collectors.toList());
 
         return responseDtos;
+    }
+
+    public MyGroupDetailResponseDto getMyEachGroupDetail(Long memberId, Long groupId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
+        if (!isJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        List<GroupMember> myGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
+        List<GroupTag> groupTags = groupTagRepository.findAllByGroup(group);
+
+        List<GroupTagResponseDto> groupTagResponseDtos = groupTags.stream()
+                .map(GroupTagResponseDto::of)
+                .collect(Collectors.toList());
+
+        Boolean isLeader = isGroupLeader(member, myGroupMembers);
+        Boolean onlineStatus = isOnlineStatus(member, myGroupMembers);
+        int onlineCount = getOnlineCount(group, myGroupMembers);
+
+        // TODO 파라미터가 너무 많음 -> 리팩토링 필요
+        return MyGroupDetailResponseDto.of(group, groupTagResponseDtos, isLeader, onlineStatus, onlineCount);
+    }
+
+    public List<MyGroupGetMemberResponseDto> getGroupMembersForMember(Long memberId, Long groupId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Group group = groupRepository.findWithGroupMemberById(groupId)
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
+        if (!isJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        List<GroupMember> groupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
+        List<MyGroupGetMemberResponseDto> responseDtos = groupMembers.stream()
+                .map(gm -> MyGroupGetMemberResponseDto.of(gm.getMember(), gm.isLeader(), gm.isOnlineStatus()))
+                .collect(Collectors.toList());
+
+        return responseDtos;
+    }
+
+    public MemberResponseDto getGroupMemberDetail(Long loginId, Long groupId, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new PlanusException(NONE_USER));
+
+        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
+        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
+
+        if (!isLoginMemberJoined || !isMemberJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        return MemberResponseDto.of(member);
+    }
+
+    public List<TodoDetailsResponseDto> getGroupMemberPeriodTodos(Long loginId, Long groupId, Long memberId,
+                                                                 LocalDate from, LocalDate to) {
+        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
+        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
+
+        if (!isLoginMemberJoined || !isMemberJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        Validator.validateStartDateBeforeEndDate(from, to);
+        List<Todo> todos = todoQueryRepository.findPeriodGroupTodosByDate(memberId, groupId, from, to);
+        List<TodoDetailsResponseDto> responseDtos = todos.stream()
+                .map(TodoDetailsResponseDto::of)
+                .collect(Collectors.toList());
+        return responseDtos;
+    }
+
+    public TodoDailyResponseDto getGroupMemberDailyTodos(Long loginId, Long groupId, Long memberId, LocalDate date) {
+        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
+        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
+
+        if (!isLoginMemberJoined || !isMemberJoined) {
+            throw new PlanusException(NOT_JOINED_GROUP);
+        }
+
+        List<Todo> todos = todoQueryRepository.findDailyTodosByDate(memberId, groupId, date);
+
+        // TODO -> 리팩토링 필요. TodoCalendarService에서 구현된 메서드
+        List<TodoDailyScheduleDto> dailySchedules = todos.stream()
+                .filter(todo -> todo.getStartTime() != null)
+                .map(TodoDailyScheduleDto::of)
+                .collect(Collectors.toList());
+
+        List<TodoDailyDto> dailyTodos = todos.stream()
+                .filter(todo -> todo.getStartTime() == null)
+                .map(TodoDailyDto::of)
+                .collect(Collectors.toList());
+
+        return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
     }
 
     @Transactional
@@ -67,34 +199,30 @@ public class MyGroupService {
         return MyGroupOnlineStatusResponseDto.of(groupMember);
     }
 
-    private List<MyGroupResponseDto> getMyGroupResponseDtos(List<GroupMember> myGroupMembers) {
-        List<Group> myGroups = myGroupMembers.stream()
-                .map(GroupMember::getGroup)
+    private Boolean isGroupLeader(Member member, List<GroupMember> myGroupMembers) {
+        return myGroupMembers.stream().filter(groupMember -> groupMember.getMember().getId().equals(member.getId()))
+                .map(GroupMember::isLeader)
+                .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
+    }
+
+    private List<GroupTagResponseDto> getEachGroupTags(Group group, List<GroupTag> allGroupTags) {
+        return allGroupTags.stream()
+                .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
+                .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
+    }
 
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllGroupMemberInGroups(myGroups);
-        List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(myGroups);
+    private Boolean isOnlineStatus(Member member, List<GroupMember> myGroupMembers) {
+        return myGroupMembers.stream()
+                .filter(groupMember -> groupMember.getMember().getId().equals(member.getId()))
+                .map(GroupMember::isOnlineStatus)
+                .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
+    }
 
-        List<MyGroupResponseDto> responseDtos = myGroups.stream().map(group -> {
-                    List<GroupTagResponseDto> eachGroupTagDtos = allGroupTags.stream()
-                            .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
-                            .map(GroupTagResponseDto::of)
-                            .collect(Collectors.toList());
-
-                    Boolean onlineStatus = myGroupMembers.stream()
-                            .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
-                            .map(GroupMember::isOnlineStatus)
-                            .findFirst().orElseThrow(() -> new PlanusException(INTERNAL_SERVER_ERROR));
-
-                    long onlineCount = allGroupMembers.stream()
-                            .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
-                            .filter(GroupMember::isOnlineStatus)
-                            .count();
-
-                    return MyGroupResponseDto.of(group, eachGroupTagDtos, onlineStatus, onlineCount);
-                })
-                .collect(Collectors.toList());
-
-        return responseDtos;
+    private int getOnlineCount(Group group, List<GroupMember> allGroupMembers) {
+        return (int) allGroupMembers.stream()
+                .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
+                .filter(GroupMember::isOnlineStatus)
+                .count();
     }
 }
