@@ -31,10 +31,12 @@ public class Member extends BaseTimeEntity {
 
     private String email;
 
+    @Column(columnDefinition = "TEXT")
     private String password;
 
     private String description;
 
+    @Column(columnDefinition = "TEXT")
     private String profileImageUrl;
 
     @Enumerated(EnumType.STRING)
