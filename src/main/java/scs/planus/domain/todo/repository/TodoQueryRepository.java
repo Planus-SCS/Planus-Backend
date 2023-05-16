@@ -15,7 +15,6 @@ import static scs.planus.domain.category.entity.QTodoCategory.todoCategory;
 import static scs.planus.domain.group.entity.QGroup.group;
 import static scs.planus.domain.member.entity.QMember.member;
 import static scs.planus.domain.todo.entity.QMemberTodo.memberTodo;
-import static scs.planus.domain.todo.entity.QTodo.todo;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,9 +27,9 @@ public class TodoQueryRepository {
         return Optional.ofNullable(queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
-                .leftJoin(todo.group, group).fetchJoin()
-                .join(todo.todoCategory, todoCategory).fetchJoin()
-                .where(todo.id.eq(todoId), memberIdEq(memberId))
+                .leftJoin(memberTodo.group, group).fetchJoin()
+                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
+                .where(memberTodo.id.eq(todoId), memberIdEq(memberId))
                 .fetchOne());
     }
 
@@ -38,9 +37,9 @@ public class TodoQueryRepository {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member).fetchJoin()
-                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
                 .where(memberIdEq(memberId), periodBetween(from, to))
-                .orderBy(todo.startDate.asc())
+                .orderBy(memberTodo.startDate.asc())
                 .fetch();
     }
 
@@ -48,10 +47,10 @@ public class TodoQueryRepository {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
-                .leftJoin(todo.group, group).fetchJoin()
-                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.group, group).fetchJoin()
+                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
                 .where(memberIdEq(memberId), dateBetween(date))
-                .orderBy(todo.startTime.asc())
+                .orderBy(memberTodo.startTime.asc())
                 .fetch();
     }
 
@@ -59,10 +58,10 @@ public class TodoQueryRepository {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
-                .leftJoin(todo.group, group).fetchJoin()
-                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.group, group).fetchJoin()
+                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
                 .where(memberIdEq(memberId), groupIdEq(groupId), dateBetween(date))
-                .orderBy(todo.startTime.asc())
+                .orderBy(memberTodo.startTime.asc())
                 .fetch();
     }
 
@@ -70,10 +69,10 @@ public class TodoQueryRepository {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
-                .leftJoin(todo.group, group).fetchJoin()
-                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.group, group).fetchJoin()
+                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
                 .where(memberIdEq(memberId), periodBetween(from, to))
-                .orderBy(todo.startDate.asc())
+                .orderBy(memberTodo.startDate.asc())
                 .fetch();
     }
 
@@ -81,10 +80,10 @@ public class TodoQueryRepository {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
-                .leftJoin(todo.group, group).fetchJoin()
-                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.group, group).fetchJoin()
+                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
                 .where(memberIdEq(memberId), groupIdEq(groupId), periodBetween(from, to))
-                .orderBy(todo.startDate.asc())
+                .orderBy(memberTodo.startDate.asc())
                 .fetch();
     }
 
@@ -97,10 +96,10 @@ public class TodoQueryRepository {
     }
 
     private BooleanExpression dateBetween(LocalDate date) {
-        return todo.startDate.loe(date).and(todo.endDate.goe(date));
+        return memberTodo.startDate.loe(date).and(memberTodo.endDate.goe(date));
     }
 
     private BooleanExpression periodBetween(LocalDate from, LocalDate to) {
-        return todo.startDate.between(from, to).or(todo.endDate.between(from, to));
+        return memberTodo.startDate.between(from, to).or(memberTodo.endDate.between(from, to));
     }
 }
