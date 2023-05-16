@@ -45,10 +45,12 @@ public enum CustomExceptionStatus implements ResponseStatus {
     // groupMember excepion
     NOT_JOINED_GROUP(BAD_REQUEST, 2700, "가입하지 않은 그룹 입니다."),
 
+    // tag
+    EXIST_DUPLICATE_TAGS(BAD_REQUEST, 2800, "중복된 태그들이 존재합니다."),
+
     // s3 exception
     INVALID_FILE(BAD_REQUEST, 5000, "잘못되거나 존재하지 않는 파일입니다."),
-    INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요.")
-    ;
+    INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요.");
 
     private final HttpStatus httpStatus;
     private final int code;
