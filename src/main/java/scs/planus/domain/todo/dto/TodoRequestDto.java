@@ -6,9 +6,10 @@ import lombok.Getter;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.member.entity.Member;
-import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.entity.MemberTodo;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,7 +23,7 @@ public class TodoRequestDto {
     private Long categoryId;
     private Long groupId;
 
-    @NotBlank(message = "시작 날짜를 선택해주세요.")
+    @NotNull(message = "시작 날짜를 선택해주세요.")
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate startDate;
 
@@ -36,8 +37,8 @@ public class TodoRequestDto {
     @Size(max = 70, message = "투두 메모는 최대 70글자입니다.")
     private String description;
 
-    public Todo toEntity(Member member, TodoCategory todoCategory, Group group) {
-        return Todo.builder()
+    public MemberTodo toEntity(Member member, TodoCategory todoCategory, Group group) {
+        return MemberTodo.builder()
                 .title(title)
                 .todoCategory(todoCategory)
                 .startDate(startDate)
