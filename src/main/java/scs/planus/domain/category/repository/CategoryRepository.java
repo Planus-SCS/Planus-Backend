@@ -3,8 +3,8 @@ package scs.planus.domain.category.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.category.entity.TodoCategory;
+import scs.planus.domain.member.entity.Member;
 
 import java.util.List;
 

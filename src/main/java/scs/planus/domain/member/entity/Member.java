@@ -7,9 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import scs.planus.domain.BaseTimeEntity;
 import scs.planus.domain.Status;
-import scs.planus.domain.category.entity.TodoCategory;
+import scs.planus.domain.category.entity.MemberTodoCategory;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +56,7 @@ public class Member extends BaseTimeEntity {
     private Role role;
 
     @OneToMany(mappedBy = "member")
-    private List<TodoCategory> todoCategories = new ArrayList<>();
+    private List<MemberTodoCategory> todoCategories = new ArrayList<>();
 
     @Builder
     public Member(String name, String nickname, String birth, String email, String password, String description,

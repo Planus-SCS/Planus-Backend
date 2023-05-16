@@ -1,9 +1,13 @@
 package scs.planus.domain.category.dto;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import scs.planus.domain.category.entity.Color;
+import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.member.entity.Member;
-import scs.planus.domain.category.entity.TodoCategory;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -20,9 +24,9 @@ public class CategoryRequestDto {
     @NotBlank(message = "[request] 색을 지정해 주세요.")
     private String color;
 
-    public TodoCategory toEntity(Member member) {
+    public MemberTodoCategory toEntity(Member member) {
         Color color = Color.isValid(this.color);
-        return TodoCategory.builder()
+        return MemberTodoCategory.builder()
                 .member(member)
                 .name(this.name)
                 .color(color)
