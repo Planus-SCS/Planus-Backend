@@ -14,7 +14,7 @@ import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
-import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.validator.Validator;
@@ -42,7 +42,7 @@ public class TodoCalendarService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodTodosByDate(member.getId(), from, to);
+        List<MemberTodo> todos = todoQueryRepository.findPeriodTodosByDate(member.getId(), from, to);
         List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
@@ -55,7 +55,7 @@ public class TodoCalendarService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodTodosByDate(member.getId(), from, to);
+        List<MemberTodo> todos = todoQueryRepository.findPeriodTodosByDate(member.getId(), from, to);
         List<TodoPeriodResponseDto> responseDtos = todos.stream()
                 .map(TodoPeriodResponseDto::of)
                 .collect(Collectors.toList());
@@ -66,7 +66,7 @@ public class TodoCalendarService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        List<Todo> todos = todoQueryRepository.findDailyTodosByDate(member.getId(), date);
+        List<MemberTodo> todos = todoQueryRepository.findDailyTodosByDate(member.getId(), date);
         List<TodoDailyScheduleDto> todoDailyScheduleDtos = getDailySchedules(todos);
         List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
 
@@ -89,7 +89,7 @@ public class TodoCalendarService {
         }
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodGroupTodosByDate(member.getId(), groupId, from, to);
+        List<MemberTodo> todos = todoQueryRepository.findPeriodGroupTodosByDate(member.getId(), groupId, from, to);
         List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
@@ -108,7 +108,7 @@ public class TodoCalendarService {
         }
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<Todo> todos = todoQueryRepository.findPeriodGroupTodosByDate(member.getId(), groupId, from, to);
+        List<MemberTodo> todos = todoQueryRepository.findPeriodGroupTodosByDate(member.getId(), groupId, from, to);
         List<TodoPeriodResponseDto> responseDtos = todos.stream()
                 .map(TodoPeriodResponseDto::of)
                 .collect(Collectors.toList());
@@ -116,14 +116,14 @@ public class TodoCalendarService {
         return responseDtos;
     }
 
-    private List<TodoDailyScheduleDto> getDailySchedules(List<Todo> todos) {
+    private List<TodoDailyScheduleDto> getDailySchedules(List<MemberTodo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() != null)
                 .map(TodoDailyScheduleDto::of)
                 .collect(Collectors.toList());
     }
 
-    private List<TodoDailyDto> getDailyTodos(List<Todo> todos) {
+    private List<TodoDailyDto> getDailyTodos(List<MemberTodo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() == null)
                 .map(TodoDailyDto::of)
