@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static scs.planus.global.exception.CustomExceptionStatus.*;
+import static scs.planus.global.util.validator.Validator.validateDuplicateTagName;
 
 @Service
 @Transactional(readOnly = true)
@@ -49,6 +50,7 @@ public class GroupService {
         String groupImageUrl = createGroupImage( multipartFile );
         Group group = Group.creatGroup( requestDto.getName(), requestDto.getNotice(), requestDto.getLimitCount(), groupImageUrl );
 
+        validateDuplicateTagName( requestDto.getTagList() );
         List<Tag> tagList = tagService.transformToTag( requestDto.getTagList() );
         GroupTag.create( group, tagList );
 
@@ -106,6 +108,7 @@ public class GroupService {
         String newGroupImageUrl = updateGroupImage(multipartFile, oldGroupImageUrl);
 
         // 그룹 테그 수정.
+        validateDuplicateTagName( requestDto.getTagList() );
         List<TagCreateRequestDto> addTagDtos = groupTagService.update( group, requestDto.getTagList() );
         List<Tag> addTags = tagService.transformToTag( addTagDtos );
         GroupTag.create( group, addTags );
