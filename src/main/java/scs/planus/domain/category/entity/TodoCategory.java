@@ -1,25 +1,32 @@
 package scs.planus.domain.category.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import scs.planus.domain.BaseTimeEntity;
-import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.Status;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TodoCategory extends BaseTimeEntity {
+public abstract class TodoCategory extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "todo_category_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
 
     private String name;
 
@@ -29,10 +36,7 @@ public class TodoCategory extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @Builder
-    public TodoCategory(Member member, String name, Color color) {
-        this.member = member;
-        if (member != null) { member.getTodoCategories().add(this); }
+    public TodoCategory(String name, Color color) {
         this.name = name;
         this.color = color;
         this.status = Status.ACTIVE;
