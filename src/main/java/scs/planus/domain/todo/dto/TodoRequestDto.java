@@ -37,7 +37,7 @@ public class TodoRequestDto {
     @Size(max = 70, message = "투두 메모는 최대 70글자입니다.")
     private String description;
 
-    public MemberTodo toEntity(Member member, TodoCategory todoCategory, Group group) {
+    public MemberTodo toMemberTodoEntity(Member member, TodoCategory todoCategory, Group group) {
         return MemberTodo.builder()
                 .title(title)
                 .todoCategory(todoCategory)
