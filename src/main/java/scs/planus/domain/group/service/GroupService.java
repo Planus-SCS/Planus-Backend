@@ -47,7 +47,7 @@ public class GroupService {
                     throw new PlanusException( NONE_USER );
                 });
 
-        String groupImageUrl = createGroupImage( multipartFile );
+        String groupImageUrl = s3Uploader.upload(multipartFile, "groups");
         Group group = Group.creatGroup( requestDto.getName(), requestDto.getNotice(), requestDto.getLimitCount(), groupImageUrl );
 
         validateDuplicateTagName( requestDto.getTagList() );
@@ -105,7 +105,7 @@ public class GroupService {
 
         // 그룹 이미지 변경
         String oldGroupImageUrl = group.getGroupImageUrl();
-        String newGroupImageUrl = updateGroupImage(multipartFile, oldGroupImageUrl);
+        String newGroupImageUrl = s3Uploader.updateImage(multipartFile, oldGroupImageUrl, "groups");
 
         // 그룹 테그 수정.
         validateDuplicateTagName( requestDto.getTagList() );
@@ -149,21 +149,6 @@ public class GroupService {
         group.changeStatusToInactive();
 
         return GroupResponseDto.of( group );
-    }
-
-    private String createGroupImage( MultipartFile multipartFile ) {
-        if ( multipartFile != null ) {
-            return s3Uploader.upload( multipartFile, "groups" );
-        }
-        throw new PlanusException( INVALID_FILE );
-    }
-
-    private String updateGroupImage( MultipartFile multipartFile, String groupImageUrl ) {
-        if (multipartFile != null) {
-            s3Uploader.deleteImage( groupImageUrl );
-            groupImageUrl = s3Uploader.upload( multipartFile, "groups" );
-        }
-        return groupImageUrl;
     }
 
     @Transactional
