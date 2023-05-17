@@ -1,12 +1,10 @@
 package scs.planus.domain.category.dto;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import scs.planus.domain.category.entity.Color;
+import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
+import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.member.entity.Member;
 
 import javax.validation.constraints.NotBlank;
@@ -27,6 +25,14 @@ public class CategoryRequestDto {
     public MemberTodoCategory toMemberTodoCategoryEntity(Member member, Color color) {
         return MemberTodoCategory.builder()
                 .member(member)
+                .name(this.name)
+                .color(color)
+                .build();
+    }
+
+    public GroupTodoCategory toGroupTodoCategoryEntity(Group group, Color color) {
+        return GroupTodoCategory.builder()
+                .group(group)
                 .name(this.name)
                 .color(color)
                 .build();
