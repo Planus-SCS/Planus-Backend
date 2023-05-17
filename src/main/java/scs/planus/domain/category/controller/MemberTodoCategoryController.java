@@ -10,7 +10,7 @@ import scs.planus.global.common.response.BaseResponse;
 import scs.planus.domain.category.dto.CategoryRequestDto;
 import scs.planus.domain.category.dto.CategoryGetResponseDto;
 import scs.planus.domain.category.dto.CategoryResponseDto;
-import scs.planus.domain.category.service.CategoryService;
+import scs.planus.domain.category.service.MemberTodoCategoryService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,15 +19,15 @@ import java.util.List;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Tag(name = "Category", description = "Category API Document")
-public class CategoryController {
-    private final CategoryService categoryService;
+public class MemberTodoCategoryController {
+    private final MemberTodoCategoryService memberTodoCategoryService;
 
     @GetMapping("/categories")
     @Operation(summary = "전체 Category 조회 API")
     public BaseResponse<List<CategoryGetResponseDto>> getAllCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         Long memberId = principalDetails.getId();
-        List<CategoryGetResponseDto> responseDto = categoryService.findAll(memberId);
+        List<CategoryGetResponseDto> responseDto = memberTodoCategoryService.findAll(memberId);
 
         return new BaseResponse<>(responseDto);
     }
@@ -37,7 +37,7 @@ public class CategoryController {
     public BaseResponse<CategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @Valid @RequestBody CategoryRequestDto requestDto){
         Long memberId = principalDetails.getId();
-        CategoryResponseDto responseDto = categoryService.createCategory( memberId,
+        CategoryResponseDto responseDto = memberTodoCategoryService.createCategory( memberId,
                                                                             requestDto);
 
         return new BaseResponse<>(responseDto);
@@ -48,7 +48,7 @@ public class CategoryController {
     public BaseResponse<CategoryResponseDto> changeCategory(@PathVariable(name = "categoryId") Long categoryId,
                                                             @RequestBody CategoryRequestDto requestDto) {
 
-        CategoryResponseDto responseDto = categoryService.changeCategory( categoryId,
+        CategoryResponseDto responseDto = memberTodoCategoryService.changeCategory( categoryId,
                                                                             requestDto);
 
         return new BaseResponse<>(responseDto);
@@ -58,7 +58,7 @@ public class CategoryController {
     @Operation(summary = "Category 삭제 API")
     public BaseResponse<CategoryResponseDto> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
 
-        CategoryResponseDto responseDto = categoryService.deleteCategory(categoryId);
+        CategoryResponseDto responseDto = memberTodoCategoryService.deleteCategory(categoryId);
 
         return new BaseResponse<>(responseDto);
     }
