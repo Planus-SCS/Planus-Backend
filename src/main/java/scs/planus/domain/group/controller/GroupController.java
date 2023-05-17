@@ -52,7 +52,7 @@ public class GroupController {
     @PatchMapping("/groups/{groupId}")
     public BaseResponse<GroupResponseDto> updateGroupDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @PathVariable("groupId") Long groupId,
-                                                            @RequestPart(value = "image") MultipartFile multipartFile,
+                                                            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
                                                             @Valid @RequestPart(value = "groupUpdateRequestDto") GroupDetailUpdateRequestDto requestDto  ) {
         Long memberId = principalDetails.getId();
         GroupResponseDto responseDto = groupService.updateGroupDetail( memberId, groupId, requestDto, multipartFile );
