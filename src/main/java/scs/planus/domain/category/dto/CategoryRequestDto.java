@@ -24,8 +24,7 @@ public class CategoryRequestDto {
     @NotBlank(message = "[request] 색을 지정해 주세요.")
     private String color;
 
-    public MemberTodoCategory toEntity(Member member) {
-        Color color = Color.isValid(this.color);
+    public MemberTodoCategory toMemberTodoCategoryEntity(Member member, Color color) {
         return MemberTodoCategory.builder()
                 .member(member)
                 .name(this.name)
