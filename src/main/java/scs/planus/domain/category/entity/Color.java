@@ -2,17 +2,17 @@ package scs.planus.domain.category.entity;
 
 import scs.planus.global.exception.PlanusException;
 
-import static scs.planus.global.exception.CustomExceptionStatus.INVALID_PARAMETER;
+import java.util.Arrays;
+
+import static scs.planus.global.exception.CustomExceptionStatus.INVALID_CATEGORY_COLOR;
 
 public enum Color {
     BLUE, GOLD, PINK, PURPLE, GREEN, NAVY, RED, YELLOW;
 
-    public static Color isValid(String color) throws PlanusException {
-        for (Color enumColor : Color.values()) {
-            if (enumColor.name().equals(color)) {
-                return enumColor;
-            }
-        }
-        throw new PlanusException(INVALID_PARAMETER);
+    public static Color translate(String color){
+        return Arrays.stream(Color.values())
+                .filter(enumColor -> enumColor.name().equals(color))
+                .findAny()
+                .orElseThrow(() -> new PlanusException(INVALID_CATEGORY_COLOR));
     }
 }
