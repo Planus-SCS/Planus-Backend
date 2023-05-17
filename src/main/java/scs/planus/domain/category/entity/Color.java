@@ -9,7 +9,7 @@ import static scs.planus.global.exception.CustomExceptionStatus.INVALID_CATEGORY
 public enum Color {
     BLUE, GOLD, PINK, PURPLE, GREEN, NAVY, RED, YELLOW;
 
-    public static Color translate(String color){
+    public static Color of(String color){
         return Arrays.stream(Color.values())
                 .filter(enumColor -> enumColor.name().equals(color))
                 .findAny()
