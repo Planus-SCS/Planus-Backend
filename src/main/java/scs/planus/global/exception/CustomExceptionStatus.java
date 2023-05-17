@@ -29,6 +29,7 @@ public enum CustomExceptionStatus implements ResponseStatus {
 
     // category exception
     NOT_EXIST_CATEGORY(BAD_REQUEST, 2400, "존재하지 않는 카테고리 입니다."),
+    INVALID_CATEGORY_COLOR(BAD_REQUEST, 2401, "소문자가 섞여 있거나, 존재하지 않는 카테고리 색 입니다."),
 
     // to_do exception
     INVALID_DATE(BAD_REQUEST, 2500, "시작 날짜가 끝 날짜보다 늦을 수 없습니다."),
@@ -41,6 +42,7 @@ public enum CustomExceptionStatus implements ResponseStatus {
     EXCEED_GROUP_LIMIT_COUNT(BAD_REQUEST, 2603, "그룹 제한 인원을 초과하였습니다."),
     ALREADY_JOINED_GROUP(BAD_REQUEST, 2604, "이미 가입된 그룹입니다."),
     NOT_EXIST_GROUP_JOIN(BAD_REQUEST, 2605, "존재 하지 않는 그룹 가입 신청서 입니다."),
+    DO_NOT_HAVE_TODO_AUTHORITY(BAD_REQUEST, 2606, "그룹 투두 권한이 없습니다."),
 
     // groupMember excepion
     NOT_JOINED_GROUP(BAD_REQUEST, 2700, "가입하지 않은 그룹 입니다."),
