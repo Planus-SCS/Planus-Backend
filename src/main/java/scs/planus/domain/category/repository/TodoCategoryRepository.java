@@ -13,6 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TodoCategoryRepository extends JpaRepository<TodoCategory, Long> {
+
+    @Query("select mc from MemberTodoCategory mc " +
+            "where mc.id = :categoryId and mc.member= :member and mc.status = 'ACTIVE'")
+    Optional<MemberTodoCategory> findByIdAndMember(@Param("categoryId") Long categoryId,
+                                                   @Param("member") Member member);
+
     @Query("select mc from MemberTodoCategory mc " +
             "where mc.member= :member")
     List<MemberTodoCategory> findAllByMember(@Param("member") Member member);
