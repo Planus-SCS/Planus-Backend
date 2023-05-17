@@ -37,7 +37,7 @@ public class MemberService {
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
         String oldProfileImageUrl = member.getProfileImageUrl();
-        String newProfileImageUrl = s3Uploader.updateImage(multipartFile, oldProfileImageUrl, "members");
+        String newProfileImageUrl = updateOrDeleteImage(multipartFile, oldProfileImageUrl, requestDto);
 
         member.updateProfile(requestDto.getNickname(), requestDto.getDescription(), newProfileImageUrl);
         return MemberResponseDto.of(member);
@@ -50,5 +50,14 @@ public class MemberService {
         member.changeStatusToInactive();
         redisService.delete(member.getEmail());
         return MemberResponseDto.of(member);
+    }
+
+    private String updateOrDeleteImage(MultipartFile multipartFile, String oldProfileImageUrl, MemberUpdateRequestDto requestDto) {
+        if (requestDto.isProfileImageRemove()) {
+            s3Uploader.deleteImage(oldProfileImageUrl);
+            return null;
+        }
+
+        return s3Uploader.updateImage(multipartFile, oldProfileImageUrl, "members");
     }
 }
