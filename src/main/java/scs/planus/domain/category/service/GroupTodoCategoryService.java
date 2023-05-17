@@ -68,7 +68,7 @@ public class GroupTodoCategoryService {
             throw new PlanusException( DO_NOT_HAVE_TODO_AUTHORITY );
         }
 
-        Color color = Color.translate(requestDto.getColor());
+        Color color = Color.of(requestDto.getColor());
 
         GroupTodoCategory groupTodoCategory = requestDto.toGroupTodoCategoryEntity( group, color );
         GroupTodoCategory saveGroupTodoCategory = todoCategoryRepository.save( groupTodoCategory );
@@ -94,7 +94,7 @@ public class GroupTodoCategoryService {
         GroupTodoCategory groupTodoCategory = todoCategoryRepository.findByIdAndStatus( categoryId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_CATEGORY ));
 
-        Color color = Color.translate( requestDto.getColor() );
+        Color color = Color.of( requestDto.getColor() );
         groupTodoCategory.change( requestDto.getName(), color );
 
         return TodoCategoryResponseDto.of( groupTodoCategory );

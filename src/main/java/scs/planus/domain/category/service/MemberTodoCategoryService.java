@@ -53,7 +53,7 @@ public class MemberTodoCategoryService {
                     throw new PlanusException(CustomExceptionStatus.NONE_USER);
                 });
 
-        Color color = Color.translate(requestDto.getColor());
+        Color color = Color.of(requestDto.getColor());
         TodoCategory todoCategory = requestDto.toMemberTodoCategoryEntity(member, color);
         TodoCategory saveCategory = todoCategoryRepository.save(todoCategory);
 
@@ -70,7 +70,7 @@ public class MemberTodoCategoryService {
                     throw new PlanusException(CustomExceptionStatus.NOT_EXIST_CATEGORY);
                 });
 
-        Color color = Color.translate(requestDto.getColor());
+        Color color = Color.of(requestDto.getColor());
         findCategory.change(requestDto.getName(), color);
 
         return TodoCategoryResponseDto.of(findCategory);
