@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class CategoryService {
+public class MemberTodoCategoryService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
 
