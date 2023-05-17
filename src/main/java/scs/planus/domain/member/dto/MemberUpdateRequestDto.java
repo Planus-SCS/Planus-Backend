@@ -14,4 +14,6 @@ public class MemberUpdateRequestDto {
 
     @Size(max = 50, message = "자기 소개는 최대 50자까지 작성할 수 있습니다.")
     private String description;
+
+    private boolean profileImageRemove;
 }
