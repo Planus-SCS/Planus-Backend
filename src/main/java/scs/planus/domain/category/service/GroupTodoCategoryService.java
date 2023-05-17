@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import scs.planus.domain.category.dto.CategoryGetResponseDto;
-import scs.planus.domain.category.dto.CategoryRequestDto;
-import scs.planus.domain.category.dto.CategoryResponseDto;
+import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
+import scs.planus.domain.category.dto.TodoCategoryRequestDto;
+import scs.planus.domain.category.dto.TodoCategoryResponseDto;
 import scs.planus.domain.category.entity.Color;
 import scs.planus.domain.category.entity.GroupTodoCategory;
-import scs.planus.domain.category.repository.CategoryRepository;
+import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.repository.GroupMemberQueryRepository;
 import scs.planus.domain.group.repository.GroupRepository;
@@ -27,12 +27,12 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 @RequiredArgsConstructor
 @Slf4j
 public class GroupTodoCategoryService {
-    private final CategoryRepository categoryRepository;
+    private final TodoCategoryRepository todoCategoryRepository;
     private final MemberRepository memberRepository;
     private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupRepository groupRepository;
 
-    public List<CategoryGetResponseDto> findAll( Long memberId, Long groupId ) {
+    public List<TodoCategoryGetResponseDto> findAll(Long memberId, Long groupId ) {
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> new PlanusException( NONE_USER ));
 
@@ -46,15 +46,15 @@ public class GroupTodoCategoryService {
             throw new PlanusException( DO_NOT_HAVE_TODO_AUTHORITY );
         }
 
-        List<GroupTodoCategory> groupTodoCategories = categoryRepository.findAllByGroup( group );
+        List<GroupTodoCategory> groupTodoCategories = todoCategoryRepository.findAllByGroup( group );
 
         return groupTodoCategories.stream()
-                .map( CategoryGetResponseDto::of )
+                .map( TodoCategoryGetResponseDto::of )
                 .collect( Collectors.toList() );
     }
 
     @Transactional
-    public CategoryResponseDto createCategory( Long memberId, Long groupId, CategoryRequestDto requestDto ) {
+    public TodoCategoryResponseDto createCategory(Long memberId, Long groupId, TodoCategoryRequestDto requestDto ) {
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> new PlanusException( NONE_USER ));
 
@@ -71,13 +71,13 @@ public class GroupTodoCategoryService {
         Color color = Color.translate(requestDto.getColor());
 
         GroupTodoCategory groupTodoCategory = requestDto.toGroupTodoCategoryEntity( group, color );
-        GroupTodoCategory saveGroupTodoCategory = categoryRepository.save( groupTodoCategory );
+        GroupTodoCategory saveGroupTodoCategory = todoCategoryRepository.save( groupTodoCategory );
 
-        return CategoryResponseDto.of( saveGroupTodoCategory );
+        return TodoCategoryResponseDto.of( saveGroupTodoCategory );
     }
 
     @Transactional
-    public CategoryResponseDto changeCategory( Long memberId, Long groupId, Long categoryId, CategoryRequestDto requestDto ) {
+    public TodoCategoryResponseDto changeCategory(Long memberId, Long groupId, Long categoryId, TodoCategoryRequestDto requestDto ) {
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> new PlanusException( NONE_USER ));
 
@@ -91,17 +91,17 @@ public class GroupTodoCategoryService {
             throw new PlanusException( DO_NOT_HAVE_TODO_AUTHORITY );
         }
 
-        GroupTodoCategory groupTodoCategory = categoryRepository.findByIdAndStatus( categoryId )
+        GroupTodoCategory groupTodoCategory = todoCategoryRepository.findByIdAndStatus( categoryId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_CATEGORY ));
 
         Color color = Color.translate( requestDto.getColor() );
         groupTodoCategory.change( requestDto.getName(), color );
 
-        return CategoryResponseDto.of( groupTodoCategory );
+        return TodoCategoryResponseDto.of( groupTodoCategory );
     }
 
     @Transactional
-    public CategoryResponseDto deleteCategory( Long memberId, Long groupId,Long categoryId ) {
+    public TodoCategoryResponseDto deleteCategory(Long memberId, Long groupId, Long categoryId ) {
         Member member = memberRepository.findById( memberId )
                 .orElseThrow(() -> new PlanusException( NONE_USER ));
 
@@ -115,12 +115,12 @@ public class GroupTodoCategoryService {
             throw new PlanusException( DO_NOT_HAVE_TODO_AUTHORITY );
         }
 
-        GroupTodoCategory groupTodoCategory = categoryRepository.findByIdAndStatus( categoryId )
+        GroupTodoCategory groupTodoCategory = todoCategoryRepository.findByIdAndStatus( categoryId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_CATEGORY ));
 
         groupTodoCategory.changeStatusToInactive();
 
-        return CategoryResponseDto.of( groupTodoCategory );
+        return TodoCategoryResponseDto.of( groupTodoCategory );
     }
 
 }

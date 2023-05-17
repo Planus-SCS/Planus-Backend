@@ -8,14 +8,14 @@ import scs.planus.domain.category.entity.TodoCategory;
 
 @Getter
 @Builder
-public class CategoryGetResponseDto {
+public class TodoCategoryGetResponseDto {
     private Long id;
     private String name;
     private Color color;
     private Status status;
 
-    public static CategoryGetResponseDto of(TodoCategory todoCategory) {
-        return CategoryGetResponseDto.builder()
+    public static TodoCategoryGetResponseDto of(TodoCategory todoCategory) {
+        return TodoCategoryGetResponseDto.builder()
                 .id(todoCategory.getId())
                 .name(todoCategory.getName())
                 .color(todoCategory.getColor())

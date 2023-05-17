@@ -7,9 +7,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
-import scs.planus.domain.category.dto.CategoryRequestDto;
-import scs.planus.domain.category.dto.CategoryGetResponseDto;
-import scs.planus.domain.category.dto.CategoryResponseDto;
+import scs.planus.domain.category.dto.TodoCategoryRequestDto;
+import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
+import scs.planus.domain.category.dto.TodoCategoryResponseDto;
 import scs.planus.domain.category.service.MemberTodoCategoryService;
 
 import javax.validation.Valid;
@@ -24,20 +24,20 @@ public class MemberTodoCategoryController {
 
     @GetMapping("/categories")
     @Operation(summary = "전체 Category 조회 API")
-    public BaseResponse<List<CategoryGetResponseDto>> getAllCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public BaseResponse<List<TodoCategoryGetResponseDto>> getAllCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         Long memberId = principalDetails.getId();
-        List<CategoryGetResponseDto> responseDto = memberTodoCategoryService.findAll(memberId);
+        List<TodoCategoryGetResponseDto> responseDto = memberTodoCategoryService.findAll(memberId);
 
         return new BaseResponse<>(responseDto);
     }
 
     @PostMapping("/categories")
     @Operation(summary = "Category 생성 API")
-    public BaseResponse<CategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                            @Valid @RequestBody CategoryRequestDto requestDto){
+    public BaseResponse<TodoCategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                @Valid @RequestBody TodoCategoryRequestDto requestDto){
         Long memberId = principalDetails.getId();
-        CategoryResponseDto responseDto = memberTodoCategoryService.createCategory( memberId,
+        TodoCategoryResponseDto responseDto = memberTodoCategoryService.createCategory( memberId,
                                                                             requestDto);
 
         return new BaseResponse<>(responseDto);
@@ -45,10 +45,10 @@ public class MemberTodoCategoryController {
 
     @PatchMapping("/categories/{categoryId}")
     @Operation(summary = "Category 변경 API")
-    public BaseResponse<CategoryResponseDto> changeCategory(@PathVariable(name = "categoryId") Long categoryId,
-                                                            @RequestBody CategoryRequestDto requestDto) {
+    public BaseResponse<TodoCategoryResponseDto> changeCategory(@PathVariable(name = "categoryId") Long categoryId,
+                                                                @RequestBody TodoCategoryRequestDto requestDto) {
 
-        CategoryResponseDto responseDto = memberTodoCategoryService.changeCategory( categoryId,
+        TodoCategoryResponseDto responseDto = memberTodoCategoryService.changeCategory( categoryId,
                                                                             requestDto);
 
         return new BaseResponse<>(responseDto);
@@ -56,9 +56,9 @@ public class MemberTodoCategoryController {
 
     @DeleteMapping("/categories/{categoryId}")
     @Operation(summary = "Category 삭제 API")
-    public BaseResponse<CategoryResponseDto> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
+    public BaseResponse<TodoCategoryResponseDto> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
 
-        CategoryResponseDto responseDto = memberTodoCategoryService.deleteCategory(categoryId);
+        TodoCategoryResponseDto responseDto = memberTodoCategoryService.deleteCategory(categoryId);
 
         return new BaseResponse<>(responseDto);
     }

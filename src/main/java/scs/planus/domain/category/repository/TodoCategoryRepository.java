@@ -12,7 +12,7 @@ import scs.planus.domain.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
 
-public interface CategoryRepository extends JpaRepository<TodoCategory, Long> {
+public interface TodoCategoryRepository extends JpaRepository<TodoCategory, Long> {
     @Query("select mc from MemberTodoCategory mc " +
             "where mc.member= :member")
     List<MemberTodoCategory> findAllByMember(@Param("member") Member member);

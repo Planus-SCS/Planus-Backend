@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import scs.planus.domain.category.dto.CategoryGetResponseDto;
-import scs.planus.domain.category.dto.CategoryRequestDto;
-import scs.planus.domain.category.dto.CategoryResponseDto;
+import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
+import scs.planus.domain.category.dto.TodoCategoryRequestDto;
+import scs.planus.domain.category.dto.TodoCategoryResponseDto;
 import scs.planus.domain.category.service.GroupTodoCategoryService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
@@ -24,45 +24,45 @@ public class GroupTodoCategoryController {
 
     @GetMapping("/my-groups/{groupId}/categories")
     @Operation(summary = "전체 Group Category 조회 API")
-    public BaseResponse<List<CategoryGetResponseDto>> getAllGroupCategories(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                            @PathVariable("groupId") Long groupId) {
+    public BaseResponse<List<TodoCategoryGetResponseDto>> getAllGroupCategories(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                                @PathVariable("groupId") Long groupId) {
 
         Long memberId = principalDetails.getId();
-        List<CategoryGetResponseDto> responseDto = groupTodoCategoryService.findAll( memberId, groupId );
+        List<TodoCategoryGetResponseDto> responseDto = groupTodoCategoryService.findAll( memberId, groupId );
 
         return new BaseResponse<>(responseDto);
     }
 
     @PostMapping("/my-groups/{groupId}/categories")
     @Operation(summary = "Group Category 생성 API")
-    public BaseResponse<CategoryResponseDto> createGroupCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                 @PathVariable("groupId") Long groupId,
-                                                                 @Valid @RequestBody CategoryRequestDto requestDto){
+    public BaseResponse<TodoCategoryResponseDto> createGroupCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                     @PathVariable("groupId") Long groupId,
+                                                                     @Valid @RequestBody TodoCategoryRequestDto requestDto){
         Long memberId = principalDetails.getId();
-        CategoryResponseDto responseDto = groupTodoCategoryService.createCategory( memberId, groupId, requestDto );
+        TodoCategoryResponseDto responseDto = groupTodoCategoryService.createCategory( memberId, groupId, requestDto );
 
         return new BaseResponse<>(responseDto);
     }
 
     @PatchMapping("/my-groups/{groupId}/categories/{categoryId}")
     @Operation(summary = "Group Category 변경 API")
-    public BaseResponse<CategoryResponseDto> modifyGroupCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                 @PathVariable("groupId") Long groupId,
-                                                                 @PathVariable("categoryId") Long categoryId,
-                                                                 @RequestBody CategoryRequestDto requestDto) {
+    public BaseResponse<TodoCategoryResponseDto> modifyGroupCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                     @PathVariable("groupId") Long groupId,
+                                                                     @PathVariable("categoryId") Long categoryId,
+                                                                     @RequestBody TodoCategoryRequestDto requestDto) {
         Long memberId = principalDetails.getId();
-        CategoryResponseDto responseDto = groupTodoCategoryService.changeCategory( memberId, groupId, categoryId, requestDto);
+        TodoCategoryResponseDto responseDto = groupTodoCategoryService.changeCategory( memberId, groupId, categoryId, requestDto);
 
         return new BaseResponse<>(responseDto);
     }
 
     @DeleteMapping("/my-groups/{groupId}/categories/{categoryId}")
     @Operation(summary = "Group Category 삭제(soft) API")
-    public BaseResponse<CategoryResponseDto> deleteGroupCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                 @PathVariable("groupId") Long groupId,
-                                                                 @PathVariable("categoryId") Long categoryId) {
+    public BaseResponse<TodoCategoryResponseDto> deleteGroupCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                     @PathVariable("groupId") Long groupId,
+                                                                     @PathVariable("categoryId") Long categoryId) {
         Long memberId = principalDetails.getId();
-        CategoryResponseDto responseDto = groupTodoCategoryService.deleteCategory( memberId, groupId, categoryId );
+        TodoCategoryResponseDto responseDto = groupTodoCategoryService.deleteCategory( memberId, groupId, categoryId );
 
         return new BaseResponse<>(responseDto);
     }
