@@ -49,6 +49,15 @@ public class AmazonS3Uploader {
         }
     }
 
+    public String updateImage(MultipartFile multipartFile, String oldImageProfileUrl, String dirName) {
+        if (dirName.equals("members")) {
+            return updateMemberImage(multipartFile, oldImageProfileUrl, dirName);
+        }
+
+        return updateGroupImage(multipartFile, oldImageProfileUrl, dirName);
+
+    }
+
     // S3로 파일 업로드하기
     private String upload(File uploadFile, String dirName) {
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName().replaceAll(" ", "");
@@ -89,5 +98,25 @@ public class AmazonS3Uploader {
 
         return Optional.empty();
     }
+
+    // 프로필 이미지 제거 가능, 기본 프로필로의 변경
+    private String updateMemberImage(MultipartFile multipartFile, String oldImageProfileUrl, String dirName) {
+        if (multipartFile != null) {
+            deleteImage(oldImageProfileUrl);
+            return upload(multipartFile, dirName);
+        }
+        deleteImage(oldImageProfileUrl);
+        return null;
+    }
+
+    // 그룹 이미지 제거 불가능
+    private String updateGroupImage(MultipartFile multipartFile, String oldImageProfileUrl, String dirName) {
+        if (multipartFile != null) {
+            deleteImage(oldImageProfileUrl);
+            return upload(multipartFile, dirName);
+        }
+        return oldImageProfileUrl;
+    }
+
 }
 
