@@ -16,6 +16,8 @@ import scs.planus.global.exception.PlanusException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,6 +45,7 @@ public class AmazonS3Uploader {
     // 사진 업데이트시, 기존 파일 삭제
     public void deleteImage(String fileName) {
         if (fileName != null) {
+            fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
             AmazonS3URI amazonS3URI = new AmazonS3URI(fileName);
             String s3URIKey = amazonS3URI.getKey();
             amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, s3URIKey));
@@ -55,7 +58,6 @@ public class AmazonS3Uploader {
         }
 
         return updateGroupImage(multipartFile, oldImageProfileUrl, dirName);
-
     }
 
     // S3로 파일 업로드하기
@@ -111,12 +113,8 @@ public class AmazonS3Uploader {
 
     // 그룹 이미지 제거 불가능
     private String updateGroupImage(MultipartFile multipartFile, String oldImageProfileUrl, String dirName) {
-        if (multipartFile != null) {
-            deleteImage(oldImageProfileUrl);
-            return upload(multipartFile, dirName);
-        }
-        return oldImageProfileUrl;
+        deleteImage(oldImageProfileUrl);
+        return upload(multipartFile, dirName);
     }
-
 }
 
