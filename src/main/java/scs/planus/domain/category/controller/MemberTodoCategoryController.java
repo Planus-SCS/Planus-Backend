@@ -18,13 +18,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/app")
 @RequiredArgsConstructor
-@Tag(name = "Category", description = "Category API Document")
+@Tag(name = "Member Todo Category", description = "Member Todo Category API Document")
 public class MemberTodoCategoryController {
     private final MemberTodoCategoryService memberTodoCategoryService;
 
     @GetMapping("/categories")
-    @Operation(summary = "전체 Category 조회 API")
-    public BaseResponse<List<TodoCategoryGetResponseDto>> getAllCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    @Operation(summary = "전체 Member Todo  Category 조회 API")
+    public BaseResponse<List<TodoCategoryGetResponseDto>> getAllMemberTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         Long memberId = principalDetails.getId();
         List<TodoCategoryGetResponseDto> responseDto = memberTodoCategoryService.findAll(memberId);
@@ -33,9 +33,9 @@ public class MemberTodoCategoryController {
     }
 
     @PostMapping("/categories")
-    @Operation(summary = "Category 생성 API")
-    public BaseResponse<TodoCategoryResponseDto> createCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                @Valid @RequestBody TodoCategoryRequestDto requestDto){
+    @Operation(summary = "Member Todo Category 생성 API")
+    public BaseResponse<TodoCategoryResponseDto> createMemberTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                          @Valid @RequestBody TodoCategoryRequestDto requestDto){
         Long memberId = principalDetails.getId();
         TodoCategoryResponseDto responseDto = memberTodoCategoryService.createCategory( memberId,
                                                                             requestDto);
@@ -44,9 +44,10 @@ public class MemberTodoCategoryController {
     }
 
     @PatchMapping("/categories/{categoryId}")
-    @Operation(summary = "Category 변경 API")
-    public BaseResponse<TodoCategoryResponseDto> changeCategory(@PathVariable(name = "categoryId") Long categoryId,
-                                                                @RequestBody TodoCategoryRequestDto requestDto) {
+    @Operation(summary = "Member Todo Category 변경 API")
+    public BaseResponse<TodoCategoryResponseDto> modifyMemberTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                          @PathVariable(name = "categoryId") Long categoryId,
+                                                                          @RequestBody TodoCategoryRequestDto requestDto) {
 
         TodoCategoryResponseDto responseDto = memberTodoCategoryService.changeCategory( categoryId,
                                                                             requestDto);
@@ -55,8 +56,9 @@ public class MemberTodoCategoryController {
     }
 
     @DeleteMapping("/categories/{categoryId}")
-    @Operation(summary = "Category 삭제 API")
-    public BaseResponse<TodoCategoryResponseDto> deleteCategory(@PathVariable(name = "categoryId") Long categoryId) {
+    @Operation(summary = "Member Todo Category 삭제 API")
+    public BaseResponse<TodoCategoryResponseDto> deleteMemberTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                          @PathVariable(name = "categoryId") Long categoryId) {
 
         TodoCategoryResponseDto responseDto = memberTodoCategoryService.deleteCategory(categoryId);
 
