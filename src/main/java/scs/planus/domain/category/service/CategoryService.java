@@ -4,16 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import scs.planus.domain.category.entity.TodoCategory;
-import scs.planus.global.exception.PlanusException;
-import scs.planus.global.exception.CustomExceptionStatus;
-import scs.planus.domain.category.entity.Color;
-import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.category.dto.CategoryGetResponseDto;
 import scs.planus.domain.category.dto.CategoryRequestDto;
 import scs.planus.domain.category.dto.CategoryResponseDto;
+import scs.planus.domain.category.entity.Color;
+import scs.planus.domain.category.entity.MemberTodoCategory;
+import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.category.repository.CategoryRepository;
+import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.global.exception.CustomExceptionStatus;
+import scs.planus.global.exception.PlanusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,9 +36,9 @@ public class CategoryService {
                     throw new PlanusException(CustomExceptionStatus.NONE_USER);
                 });
 
-        List<TodoCategory> todoCategories = categoryRepository.findAllByMember(member);
+        List<MemberTodoCategory> memberTodoCategories = categoryRepository.findAllByMember(member);
 
-        return todoCategories.stream()
+        return memberTodoCategories.stream()
                 .map(CategoryGetResponseDto::of)
                 .collect(Collectors.toList());
     }
@@ -52,10 +53,11 @@ public class CategoryService {
                     throw new PlanusException(CustomExceptionStatus.NONE_USER);
                 });
 
-        TodoCategory todoCategory = requestDto.toEntity(member);
+        Color color = Color.translate(requestDto.getColor());
+        TodoCategory todoCategory = requestDto.toMemberTodoCategoryEntity(member, color);
         TodoCategory saveCategory = categoryRepository.save(todoCategory);
 
-        return new CategoryResponseDto(saveCategory);
+        return CategoryResponseDto.of(saveCategory);
     }
 
     /**
@@ -68,10 +70,10 @@ public class CategoryService {
                     throw new PlanusException(CustomExceptionStatus.NOT_EXIST_CATEGORY);
                 });
 
-        Color color = Color.isValid(requestDto.getColor());
+        Color color = Color.translate(requestDto.getColor());
         findCategory.change(requestDto.getName(), color);
 
-        return new CategoryResponseDto(findCategory);
+        return CategoryResponseDto.of(findCategory);
     }
 
     /**
@@ -86,7 +88,6 @@ public class CategoryService {
 
         findCategory.changeStatusToInactive();
 
-        return new CategoryResponseDto(findCategory);
+        return CategoryResponseDto.of(findCategory);
     }
-
 }
