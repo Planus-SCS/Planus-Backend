@@ -29,6 +29,7 @@ public enum CustomExceptionStatus implements ResponseStatus {
 
     // category exception
     NOT_EXIST_CATEGORY(BAD_REQUEST, 2400, "존재하지 않는 카테고리 입니다."),
+    INVALID_CATEGORY_COLOR(BAD_REQUEST, 2401, "소문자가 섞여 있거나, 존재하지 않는 카테고리 색 입니다."),
 
     // to_do exception
     INVALID_DATE(BAD_REQUEST, 2500, "시작 날짜가 끝 날짜보다 늦을 수 없습니다."),
