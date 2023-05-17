@@ -22,38 +22,38 @@ public class GroupController {
 
     @PostMapping("/groups")
     public BaseResponse<GroupResponseDto> createGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                         @RequestPart(value = "image") MultipartFile multipartFile,
-                                                         @Valid @RequestPart(value = "groupCreateRequestDto") GroupCreateRequestDto requestDto ) {
+                                                      @RequestPart(value = "image") MultipartFile multipartFile,
+                                                      @Valid @RequestPart(value = "groupCreateRequestDto") GroupCreateRequestDto requestDto) {
         Long memberId = principalDetails.getId();
-        GroupResponseDto responseDto = groupService.createGroup( memberId, requestDto, multipartFile );
+        GroupResponseDto responseDto = groupService.createGroup(memberId, requestDto, multipartFile);
 
         return new BaseResponse<>(responseDto);
     }
 
     @GetMapping("/groups/{groupId}")
-    public BaseResponse<GroupGetResponseDto> getGroupDetailForNonMember( @AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                       @PathVariable("groupId") Long groupId ) {
+    public BaseResponse<GroupGetResponseDto> getGroupDetailForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                        @PathVariable("groupId") Long groupId) {
 
         Long memberId = principalDetails.getId();
-        GroupGetResponseDto responseDto = groupService.getGroupDetailForNonMember( memberId, groupId );
+        GroupGetResponseDto responseDto = groupService.getGroupDetailForNonMember(memberId, groupId);
 
-        return new BaseResponse<>( responseDto );
+        return new BaseResponse<>(responseDto);
     }
 
     @GetMapping("/groups/{groupId}/members")
-    public BaseResponse<List<GroupGetMemberResponseDto>> getGroupMemberForNonMember( @AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                                     @PathVariable("groupId") Long groupId ) {
+    public BaseResponse<List<GroupGetMemberResponseDto>> getGroupMemberForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                                    @PathVariable("groupId") Long groupId) {
 
-        List<GroupGetMemberResponseDto> responseDto = groupService.getGroupMemberForNonMember( groupId );
+        List<GroupGetMemberResponseDto> responseDto = groupService.getGroupMemberForNonMember(groupId);
 
-        return new BaseResponse<>( responseDto );
+        return new BaseResponse<>(responseDto);
     }
 
     @PatchMapping("/groups/{groupId}")
     public BaseResponse<GroupResponseDto> updateGroupDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @PathVariable("groupId") Long groupId,
                                                             @RequestPart(value = "image", required = false) MultipartFile multipartFile,
-                                                            @Valid @RequestPart(value = "groupUpdateRequestDto", required = false) GroupDetailUpdateRequestDto requestDto  ) {
+                                                            @Valid @RequestPart(value = "groupUpdateRequestDto") GroupDetailUpdateRequestDto requestDto  ) {
         Long memberId = principalDetails.getId();
         GroupResponseDto responseDto = groupService.updateGroupDetail( memberId, groupId, requestDto, multipartFile );
 
@@ -121,13 +121,12 @@ public class GroupController {
 
     @DeleteMapping("/groups/{groupId}/members/{memberId}")
     public BaseResponse<GroupMemberResponseDto> withdrawGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                @PathVariable("groupId") Long groupId,
-                                                                @PathVariable("memberId") Long memberId ){
-
+                                                                    @PathVariable("groupId") Long groupId,
+                                                                    @PathVariable("memberId") Long memberId) {
         Long leaderId = principalDetails.getId();
-        GroupMemberResponseDto responseDto = groupService.withdrawGroupMember( leaderId, memberId, groupId );
+        GroupMemberResponseDto responseDto = groupService.withdrawGroupMember(leaderId, memberId, groupId);
 
-        return new BaseResponse<>( responseDto );
+        return new BaseResponse<>(responseDto);
     }
 
 }

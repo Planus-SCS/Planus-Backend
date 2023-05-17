@@ -36,10 +36,10 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        String profileImageUrl = member.getProfileImageUrl();
-        profileImageUrl = updateProfileImage(multipartFile, profileImageUrl);
+        String oldProfileImageUrl = member.getProfileImageUrl();
+        String newProfileImageUrl = updateOrDeleteImage(multipartFile, oldProfileImageUrl, requestDto);
 
-        member.updateProfile(requestDto.getNickname(), requestDto.getDescription(), profileImageUrl);
+        member.updateProfile(requestDto.getNickname(), requestDto.getDescription(), newProfileImageUrl);
         return MemberResponseDto.of(member);
     }
 
@@ -52,11 +52,12 @@ public class MemberService {
         return MemberResponseDto.of(member);
     }
 
-    private String updateProfileImage(MultipartFile multipartFile, String profileImageUrl) {
-        if (multipartFile != null) {
-            s3Uploader.deleteImage(profileImageUrl); // 기존 프로필 s3에서 제거
-            profileImageUrl = s3Uploader.upload(multipartFile, "profile");
+    private String updateOrDeleteImage(MultipartFile multipartFile, String oldProfileImageUrl, MemberUpdateRequestDto requestDto) {
+        if (requestDto.isProfileImageRemove()) {
+            s3Uploader.deleteImage(oldProfileImageUrl);
+            return null;
         }
-        return profileImageUrl;
+
+        return s3Uploader.updateImage(multipartFile, oldProfileImageUrl, "members");
     }
 }
