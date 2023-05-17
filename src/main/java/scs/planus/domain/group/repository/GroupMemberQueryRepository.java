@@ -28,6 +28,16 @@ public class GroupMemberQueryRepository {
         return fetchOne != null;
     }
 
+    public Boolean existByMemberIdAndGroupIdAndTodoAuthority(Long memberId, Long groupId) {
+        Integer fetchOne = queryFactory.selectOne()
+                .from(groupMember)
+                .join(groupMember.member, member)
+                .join(groupMember.group, group)
+                .where(isActiveGroup(), memberIdEq(memberId), groupIdEq(groupId), isTodoAuthority())
+                .fetchFirst();
+        return fetchOne != null;
+    }
+
     private BooleanExpression memberIdEq(Long memberId) {
         return member.id.eq(memberId);
     }
@@ -38,5 +48,8 @@ public class GroupMemberQueryRepository {
 
     private BooleanExpression isActiveGroup() {
         return group.status.eq(Status.ACTIVE);
+    }
+    private BooleanExpression isTodoAuthority() {
+        return groupMember.todoAuthority.eq(true);
     }
 }

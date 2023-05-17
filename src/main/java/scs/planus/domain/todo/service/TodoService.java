@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.category.entity.TodoCategory;
-import scs.planus.domain.category.repository.CategoryRepository;
+import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
@@ -28,7 +28,7 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 public class TodoService {
 
     private final MemberRepository memberRepository;
-    private final CategoryRepository categoryRepository;
+    private final TodoCategoryRepository todoCategoryRepository;
     private final GroupRepository groupRepository;
     private final TodoRepository todoRepository;
     private final TodoQueryRepository todoQueryRepository;
@@ -38,7 +38,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId)
                         .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        TodoCategory todoCategory = categoryRepository.findById(requestDto.getCategoryId())
+        TodoCategory todoCategory = todoCategoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         Group group = getGroup(requestDto.getGroupId());
@@ -66,7 +66,7 @@ public class TodoService {
         Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
-        TodoCategory todoCategory = categoryRepository.findById(requestDto.getCategoryId())
+        TodoCategory todoCategory = todoCategoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         Group group = getGroup(requestDto.getGroupId());
