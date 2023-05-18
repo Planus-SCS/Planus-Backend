@@ -96,6 +96,16 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
+    public List<GroupTodo> findDailyGroupTodosByDate(Long groupId, LocalDate date) {
+        return queryFactory
+                .selectFrom(groupTodo)
+                .join(groupTodo.group, group).fetchJoin()
+                .join(groupTodo.todoCategory, todoCategory).fetchJoin()
+                .where(groupIdEq(groupId), groupTodoDateBetween(date))
+                .orderBy(groupTodo.startTime.asc())
+                .fetch();
+    }
+
     private BooleanExpression memberIdEq(Long memberId) {
         return member.id.eq(memberId);
     }
