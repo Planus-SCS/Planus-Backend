@@ -13,7 +13,7 @@ import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.service.MyGroupService;
-import scs.planus.domain.todo.dto.TodoDailyResponseDto;
+import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
