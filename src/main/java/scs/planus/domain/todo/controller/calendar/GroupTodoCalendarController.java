@@ -1,4 +1,4 @@
-package scs.planus.domain.todo.controller;
+package scs.planus.domain.todo.controller.calendar;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.calendar.TodoPeriodResponseDto;
-import scs.planus.domain.todo.service.GroupTodoCalendarService;
+import scs.planus.domain.todo.service.calendar.GroupTodoCalendarService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 

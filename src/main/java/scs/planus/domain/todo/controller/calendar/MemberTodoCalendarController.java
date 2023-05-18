@@ -1,4 +1,4 @@
-package scs.planus.domain.todo.controller;
+package scs.planus.domain.todo.controller.calendar;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
-import scs.planus.domain.todo.service.TodoCalendarService;
+import scs.planus.domain.todo.service.calendar.TodoCalendarService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 
@@ -23,8 +23,8 @@ import java.util.List;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Todo Calendar", description = "Todo Calendar API Document")
-public class TodoCalendarController {
+@Tag(name = "MemberTodo Calendar", description = "MemberTodo Calendar API Document")
+public class MemberTodoCalendarController {
 
     private final TodoCalendarService todoCalendarService;
 

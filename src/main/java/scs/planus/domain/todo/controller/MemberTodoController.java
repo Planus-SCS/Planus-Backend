@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
-import scs.planus.domain.todo.service.TodoService;
+import scs.planus.domain.todo.service.MemberTodoService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 
@@ -26,45 +26,45 @@ import javax.validation.Valid;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Todo", description = "Todo API Document")
-public class TodoController {
+@Tag(name = "MemberTodo", description = "MemberTodo API Document")
+public class MemberTodoController {
 
-    private final TodoService todoService;
+    private final MemberTodoService memberTodoService;
 
     @PostMapping("/todos")
-    @Operation(summary = "Todo 생성 API")
+    @Operation(summary = "MemberTodo 생성 API")
     public BaseResponse<TodoResponseDto> createTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @Valid @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
-        TodoResponseDto responseDto = todoService.createMemberTodo(memberId, todoRequestDto);
+        TodoResponseDto responseDto = memberTodoService.createMemberTodo(memberId, todoRequestDto);
         return new BaseResponse<>(responseDto);
     }
 
     @GetMapping("/todos/{todoId}")
-    @Operation(summary = "Todo 조회 API")
+    @Operation(summary = "MemberTodo 조회 API")
     public BaseResponse<TodoDetailsResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                               @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
-        TodoDetailsResponseDto responseDto = todoService.getOneTodo(memberId, todoId);
+        TodoDetailsResponseDto responseDto = memberTodoService.getOneTodo(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
 
     @PatchMapping("/todos/{todoId}")
-    @Operation(summary = "Todo 변경 API")
+    @Operation(summary = "MemberTodo 변경 API")
     public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                  @PathVariable Long todoId,
                                                                  @Valid @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
-        TodoDetailsResponseDto responseDto = todoService.updateTodo(memberId, todoId, todoRequestDto);
+        TodoDetailsResponseDto responseDto = memberTodoService.updateTodo(memberId, todoId, todoRequestDto);
         return new BaseResponse<>(responseDto);
     }
 
     @PatchMapping("/todos/{todoId}/completion")
-    @Operation(summary = "Todo 완료 API")
+    @Operation(summary = "MemberTodo 완료 API")
     public BaseResponse<TodoResponseDto> completeTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                       @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
-        TodoResponseDto responseDto = todoService.checkCompletion(memberId, todoId);
+        TodoResponseDto responseDto = memberTodoService.checkCompletion(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
 
@@ -73,7 +73,7 @@ public class TodoController {
     public BaseResponse<TodoResponseDto> deleteTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
-        TodoResponseDto responseDto = todoService.deleteTodo(memberId, todoId);
+        TodoResponseDto responseDto = memberTodoService.deleteTodo(memberId, todoId);
         return new BaseResponse<>(responseDto);
     }
 }

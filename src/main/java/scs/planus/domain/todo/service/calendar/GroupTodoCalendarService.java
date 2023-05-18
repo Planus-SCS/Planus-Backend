@@ -1,4 +1,4 @@
-package scs.planus.domain.todo.service;
+package scs.planus.domain.todo.service.calendar;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

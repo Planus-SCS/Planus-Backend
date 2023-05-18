@@ -8,7 +8,6 @@ import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
-import scs.planus.domain.group.repository.GroupMemberQueryRepository;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
@@ -32,7 +31,6 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 public class GroupTodoService {
 
     private final GroupRepository groupRepository;
-    private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final TodoCategoryRepository todoCategoryRepository;
     private final TodoRepository todoRepository;
