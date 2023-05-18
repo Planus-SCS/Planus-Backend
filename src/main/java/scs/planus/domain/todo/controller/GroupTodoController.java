@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +51,6 @@ public class GroupTodoController {
         return new BaseResponse<>(responseDto);
     }
 
-
     @PatchMapping("/my-groups/{groupId}/todos/{todoId}")
     @Operation(summary = "Group Todo 변경 API")
     public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -62,13 +62,13 @@ public class GroupTodoController {
         return new BaseResponse<>(responseDto);
     }
 
-//
-//    @DeleteMapping("/my-groups/{groupId}/todos/{todoId}")
-//    @Operation(summary = "Group Todo 삭제 API")
-//    public BaseResponse<TodoResponseDto> deleteTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
-//                                                    @PathVariable Long todoId) {
-//        Long memberId = principalDetails.getId();
-//        TodoResponseDto responseDto = groupTodoService.deleteTodo(memberId, todoId);
-//        return new BaseResponse<>(responseDto);
-//    }
+    @DeleteMapping("/my-groups/{groupId}/todos/{todoId}")
+    @Operation(summary = "Group Todo 삭제 API")
+    public BaseResponse<TodoResponseDto> deleteTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                    @PathVariable Long groupId,
+                                                    @PathVariable Long todoId) {
+        Long memberId = principalDetails.getId();
+        TodoResponseDto responseDto = groupTodoService.deleteTodo(memberId, groupId, todoId);
+        return new BaseResponse<>(responseDto);
+    }
 }
