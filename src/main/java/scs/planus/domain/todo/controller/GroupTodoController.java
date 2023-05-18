@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,4 +49,26 @@ public class GroupTodoController {
         TodoDetailsResponseDto responseDto = groupTodoService.getOneTodo(memberId, groupId, todoId);
         return new BaseResponse<>(responseDto);
     }
+
+
+    @PatchMapping("/my-groups/{groupId}/todos/{todoId}")
+    @Operation(summary = "Group Todo 변경 API")
+    public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                 @PathVariable Long groupId,
+                                                                 @PathVariable Long todoId,
+                                                                 @Valid @RequestBody TodoRequestDto todoRequestDto) {
+        Long memberId = principalDetails.getId();
+        TodoDetailsResponseDto responseDto = groupTodoService.updateTodo(memberId, groupId, todoId, todoRequestDto);
+        return new BaseResponse<>(responseDto);
+    }
+
+//
+//    @DeleteMapping("/my-groups/{groupId}/todos/{todoId}")
+//    @Operation(summary = "Group Todo 삭제 API")
+//    public BaseResponse<TodoResponseDto> deleteTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
+//                                                    @PathVariable Long todoId) {
+//        Long memberId = principalDetails.getId();
+//        TodoResponseDto responseDto = groupTodoService.deleteTodo(memberId, todoId);
+//        return new BaseResponse<>(responseDto);
+//    }
 }
