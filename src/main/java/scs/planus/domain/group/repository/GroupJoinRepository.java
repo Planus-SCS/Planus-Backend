@@ -24,4 +24,9 @@ public interface GroupJoinRepository extends JpaRepository<GroupJoin, Long> {
             "where gj.id= :groupJoinId " +
             "and gj.status = 'INACTIVE'")
     Optional<GroupJoin> findWithGroupById(@Param("groupJoinId") Long groupJoinId );
+
+    @Query("select gj from GroupJoin gj " +
+            "where gj.member.id = :memberId and gj.group.id = :groupId")
+    Optional<GroupJoin> findByMemberIdAndGroupId(@Param("memberId") Long memberId,
+                                                 @Param("groupId") Long groupId);
 }
