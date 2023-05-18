@@ -170,7 +170,7 @@ public class MyGroupService {
             throw new PlanusException(NOT_JOINED_GROUP);
         }
 
-        List<MemberTodo> todos = todoQueryRepository.findDailyTodosByDate(memberId, groupId, date);
+        List<MemberTodo> todos = todoQueryRepository.findMemberDailyTodosByDate(memberId, groupId, date);
 
         // TODO -> 리팩토링 필요. TodoCalendarService에서 구현된 메서드
         List<TodoDailyScheduleDto> dailySchedules = todos.stream()

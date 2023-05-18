@@ -23,7 +23,7 @@ public class TodoQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Optional<MemberTodo> findOneTodoById(Long todoId, Long memberId) {
+    public Optional<MemberTodo> findOneMemberTodoById(Long todoId, Long memberId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
@@ -33,7 +33,7 @@ public class TodoQueryRepository {
                 .fetchOne());
     }
 
-    public List<MemberTodo> findPeriodTodosByDate(Long memberId, LocalDate from, LocalDate to) {
+    public List<MemberTodo> findMemberPeriodTodosByDate(Long memberId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member).fetchJoin()
@@ -43,7 +43,7 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
-    public List<MemberTodo> findDailyTodosByDate(Long memberId, LocalDate date) {
+    public List<MemberTodo> findMemberDailyTodosByDate(Long memberId, LocalDate date) {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
@@ -54,7 +54,7 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
-    public List<MemberTodo> findDailyTodosByDate(Long memberId, Long groupId, LocalDate date) {
+    public List<MemberTodo> findMemberDailyTodosByDate(Long memberId, Long groupId, LocalDate date) {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)

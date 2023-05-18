@@ -53,7 +53,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
+        Todo todo = todoQueryRepository.findOneMemberTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         return TodoDetailsResponseDto.of(todo);
@@ -64,7 +64,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
+        Todo todo = todoQueryRepository.findOneMemberTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         TodoCategory todoCategory = todoCategoryRepository.findById(requestDto.getCategoryId())
@@ -84,7 +84,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
+        Todo todo = todoQueryRepository.findOneMemberTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         todo.changeCompletion();
@@ -96,7 +96,7 @@ public class TodoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        Todo todo = todoQueryRepository.findOneTodoById(todoId, member.getId())
+        Todo todo = todoQueryRepository.findOneMemberTodoById(todoId, member.getId())
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         todoRepository.delete(todo);
