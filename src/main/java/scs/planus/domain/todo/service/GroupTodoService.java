@@ -11,6 +11,7 @@ import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberQueryRepository;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
+import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
@@ -57,6 +58,7 @@ public class GroupTodoService {
 
         GroupTodo groupTodo = requestDto.toGroupTodoEntity(group, groupTodoCategory);
 
+        // TODO 연관된 다른 메서드들이 많아 @Param을 group으로 진행 -> 이후 일관성있도록 리펙토링 필요
         List<GroupMember> groupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
         groupMembers.stream()
                 .map(GroupMember::getMember)
@@ -66,5 +68,18 @@ public class GroupTodoService {
 
         todoRepository.save(groupTodo);
         return TodoResponseDto.of(groupTodo);
+    }
+
+    public TodoDetailsResponseDto getOneTodo(Long memberId, Long groupId, Long todoId) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+        return TodoDetailsResponseDto.of(groupTodo);
     }
 }
