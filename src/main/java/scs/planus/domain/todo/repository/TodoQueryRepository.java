@@ -92,7 +92,7 @@ public class TodoQueryRepository {
                 .join(groupTodo.group, group).fetchJoin()
                 .join(groupTodo.todoCategory, todoCategory).fetchJoin()
                 .where(groupIdEq(groupId), groupTodoPeriodBetween(from, to))
-                .orderBy(groupTodo.startDate.asc())
+                .orderBy(groupTodo.startDate.asc(), groupTodo.endDate.desc())
                 .fetch();
     }
 
