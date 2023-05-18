@@ -21,7 +21,7 @@ public class GroupTodoCompletion {
 
     private boolean completion;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
@@ -37,5 +37,12 @@ public class GroupTodoCompletion {
             groupTodo.getGroupTodoCompletions().add(this);
         }
         this.groupTodo = groupTodo;
+    }
+
+    public static GroupTodoCompletion createGroupTodoCompletion(Member member, GroupTodo groupTodo) {
+        return GroupTodoCompletion.builder()
+                .member(member)
+                .groupTodo(groupTodo)
+                .build();
     }
 }

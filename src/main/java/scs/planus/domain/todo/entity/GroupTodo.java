@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.group.entity.Group;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -21,13 +22,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupTodo extends Todo {
 
-    @OneToMany(mappedBy = "groupTodo")
+    @OneToMany(mappedBy = "groupTodo", cascade = CascadeType.ALL, orphanRemoval = true)
     List<GroupTodoCompletion> groupTodoCompletions = new ArrayList<>();
 
     @Builder
     public GroupTodo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate, boolean showDDay, boolean completion,
-                     TodoCategory todoCategory, Group group, List<GroupTodoCompletion> groupTodoCompletions) {
+                     TodoCategory todoCategory, Group group) {
         super(title, description, startTime, startDate, endDate, showDDay, completion, todoCategory, group);
-        this.groupTodoCompletions = groupTodoCompletions;
     }
 }

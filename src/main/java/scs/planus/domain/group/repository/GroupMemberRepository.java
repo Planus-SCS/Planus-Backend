@@ -22,7 +22,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
     @Query("select gm from GroupMember gm " +
             "join fetch gm.group g " +
             "join fetch gm.member m " +
-            "where m.id = :memberId and g.id = :groupId")
+            "where m.id = :memberId and g.id = :groupId and gm.status = 'ACTIVE'")
     Optional<GroupMember> findByMemberIdAndGroupId(@Param("memberId") Long memberId,
                                                    @Param("groupId") Long groupId);
 

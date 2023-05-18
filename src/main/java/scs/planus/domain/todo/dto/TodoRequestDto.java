@@ -6,6 +6,7 @@ import lombok.Getter;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.MemberTodo;
 
 import javax.validation.constraints.NotBlank;
@@ -46,6 +47,18 @@ public class TodoRequestDto {
                 .startTime(startTime)
                 .description(description)
                 .member(member)
+                .group(group)
+                .build();
+    }
+
+    public GroupTodo toGroupTodoEntity(Group group, TodoCategory todoCategory) {
+        return GroupTodo.builder()
+                .title(title)
+                .todoCategory(todoCategory)
+                .startDate(startDate)
+                .endDate(endDate)
+                .startTime(startTime)
+                .description(description)
                 .group(group)
                 .build();
     }
