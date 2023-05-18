@@ -33,7 +33,7 @@ public class GroupMemberQueryRepository {
                 .from(groupMember)
                 .join(groupMember.member, member)
                 .join(groupMember.group, group)
-                .where(isActiveGroup(), memberIdEq(memberId), groupIdEq(groupId), isTodoAuthority())
+                .where(isActiveGroup(), memberIdEq(memberId), groupIdEq(groupId), hasTodoAuthority())
                 .fetchFirst();
         return fetchOne != null;
     }
@@ -49,7 +49,7 @@ public class GroupMemberQueryRepository {
     private BooleanExpression isActiveGroup() {
         return group.status.eq(Status.ACTIVE);
     }
-    private BooleanExpression isTodoAuthority() {
+    private BooleanExpression hasTodoAuthority() {
         return groupMember.todoAuthority.eq(true);
     }
 }

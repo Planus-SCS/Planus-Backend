@@ -4,7 +4,6 @@ import scs.planus.domain.tag.dto.TagCreateRequestDto;
 import scs.planus.global.exception.PlanusException;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 
 import static scs.planus.global.exception.CustomExceptionStatus.EXIST_DUPLICATE_TAGS;
@@ -22,13 +21,14 @@ public class Validator {
 
 
     public static void validateDuplicateTagName(List<TagCreateRequestDto> updateTags) {
-        // HashSet 의 add()를 통해 중복된 값이 있으면 false
-        boolean isDuplcate = !updateTags.stream()
-                .map( TagCreateRequestDto::getName )
-                .allMatch( new HashSet<>()::add );
+        long sizeAfterDistinct = updateTags.stream()
+                .map(TagCreateRequestDto::getName)
+                .distinct()
+                .count();
 
-        if (isDuplcate) {
+        if (sizeAfterDistinct != (long)updateTags.size()) {
             throw new PlanusException( EXIST_DUPLICATE_TAGS );
         }
+
     }
 }
