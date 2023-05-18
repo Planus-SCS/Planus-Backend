@@ -46,7 +46,7 @@ public enum CustomExceptionStatus implements ResponseStatus {
 
     // groupMember excepion
     NOT_JOINED_GROUP(BAD_REQUEST, 2700, "가입하지 않은 그룹 입니다."),
-    NOT_JOINED_MEMBER_IN_GROUP(BAD_REQUEST, 2700, "그룹에 가입되어 있지 않은 회원입니다."),
+    NOT_JOINED_MEMBER_IN_GROUP(BAD_REQUEST, 2701, "그룹에 가입되어 있지 않은 회원입니다."),
 
     // tag
     EXIST_DUPLICATE_TAGS(BAD_REQUEST, 2800, "중복된 태그들이 존재합니다."),
