@@ -36,7 +36,7 @@ public class TodoController {
     public BaseResponse<TodoResponseDto> createTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                     @Valid @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
-        TodoResponseDto responseDto = todoService.createPrivateTodo(memberId, todoRequestDto);
+        TodoResponseDto responseDto = todoService.createMemberTodo(memberId, todoRequestDto);
         return new BaseResponse<>(responseDto);
     }
 

@@ -13,6 +13,7 @@ import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
+import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
@@ -34,16 +35,16 @@ public class TodoService {
     private final TodoQueryRepository todoQueryRepository;
 
     @Transactional
-    public TodoResponseDto createPrivateTodo(Long memberId, TodoRequestDto requestDto) {
+    public TodoResponseDto createMemberTodo(Long memberId, TodoRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
                         .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        TodoCategory todoCategory = todoCategoryRepository.findById(requestDto.getCategoryId())
+        TodoCategory todoCategory = todoCategoryRepository.findByIdAndMember(requestDto.getCategoryId(), member)
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         Group group = getGroup(requestDto.getGroupId());
         Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
-        Todo memberTodo = requestDto.toEntity(member, todoCategory, group);
+        MemberTodo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, group);
         todoRepository.save(memberTodo);
         return TodoResponseDto.of(memberTodo);
     }
