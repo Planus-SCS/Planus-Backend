@@ -15,7 +15,7 @@ import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.GroupTodoCompletion;
-import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
+import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
 import scs.planus.global.exception.PlanusException;
 
@@ -34,14 +34,19 @@ public class GroupTodoService {
     private final GroupMemberRepository groupMemberRepository;
     private final TodoCategoryRepository todoCategoryRepository;
     private final TodoRepository todoRepository;
-    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
+    private final TodoQueryRepository todoQueryRepository;
 
     @Transactional
     public TodoResponseDto createGroupTodo(Long memberId, Long groupId, TodoRequestDto requestDto) {
-        Group group = groupRepository.findByIdAndStatus(groupId)
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
 
-        Boolean hasTodoAuthority = groupMemberQueryRepository.existByMemberIdAndGroupIdAndTodoAuthority(memberId, group.getId());
+        Group group = groupMember.getGroup();
+        boolean hasTodoAuthority = groupMember.isTodoAuthority();
 
         if (!hasTodoAuthority) {
             throw new PlanusException(DO_NOT_HAVE_TODO_AUTHORITY);
