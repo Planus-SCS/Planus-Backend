@@ -249,7 +249,7 @@ public class MyGroupService {
             throw new PlanusException( NOT_JOINED_MEMBER_IN_GROUP );
         }
 
-        List<MemberTodoCategory> targetMemberTodoCategories = todoCategoryRepository.findAllByMember( targetMember );
+        List<MemberTodoCategory> targetMemberTodoCategories = todoCategoryRepository.findMemberTodoCategoryAllByMember( targetMember );
 
         // TODO : 그룹 개인 투두 용으로만 쓴 카테고리 뿐 만 아니라 모두 응답으로 주는 것에 대한 보안 문제
         return targetMemberTodoCategories.stream()

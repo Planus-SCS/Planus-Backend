@@ -14,21 +14,28 @@ import java.util.Optional;
 
 public interface TodoCategoryRepository extends JpaRepository<TodoCategory, Long> {
 
+    /**
+     * Query For Member Todo Category
+     */
     @Query("select mc from MemberTodoCategory mc " +
             "where mc.id = :categoryId and mc.member= :member and mc.status = 'ACTIVE'")
-    Optional<MemberTodoCategory> findByIdAndMember(@Param("categoryId") Long categoryId,
-                                                   @Param("member") Member member);
+    Optional<MemberTodoCategory> findMemberTodoCategoryByIdAndMember(@Param("categoryId") Long categoryId,
+                                                                     @Param("member") Member member);
 
     @Query("select mc from MemberTodoCategory mc " +
             "where mc.member= :member")
-    List<MemberTodoCategory> findAllByMember(@Param("member") Member member);
+    List<MemberTodoCategory> findMemberTodoCategoryAllByMember(@Param("member") Member member);
 
+
+    /**
+     * Query For Group Todo Category
+     */
     @Query("select gc from GroupTodoCategory gc " +
             "where gc.group= :group")
-    List<GroupTodoCategory> findAllByGroup(@Param("group") Group group);
+    List<GroupTodoCategory> findGroupTodoCategoryAllByGroup(@Param("group") Group group);
 
     @Query("select gc from GroupTodoCategory gc " +
             "where gc.id= :categoryId " +
             "and gc.status= 'ACTIVE' ")
-    Optional<GroupTodoCategory> findByIdAndStatus(@Param("categoryId") Long categoryId);
+    Optional<GroupTodoCategory> findGroupTodoCategoryByIdAndStatus(@Param("categoryId") Long categoryId);
 }

@@ -46,7 +46,7 @@ public class GroupTodoCategoryService {
             throw new PlanusException( DO_NOT_HAVE_TODO_AUTHORITY );
         }
 
-        List<GroupTodoCategory> groupTodoCategories = todoCategoryRepository.findAllByGroup( group );
+        List<GroupTodoCategory> groupTodoCategories = todoCategoryRepository.findGroupTodoCategoryAllByGroup( group );
 
         return groupTodoCategories.stream()
                 .map( TodoCategoryGetResponseDto::of )
@@ -91,7 +91,7 @@ public class GroupTodoCategoryService {
             throw new PlanusException( DO_NOT_HAVE_TODO_AUTHORITY );
         }
 
-        GroupTodoCategory groupTodoCategory = todoCategoryRepository.findByIdAndStatus( categoryId )
+        GroupTodoCategory groupTodoCategory = todoCategoryRepository.findGroupTodoCategoryByIdAndStatus( categoryId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_CATEGORY ));
 
         Color color = Color.of( requestDto.getColor() );
@@ -115,7 +115,7 @@ public class GroupTodoCategoryService {
             throw new PlanusException( DO_NOT_HAVE_TODO_AUTHORITY );
         }
 
-        GroupTodoCategory groupTodoCategory = todoCategoryRepository.findByIdAndStatus( categoryId )
+        GroupTodoCategory groupTodoCategory = todoCategoryRepository.findGroupTodoCategoryByIdAndStatus( categoryId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_CATEGORY ));
 
         groupTodoCategory.changeStatusToInactive();
