@@ -90,6 +90,9 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
+    /**
+     * Query For GroupTodo
+     */
     public Optional<GroupTodo> findOneGroupTodoById(Long groupId, Long todoId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(groupTodo)
