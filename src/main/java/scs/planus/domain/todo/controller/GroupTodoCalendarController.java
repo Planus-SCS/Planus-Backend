@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import scs.planus.domain.todo.dto.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.service.GroupTodoCalendarService;
 import scs.planus.global.auth.entity.PrincipalDetails;
@@ -36,6 +37,16 @@ public class GroupTodoCalendarController {
                                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         Long memberId = principalDetails.getId();
         List<TodoPeriodResponseDto> responseDtos = GroupTodoCalendarService.getPeriodGroupTodos(memberId, groupId, from, to);
+        return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("my-groups/{groupId}/todos/calendar/daily")
+    @Operation(summary = "일별 GroupTodo/GroupSchedule 조회 API")
+    public BaseResponse<TodoDailyResponseDto> getDailyTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                            @PathVariable Long groupId,
+                                                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        Long memberId = principalDetails.getId();
+        TodoDailyResponseDto responseDtos = GroupTodoCalendarService.getDailyGroupTodos(memberId, groupId, date);
         return new BaseResponse<>(responseDtos);
     }
 }
