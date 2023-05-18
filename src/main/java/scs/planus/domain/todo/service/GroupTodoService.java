@@ -19,6 +19,7 @@ import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
 import scs.planus.global.exception.PlanusException;
+import scs.planus.global.util.validator.Validator;
 
 import java.util.List;
 
@@ -80,6 +81,35 @@ public class GroupTodoService {
 
         GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
+        return TodoDetailsResponseDto.of(groupTodo);
+    }
+
+    @Transactional
+    public TodoDetailsResponseDto updateTodo(Long memberId, Long groupId, Long todoId, TodoRequestDto requestDto) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        Group group = groupMember.getGroup();
+        boolean hasTodoAuthority = groupMember.isTodoAuthority();
+
+        if (!hasTodoAuthority) {
+            throw new PlanusException(DO_NOT_HAVE_TODO_AUTHORITY);
+        }
+
+        GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        GroupTodoCategory groupTodoCategory = todoCategoryRepository.findGroupTodoCategoryByIdAndStatus(requestDto.getCategoryId())
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
+
+        Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
+        groupTodo.update(requestDto.getTitle(), requestDto.getDescription(), requestDto.getStartTime(),
+                requestDto.getStartDate(), requestDto.getEndDate(), groupTodoCategory, group);
+
         return TodoDetailsResponseDto.of(groupTodo);
     }
 }
