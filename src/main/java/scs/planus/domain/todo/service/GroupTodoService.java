@@ -112,4 +112,26 @@ public class GroupTodoService {
 
         return TodoDetailsResponseDto.of(groupTodo);
     }
+
+    @Transactional
+    public TodoResponseDto deleteTodo(Long memberId, Long groupId, Long todoId) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        boolean hasTodoAuthority = groupMember.isTodoAuthority();
+
+        if (!hasTodoAuthority) {
+            throw new PlanusException(DO_NOT_HAVE_TODO_AUTHORITY);
+        }
+
+        GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        todoRepository.delete(groupTodo);
+        return TodoResponseDto.of(groupTodo);
+    }
 }
