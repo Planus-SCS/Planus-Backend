@@ -7,6 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
+import scs.planus.domain.todo.dto.TodoDailyDto;
+import scs.planus.domain.todo.dto.TodoDailyResponseDto;
+import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.TodoPeriodResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
@@ -45,5 +48,34 @@ public class GroupTodoCalendarService {
                 .map(TodoPeriodResponseDto::of)
                 .collect(Collectors.toList());
         return responseDtos;
+    }
+
+    public TodoDailyResponseDto getDailyGroupTodos(Long memberId, Long groupId, LocalDate date) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        List<GroupTodo> todos = todoQueryRepository.findDailyGroupTodosByDate(groupId, date);
+        List<TodoDailyScheduleDto> todoDailyScheduleDtos = getDailySchedules(todos);
+        List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
+
+        return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
+    }
+
+    private List<TodoDailyScheduleDto> getDailySchedules(List<GroupTodo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() != null)
+                .map(TodoDailyScheduleDto::of)
+                .collect(Collectors.toList());
+    }
+
+    private List<TodoDailyDto> getDailyTodos(List<GroupTodo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() == null)
+                .map(TodoDailyDto::of)
+                .collect(Collectors.toList());
     }
 }
