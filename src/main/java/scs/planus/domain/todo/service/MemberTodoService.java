@@ -26,7 +26,7 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class TodoService {
+public class MemberTodoService {
 
     private final MemberRepository memberRepository;
     private final TodoCategoryRepository todoCategoryRepository;

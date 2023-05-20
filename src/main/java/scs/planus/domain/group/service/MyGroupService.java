@@ -19,9 +19,9 @@ import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.dto.MemberResponseDto;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.domain.todo.dto.TodoDailyDto;
-import scs.planus.domain.todo.dto.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.TodoDailyScheduleDto;
+import scs.planus.domain.todo.dto.calendar.TodoDailyDto;
+import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
+import scs.planus.domain.todo.dto.calendar.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
@@ -155,7 +155,7 @@ public class MyGroupService {
         }
 
         Validator.validateStartDateBeforeEndDate(from, to);
-        List<MemberTodo> todos = todoQueryRepository.findPeriodGroupTodosByDate(memberId, groupId, from, to);
+        List<MemberTodo> todos = todoQueryRepository.findPeriodGroupMemberTodosByDate(memberId, groupId, from, to);
         List<TodoDetailsResponseDto> responseDtos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
@@ -170,7 +170,7 @@ public class MyGroupService {
             throw new PlanusException(NOT_JOINED_GROUP);
         }
 
-        List<MemberTodo> todos = todoQueryRepository.findMemberDailyTodosByDate(memberId, groupId, date);
+        List<MemberTodo> todos = todoQueryRepository.findDailyGroupMemberTodosByDate(memberId, groupId, date);
 
         // TODO -> 리팩토링 필요. TodoCalendarService에서 구현된 메서드
         List<TodoDailyScheduleDto> dailySchedules = todos.stream()

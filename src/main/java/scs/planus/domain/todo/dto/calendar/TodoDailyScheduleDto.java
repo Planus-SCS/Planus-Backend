@@ -1,4 +1,4 @@
-package scs.planus.domain.todo.dto;
+package scs.planus.domain.todo.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
@@ -17,7 +17,7 @@ public class TodoDailyScheduleDto {
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
     private LocalTime startTime;
 
-    private Boolean isGroupMemberTodo;
+    private Boolean hasGroup;
     private Boolean isPeriodTodo;
     private Boolean hasDescription;
     private Boolean isCompleted;
@@ -28,7 +28,7 @@ public class TodoDailyScheduleDto {
                 .categoryId(todo.getTodoCategory().getId())
                 .title(todo.getTitle())
                 .startTime(todo.getStartTime())
-                .isGroupMemberTodo(todo.getGroup() != null)
+                .hasGroup(todo.getGroup() != null)
                 .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
                 .hasDescription(todo.getDescription() != null)
                 .isCompleted(todo.isCompletion())

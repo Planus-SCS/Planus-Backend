@@ -1,4 +1,4 @@
-package scs.planus.domain.todo.dto;
+package scs.planus.domain.todo.dto.calendar;
 
 import lombok.Builder;
 import lombok.Getter;

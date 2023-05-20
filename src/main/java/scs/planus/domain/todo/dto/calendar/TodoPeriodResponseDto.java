@@ -1,4 +1,4 @@
-package scs.planus.domain.todo.dto;
+package scs.planus.domain.todo.dto.calendar;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;

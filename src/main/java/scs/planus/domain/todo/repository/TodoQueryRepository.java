@@ -26,6 +26,9 @@ public class TodoQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * Query For MemberTodo
+     */
     public Optional<MemberTodo> findOneMemberTodoById(Long todoId, Long memberId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(memberTodo)
@@ -36,56 +39,37 @@ public class TodoQueryRepository {
                 .fetchOne());
     }
 
-    public List<MemberTodo> findMemberPeriodTodosByDate(Long memberId, LocalDate from, LocalDate to) {
+    public List<MemberTodo> findPeriodMemberTodosByDate(Long memberId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member).fetchJoin()
                 .join(memberTodo.todoCategory, todoCategory).fetchJoin()
-                .where(memberIdEq(memberId), periodBetween(from, to))
+                .where(memberIdEq(memberId), memberTodoPeriodBetween(from, to))
                 .orderBy(memberTodo.startDate.asc())
                 .fetch();
     }
 
-    public List<MemberTodo> findMemberDailyTodosByDate(Long memberId, LocalDate date) {
+    /**
+     * Query For GroupMemberTodo
+     */
+    public List<MemberTodo> findDailyGroupMemberTodosByDate(Long memberId, Long groupId, LocalDate date) {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
                 .leftJoin(memberTodo.group, group).fetchJoin()
                 .join(memberTodo.todoCategory, todoCategory).fetchJoin()
-                .where(memberIdEq(memberId), dateBetween(date))
+                .where(memberIdEq(memberId), groupIdEq(groupId), memberTodoDateBetween(date))
                 .orderBy(memberTodo.startTime.asc())
                 .fetch();
     }
 
-    public List<MemberTodo> findMemberDailyTodosByDate(Long memberId, Long groupId, LocalDate date) {
+    public List<MemberTodo> findPeriodGroupMemberTodosByDate(Long memberId, Long groupId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
                 .leftJoin(memberTodo.group, group).fetchJoin()
                 .join(memberTodo.todoCategory, todoCategory).fetchJoin()
-                .where(memberIdEq(memberId), groupIdEq(groupId), dateBetween(date))
-                .orderBy(memberTodo.startTime.asc())
-                .fetch();
-    }
-
-    public List<MemberTodo> findPeriodGroupTodosDetailByDate(Long memberId, LocalDate from, LocalDate to) {
-        return queryFactory
-                .selectFrom(memberTodo)
-                .join(memberTodo.member, member)
-                .leftJoin(memberTodo.group, group).fetchJoin()
-                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
-                .where(memberIdEq(memberId), periodBetween(from, to))
-                .orderBy(memberTodo.startDate.asc())
-                .fetch();
-    }
-
-    public List<MemberTodo> findPeriodGroupTodosByDate(Long memberId, Long groupId, LocalDate from, LocalDate to) {
-        return queryFactory
-                .selectFrom(memberTodo)
-                .join(memberTodo.member, member)
-                .leftJoin(memberTodo.group, group).fetchJoin()
-                .join(memberTodo.todoCategory, todoCategory).fetchJoin()
-                .where(memberIdEq(memberId), groupIdEq(groupId), periodBetween(from, to))
+                .where(memberIdEq(memberId), groupIdEq(groupId), memberTodoPeriodBetween(from, to))
                 .orderBy(memberTodo.startDate.asc())
                 .fetch();
     }
@@ -102,6 +86,26 @@ public class TodoQueryRepository {
                 .fetchOne());
     }
 
+    public List<GroupTodo> findPeriodGroupTodosByDate(Long groupId, LocalDate from, LocalDate to) {
+        return queryFactory
+                .selectFrom(groupTodo)
+                .join(groupTodo.group, group).fetchJoin()
+                .join(groupTodo.todoCategory, todoCategory).fetchJoin()
+                .where(groupIdEq(groupId), groupTodoPeriodBetween(from, to))
+                .orderBy(groupTodo.startDate.asc(), groupTodo.endDate.desc())
+                .fetch();
+    }
+
+    public List<GroupTodo> findDailyGroupTodosByDate(Long groupId, LocalDate date) {
+        return queryFactory
+                .selectFrom(groupTodo)
+                .join(groupTodo.group, group).fetchJoin()
+                .join(groupTodo.todoCategory, todoCategory).fetchJoin()
+                .where(groupIdEq(groupId), groupTodoDateBetween(date))
+                .orderBy(groupTodo.startTime.asc())
+                .fetch();
+    }
+
     private BooleanExpression memberIdEq(Long memberId) {
         return member.id.eq(memberId);
     }
@@ -114,11 +118,19 @@ public class TodoQueryRepository {
         return group.status.eq(Status.ACTIVE);
     }
 
-    private BooleanExpression dateBetween(LocalDate date) {
+    private BooleanExpression memberTodoDateBetween(LocalDate date) {
         return memberTodo.startDate.loe(date).and(memberTodo.endDate.goe(date));
     }
 
-    private BooleanExpression periodBetween(LocalDate from, LocalDate to) {
+    private BooleanExpression memberTodoPeriodBetween(LocalDate from, LocalDate to) {
         return memberTodo.startDate.between(from, to).or(memberTodo.endDate.between(from, to));
+    }
+
+    private BooleanExpression groupTodoDateBetween(LocalDate date) {
+        return groupTodo.startDate.loe(date).and(groupTodo.endDate.goe(date));
+    }
+
+    private BooleanExpression groupTodoPeriodBetween(LocalDate from, LocalDate to) {
+        return groupTodo.startDate.between(from, to).or(groupTodo.endDate.between(from, to));
     }
 }

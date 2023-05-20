@@ -26,8 +26,8 @@ public class GroupTodo extends Todo {
     List<GroupTodoCompletion> groupTodoCompletions = new ArrayList<>();
 
     @Builder
-    public GroupTodo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate, boolean showDDay, boolean completion,
-                     TodoCategory todoCategory, Group group) {
+    public GroupTodo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate,
+                     boolean showDDay, boolean completion, TodoCategory todoCategory, Group group) {
         super(title, description, startTime, startDate, endDate, showDDay, completion, todoCategory, group);
     }
 }
