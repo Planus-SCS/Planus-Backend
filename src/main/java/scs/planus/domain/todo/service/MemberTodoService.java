@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.entity.GroupMember;
+import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
@@ -30,9 +32,10 @@ public class MemberTodoService {
 
     private final MemberRepository memberRepository;
     private final TodoCategoryRepository todoCategoryRepository;
-    private final GroupRepository groupRepository;
     private final TodoRepository todoRepository;
     private final TodoQueryRepository todoQueryRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final GroupRepository groupRepository;
 
     @Transactional
     public TodoResponseDto createMemberTodo(Long memberId, TodoRequestDto requestDto) {
@@ -42,7 +45,7 @@ public class MemberTodoService {
         TodoCategory todoCategory = todoCategoryRepository.findMemberTodoCategoryByIdAndMember(requestDto.getCategoryId(), member)
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
-        Group group = getGroup(requestDto.getGroupId());
+        Group group = checkAndGetGroup(memberId, requestDto.getGroupId());
         Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
         MemberTodo memberTodo = requestDto.toMemberTodoEntity(member, todoCategory, group);
         todoRepository.save(memberTodo);
@@ -70,7 +73,7 @@ public class MemberTodoService {
         TodoCategory todoCategory = todoCategoryRepository.findById(requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
-        Group group = getGroup(requestDto.getGroupId());
+        Group group = checkAndGetGroup(memberId, requestDto.getGroupId());
 
         Validator.validateStartDateBeforeEndDate(requestDto.getStartDate(), requestDto.getEndDate());
         todo.update(requestDto.getTitle(), requestDto.getDescription(), requestDto.getStartTime(),
@@ -103,12 +106,17 @@ public class MemberTodoService {
         return TodoResponseDto.of(todo);
     }
 
-    private Group getGroup(Long groupId) {
+    private Group checkAndGetGroup(Long memberId, Long groupId) {
         if (groupId == null) {
             return null;
         }
-        // TODO : 그룹 가입 이후, 현재 멤버가 해당 그룹에 가입했는지를 체크해야함. 아래 방식은 가입하지 않더라도 그룹 지정 가능한 방식
-        return groupRepository.findById(groupId)
-                    .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+        return groupMember.getGroup();
     }
 }

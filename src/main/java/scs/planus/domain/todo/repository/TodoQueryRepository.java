@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import scs.planus.domain.Status;
+import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.MemberTodo;
 
@@ -18,6 +19,7 @@ import static scs.planus.domain.group.entity.QGroup.group;
 import static scs.planus.domain.member.entity.QMember.member;
 import static scs.planus.domain.todo.entity.QGroupTodo.groupTodo;
 import static scs.planus.domain.todo.entity.QMemberTodo.memberTodo;
+import static scs.planus.domain.todo.entity.QTodo.todo;
 
 @Repository
 @RequiredArgsConstructor
@@ -39,7 +41,7 @@ public class TodoQueryRepository {
                 .fetchOne());
     }
 
-    public List<MemberTodo> findPeriodMemberTodosByDate(Long memberId, LocalDate from, LocalDate to) {
+    public List<MemberTodo> findAllPeriodMemberTodosByDate(Long memberId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member).fetchJoin()
@@ -106,12 +108,30 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
+    public List<GroupTodo> findAllPeriodGroupTodosByDate(List<Group> groups, LocalDate from , LocalDate to) {
+        return queryFactory
+                .selectFrom(groupTodo)
+                .join(groupTodo.group, group).fetchJoin()
+                .join(groupTodo.todoCategory, todoCategory).fetchJoin()
+                .where(groupsIn(groups), groupTodoPeriodBetween(from, to))
+                .orderBy(groupTodo.startDate.asc())
+                .fetch();
+    }
+
+    private BooleanExpression todoIdEq(Long todoId) {
+        return todo.id.eq(todoId);
+    }
+
     private BooleanExpression memberIdEq(Long memberId) {
         return member.id.eq(memberId);
     }
 
     private BooleanExpression groupIdEq(Long groupId) {
         return group.id.eq(groupId);
+    }
+
+    private BooleanExpression groupsIn(List<Group> groups) {
+        return group.in(groups);
     }
 
     private BooleanExpression isActiveGroup() {
