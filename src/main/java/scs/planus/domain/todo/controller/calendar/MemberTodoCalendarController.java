@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
-import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
+import scs.planus.domain.todo.dto.calendar.AllTodoResponseDto;
 import scs.planus.domain.todo.service.calendar.TodoCalendarService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
@@ -29,12 +29,12 @@ public class MemberTodoCalendarController {
     private final TodoCalendarService todoCalendarService;
 
     @GetMapping("/todos/calendar")
-    @Operation(summary = "월별 Todo Calendar 상세 조회 API - Todo 내용 전체 출력")
-    public BaseResponse<List<TodoDetailsResponseDto>> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+    @Operation(summary = "월별 Todo Calendar 상세 조회 API - MemberTodo/GroupTodo 전체 조회")
+    public BaseResponse<AllTodoResponseDto> getTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                     @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         Long memberId = principalDetails.getId();
-        List<TodoDetailsResponseDto> responseDtos = todoCalendarService.getPeriodDetailTodos(memberId, from, to);
+        AllTodoResponseDto responseDtos = todoCalendarService.getPeriodDetailTodos(memberId, from, to);
         return new BaseResponse<>(responseDtos);
     }
 
