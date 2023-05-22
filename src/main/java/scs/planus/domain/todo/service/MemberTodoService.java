@@ -9,6 +9,7 @@ import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
+import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
@@ -34,6 +35,7 @@ public class MemberTodoService {
     private final TodoRepository todoRepository;
     private final TodoQueryRepository todoQueryRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupRepository groupRepository;
 
     @Transactional
     public TodoResponseDto createMemberTodo(Long memberId, TodoRequestDto requestDto) {
@@ -110,7 +112,11 @@ public class MemberTodoService {
         }
 
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
-                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
         return groupMember.getGroup();
     }
 }
