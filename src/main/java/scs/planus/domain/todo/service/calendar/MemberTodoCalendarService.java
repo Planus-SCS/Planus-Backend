@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
-public class TodoCalendarService {
+public class MemberTodoCalendarService {
 
     private final MyGroupService myGroupService;
     private final MemberRepository memberRepository;
@@ -41,8 +41,8 @@ public class TodoCalendarService {
                 .map(GroupMember::getGroup)
                 .collect(Collectors.toList());
 
-        List<MemberTodo> todos = todoQueryRepository.findPeriodMemberTodosByDate(memberId, from, to);
-        List<GroupTodo> groupTodos = todoQueryRepository.findAllPeriodGroupTodos(groups, from, to);
+        List<MemberTodo> todos = todoQueryRepository.findAllPeriodMemberTodosByDate(memberId, from, to);
+        List<GroupTodo> groupTodos = todoQueryRepository.findAllPeriodGroupTodosByDate(groups, from, to);
 
         List<TodoDetailsResponseDto> memberTodos = todos.stream()
                 .map(TodoDetailsResponseDto::of)

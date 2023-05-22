@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
 import scs.planus.domain.todo.dto.calendar.AllTodoResponseDto;
-import scs.planus.domain.todo.service.calendar.TodoCalendarService;
+import scs.planus.domain.todo.service.calendar.MemberTodoCalendarService;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 
@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "MemberTodo Calendar", description = "MemberTodo Calendar API Document")
 public class MemberTodoCalendarController {
 
-    private final TodoCalendarService todoCalendarService;
+    private final MemberTodoCalendarService todoCalendarService;
 
     @GetMapping("/todos/calendar")
     @Operation(summary = "월별 Todo Calendar 상세 조회 API - MemberTodo/GroupTodo 전체 조회")
