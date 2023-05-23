@@ -87,14 +87,33 @@ public class GroupTodoCalendarService {
         return responseDtos;
     }
 
-    private List<TodoDailyScheduleDto> getDailySchedules(List<GroupTodo> todos) {
+    public TodoDailyResponseDto getGroupMemberDailyTodos(Long loginId, Long groupId, Long memberId, LocalDate date) {
+        GroupMember loginGroupMember = groupMemberRepository.findByMemberIdAndGroupId(loginId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+
+        List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
+
+        List<TodoDailyScheduleDto> dailySchedules = getDailySchedules(todos);
+        List<TodoDailyDto> dailyTodos = getDailyTodos(todos);
+
+        return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
+    }
+
+    private List<TodoDailyScheduleDto> getDailySchedules(List<? extends Todo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() != null)
                 .map(TodoDailyScheduleDto::of)
                 .collect(Collectors.toList());
     }
 
-    private List<TodoDailyDto> getDailyTodos(List<GroupTodo> todos) {
+    private List<TodoDailyDto> getDailyTodos(List<? extends Todo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() == null)
                 .map(TodoDailyDto::of)
