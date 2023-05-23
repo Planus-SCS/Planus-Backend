@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.entity.TodoCategory;
+import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.member.entity.Member;
 
 import java.util.List;
@@ -37,4 +38,9 @@ public interface TodoCategoryRepository extends JpaRepository<TodoCategory, Long
             "where gc.id= :categoryId " +
             "and gc.status= 'ACTIVE' ")
     Optional<GroupTodoCategory> findGroupTodoCategoryByIdAndStatus(@Param("categoryId") Long categoryId);
+
+    @Query("select gc from GroupTodoCategory gc " +
+            "where gc.group in :groups " +
+            "order by gc.group.id ASC")
+    List<GroupTodoCategory> findAllGroupTodoCategoriesInGroups(@Param("groups") List<Group> groups);
 }
