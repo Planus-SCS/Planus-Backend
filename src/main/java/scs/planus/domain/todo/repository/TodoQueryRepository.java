@@ -36,7 +36,6 @@ public class TodoQueryRepository {
         return queryFactory
                 .selectFrom(todo)
                 .join(memberTodo).on(memberTodo.eq(todo))
-                .join(groupTodo).on(groupTodo.eq(todo))
                 .join(todo.group, group).on(groupIdEq(groupId))
                 .join(todo.todoCategory, todoCategory).fetchJoin()
                 .leftJoin(memberTodo.member, member)
@@ -47,6 +46,20 @@ public class TodoQueryRepository {
                 .fetch();
     }
 
+    public List<Todo> findGroupMemberDailyTodosByDate(Long memberId, Long groupId, LocalDate date) {
+        return queryFactory
+                .selectFrom(todo)
+                .join(memberTodo).on(memberTodo.eq(todo))
+                .join(todo.group, group).on(groupIdEq(groupId))
+                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.member, member)
+                .where((memberIdEq(memberId).and(groupIdEq(groupId)))
+                                .or(groupIdEq(groupId).and(member.isNull())),
+                        todoDateBetween(date))
+                .orderBy(todo.startTime.asc())
+                .fetch();
+    }
+
     /**
      * Query For MemberTodo
      */
@@ -54,7 +67,7 @@ public class TodoQueryRepository {
         return Optional.ofNullable(queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
-                .leftJoin(memberTodo.group, group).fetchJoin()
+                .join(memberTodo.group, group).fetchJoin()
                 .join(memberTodo.todoCategory, todoCategory).fetchJoin()
                 .where(memberTodo.id.eq(todoId), memberIdEq(memberId))
                 .fetchOne());
@@ -132,6 +145,7 @@ public class TodoQueryRepository {
         return group.status.eq(Status.ACTIVE);
     }
 
+    // TODO 동일한 기능, 다른 타입을 이용하는 함수가 너무 많음 -> 리팩토링 필요
     private BooleanExpression memberTodoPeriodBetween(LocalDate from, LocalDate to) {
         return memberTodo.startDate.between(from, to).or(memberTodo.endDate.between(from, to));
     }
@@ -142,6 +156,10 @@ public class TodoQueryRepository {
 
     private BooleanExpression groupTodoPeriodBetween(LocalDate from, LocalDate to) {
         return groupTodo.startDate.between(from, to).or(groupTodo.endDate.between(from, to));
+    }
+
+    private BooleanExpression todoDateBetween(LocalDate date) {
+        return todo.startDate.loe(date).and(todo.endDate.goe(date));
     }
 
     private BooleanExpression todoPeriodBetween(LocalDate from, LocalDate to) {
