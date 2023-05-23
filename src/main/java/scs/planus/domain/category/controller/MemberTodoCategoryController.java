@@ -32,6 +32,16 @@ public class MemberTodoCategoryController {
         return new BaseResponse<>(responseDto);
     }
 
+    @GetMapping("/categories/groups")
+    @Operation(summary = "속한 Group Todo Category 조회 API")
+    public BaseResponse<List<TodoCategoryGetResponseDto>> getAllGroupTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+
+        Long memberId = principalDetails.getId();
+        List<TodoCategoryGetResponseDto> responseDto = memberTodoCategoryService.findAllGroupTodoCategories(memberId);
+
+        return new BaseResponse<>(responseDto);
+    }
+
     @PostMapping("/categories")
     @Operation(summary = "Member Todo Category 생성 API")
     public BaseResponse<TodoCategoryResponseDto> createMemberTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
