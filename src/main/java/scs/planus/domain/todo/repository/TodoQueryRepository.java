@@ -91,7 +91,7 @@ public class TodoQueryRepository {
     public List<GroupTodo> findPeriodGroupTodosByDate(Long groupId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(groupTodo)
-                .join(groupTodo.group, group).fetchJoin()
+                .join(groupTodo.group, group)
                 .join(groupTodo.todoCategory, todoCategory).fetchJoin()
                 .where(groupIdEq(groupId), groupTodoPeriodBetween(from, to))
                 .orderBy(groupTodo.startDate.asc(), groupTodo.endDate.desc())
@@ -101,7 +101,7 @@ public class TodoQueryRepository {
     public List<GroupTodo> findDailyGroupTodosByDate(Long groupId, LocalDate date) {
         return queryFactory
                 .selectFrom(groupTodo)
-                .join(groupTodo.group, group).fetchJoin()
+                .join(groupTodo.group, group)
                 .join(groupTodo.todoCategory, todoCategory).fetchJoin()
                 .where(groupIdEq(groupId), groupTodoDateBetween(date))
                 .orderBy(groupTodo.startTime.asc())
