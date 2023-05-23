@@ -12,6 +12,7 @@ import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.calendar.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.calendar.TodoPeriodResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
+import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.validator.Validator;
@@ -63,6 +64,27 @@ public class GroupTodoCalendarService {
         List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
 
         return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
+    }
+
+    public List<TodoPeriodResponseDto> getGroupMemberPeriodTodos(Long loginId, Long groupId, Long memberId,
+                                                                  LocalDate from, LocalDate to) {
+        GroupMember loginGroupMember = groupMemberRepository.findByMemberIdAndGroupId(loginId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+
+        Validator.validateStartDateBeforeEndDate(from, to);
+        List<Todo> todos = todoQueryRepository.findGroupMemberPeriodTodosByDate(memberId, groupId, from, to);
+
+        List<TodoPeriodResponseDto> responseDtos = todos.stream()
+                .map(TodoPeriodResponseDto::of)
+                .collect(Collectors.toList());
+        return responseDtos;
     }
 
     private List<TodoDailyScheduleDto> getDailySchedules(List<GroupTodo> todos) {
