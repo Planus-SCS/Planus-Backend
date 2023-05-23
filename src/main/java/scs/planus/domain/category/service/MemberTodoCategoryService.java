@@ -8,9 +8,13 @@ import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
 import scs.planus.domain.category.dto.TodoCategoryRequestDto;
 import scs.planus.domain.category.dto.TodoCategoryResponseDto;
 import scs.planus.domain.category.entity.Color;
+import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
+import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.entity.GroupMember;
+import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.global.exception.CustomExceptionStatus;
@@ -26,6 +30,7 @@ import java.util.stream.Collectors;
 public class MemberTodoCategoryService {
     private final TodoCategoryRepository todoCategoryRepository;
     private final MemberRepository memberRepository;
+    private final GroupMemberRepository groupMemberRepository;
 
     /**
      * 카테고리 조회
@@ -41,6 +46,24 @@ public class MemberTodoCategoryService {
         return memberTodoCategories.stream()
                 .map(TodoCategoryGetResponseDto::of)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 속한 그룹 카테고리 조회
+     */
+    public List<TodoCategoryGetResponseDto> findAllGroupTodoCategories(Long memberId) {
+
+        List<GroupMember> groupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(memberId);
+        List<Group> groups = groupMembers.stream()
+                .map(GroupMember::getGroup)
+                .collect(Collectors.toList());
+
+        List<GroupTodoCategory> groupTodoCategories = todoCategoryRepository.findAllGroupTodoCategoriesInGroups(groups);
+        List<TodoCategoryGetResponseDto> responseDtos = groupTodoCategories.stream()
+                .map(TodoCategoryGetResponseDto::of)
+                .collect(Collectors.toList());
+
+        return responseDtos;
     }
 
     /**
