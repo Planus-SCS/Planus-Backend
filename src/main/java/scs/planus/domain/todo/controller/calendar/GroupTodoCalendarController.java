@@ -53,12 +53,23 @@ public class GroupTodoCalendarController {
     @GetMapping("/my-groups/{groupId}/members/{memberId}/calendar")
     @Operation(summary = "월별 GroupMemberTodo Calendar 조회 API")
     public BaseResponse<List<TodoPeriodResponseDto>> getGroupMemberPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                                @PathVariable Long groupId,
-                                                                                @PathVariable Long memberId,
-                                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-                                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
+                                                                               @PathVariable Long groupId,
+                                                                               @PathVariable Long memberId,
+                                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+                                                                               @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
         Long loginId = principalDetails.getId();
         List<TodoPeriodResponseDto> responseDtos = groupTodoCalendarService.getGroupMemberPeriodTodos(loginId, groupId, memberId, from, to);
+        return new BaseResponse<>(responseDtos);
+    }
+
+    @GetMapping("/my-groups/{groupId}/members/{memberId}/calendar/daily")
+    @Operation(summary = "일별 GroupMemberTodo/GroupMemberSchedule 조회 API")
+    public BaseResponse<TodoDailyResponseDto> getGroupMemberPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                        @PathVariable Long groupId,
+                                                                        @PathVariable Long memberId,
+                                                                        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        Long loginId = principalDetails.getId();
+        TodoDailyResponseDto responseDtos = groupTodoCalendarService.getGroupMemberDailyTodos(loginId, groupId, memberId, date);
         return new BaseResponse<>(responseDtos);
     }
 }
