@@ -4,21 +4,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.service.MyGroupService;
-import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.common.response.BaseResponse;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -54,29 +54,6 @@ public class MyGroupController {
         Long memberId = principalDetails.getId();
         List<MyGroupGetMemberResponseDto> responseDto = myGroupService.getGroupMembersForMember(memberId, groupId);
         return new BaseResponse<>(responseDto);
-    }
-
-    @GetMapping("/my-groups/{groupId}/members/{memberId}/calendar")
-    @Operation(summary = "MyGroup에 속한 그룹원 캘린더 조회 API")
-    public BaseResponse<List<TodoDetailsResponseDto>> getGroupMemberPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                                @PathVariable Long groupId,
-                                                                                @PathVariable Long memberId,
-                                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-                                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to) {
-        Long loginId = principalDetails.getId();
-        List<TodoDetailsResponseDto> responseDtos = myGroupService.getGroupMemberPeriodTodos(loginId, groupId, memberId, from, to);
-        return new BaseResponse<>(responseDtos);
-    }
-
-    @GetMapping("/my-groups/{groupId}/members/{memberId}/calendar/daily")
-    @Operation(summary = "MyGroup에 속한 그룹원 일별 Todo/Schedule 조회 API")
-    public BaseResponse<TodoDailyResponseDto> getGroupMemberPeriodTodos(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                                @PathVariable Long groupId,
-                                                                                @PathVariable Long memberId,
-                                                                                @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
-        Long loginId = principalDetails.getId();
-        TodoDailyResponseDto responseDtos = myGroupService.getGroupMemberDailyTodos(loginId, groupId, memberId, date);
-        return new BaseResponse<>(responseDtos);
     }
 
     @PatchMapping("/my-groups/{groupId}/online-status")

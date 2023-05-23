@@ -8,7 +8,11 @@ import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
-import scs.planus.domain.group.dto.mygroup.*;
+import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupGetMemberResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupOnlineStatusResponseDto;
+import scs.planus.domain.group.dto.mygroup.MyGroupResponseDto;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
@@ -19,16 +23,9 @@ import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.dto.MemberResponseDto;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.domain.todo.dto.calendar.TodoDailyDto;
-import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.calendar.TodoDailyScheduleDto;
-import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
-import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
-import scs.planus.global.util.validator.Validator;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -143,47 +140,6 @@ public class MyGroupService {
         }
 
         return MemberResponseDto.of(member);
-    }
-
-    public List<TodoDetailsResponseDto> getGroupMemberPeriodTodos(Long loginId, Long groupId, Long memberId,
-                                                                 LocalDate from, LocalDate to) {
-        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
-        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
-
-        if (!isLoginMemberJoined || !isMemberJoined) {
-            throw new PlanusException(NOT_JOINED_GROUP);
-        }
-
-        Validator.validateStartDateBeforeEndDate(from, to);
-        List<MemberTodo> todos = todoQueryRepository.findPeriodGroupMemberTodosByDate(memberId, groupId, from, to);
-        List<TodoDetailsResponseDto> responseDtos = todos.stream()
-                .map(TodoDetailsResponseDto::of)
-                .collect(Collectors.toList());
-        return responseDtos;
-    }
-
-    public TodoDailyResponseDto getGroupMemberDailyTodos(Long loginId, Long groupId, Long memberId, LocalDate date) {
-        Boolean isLoginMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(loginId, groupId);
-        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(memberId, groupId);
-
-        if (!isLoginMemberJoined || !isMemberJoined) {
-            throw new PlanusException(NOT_JOINED_GROUP);
-        }
-
-        List<MemberTodo> todos = todoQueryRepository.findDailyGroupMemberTodosByDate(memberId, groupId, date);
-
-        // TODO -> 리팩토링 필요. TodoCalendarService에서 구현된 메서드
-        List<TodoDailyScheduleDto> dailySchedules = todos.stream()
-                .filter(todo -> todo.getStartTime() != null)
-                .map(TodoDailyScheduleDto::of)
-                .collect(Collectors.toList());
-
-        List<TodoDailyDto> dailyTodos = todos.stream()
-                .filter(todo -> todo.getStartTime() == null)
-                .map(TodoDailyDto::of)
-                .collect(Collectors.toList());
-
-        return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
     }
 
     @Transactional
