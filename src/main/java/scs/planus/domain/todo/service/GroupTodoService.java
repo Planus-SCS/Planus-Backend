@@ -15,6 +15,7 @@ import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.GroupTodoCompletion;
+import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
 import scs.planus.global.exception.PlanusException;
@@ -69,7 +70,7 @@ public class GroupTodoService {
         return TodoResponseDto.of(groupTodo);
     }
 
-    public TodoDetailsResponseDto getOneTodo(Long memberId, Long groupId, Long todoId) {
+    public TodoDetailsResponseDto getOneGroupTodo(Long memberId, Long groupId, Long todoId) {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
                 .orElseThrow(() -> {
                     groupRepository.findById(groupId)
@@ -80,6 +81,22 @@ public class GroupTodoService {
         GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
         return TodoDetailsResponseDto.of(groupTodo);
+    }
+
+    public TodoDetailsResponseDto getOneGroupMemberTodo(Long loginId, Long memberId, Long groupId, Long todoId) {
+        GroupMember loginMember = groupMemberRepository.findByMemberIdAndGroupId(loginId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_MEMBER_IN_GROUP));
+
+        Todo todo = todoQueryRepository.findOneGroupMemberTodoById(groupId, memberId, todoId)
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+        return TodoDetailsResponseDto.of(todo);
     }
 
     @Transactional
