@@ -2,36 +2,31 @@ package scs.planus.domain.group.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import scs.planus.domain.group.entity.Group;
 
 import java.util.List;
 
 @Getter
 @Builder
-@Slf4j
-public class GroupGetResponseDto {
-    private Long id;
+public class GroupsGetResponseDto {
+    private Long groupId;
     private String name;
-    private Boolean isJoined;
-    private String notice;
     private String groupImageUrl;
     private int memberCount;
     private int limitCount;
+    private Long leaderId;
     private String leaderName;
     private List<GroupTagResponseDto> groupTags;
 
-
-    public static GroupGetResponseDto of( Group group, List<GroupTagResponseDto> groupTagNameList, Boolean isJoined ) {
-        return GroupGetResponseDto.builder()
-                .id( group.getId() )
+    public static GroupsGetResponseDto of( Group group, List<GroupTagResponseDto> groupTagNameList ) {
+        return GroupsGetResponseDto.builder()
+                .groupId( group.getId() )
                 .name( group.getName() )
-                .isJoined( isJoined )
-                .notice( group.getNotice() )
                 .groupImageUrl( group.getGroupImageUrl() )
                 .memberCount( group.getGroupMembers().size() )
                 .limitCount( group.getLimitCount() )
-                .leaderName( group.getLeaderName() )
+                .leaderId( group.getLeader().getId() )
+                .leaderName( group.getLeader().getNickname() )
                 .groupTags( groupTagNameList )
                 .build();
     }

@@ -53,4 +53,5 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
             "where gm.member= :member " +
             "and gm.leader= true")
     List<GroupMember> findWithGroupByLeaderMember(@Param("member") Member member);
+
 }
