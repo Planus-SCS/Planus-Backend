@@ -268,6 +268,7 @@ public class GroupService {
         return GroupMemberResponseDto.of( withdrawGroupMember );
     }
 
+    // TODO MyGroupService 내 동일 메서드 존재 -> 추후 통합 리펙토링 고려
     private List<GroupTagResponseDto> getEachGroupTags(Group group, List<GroupTag> allGroupTags) {
         return allGroupTags.stream()
                 .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
