@@ -71,7 +71,7 @@ public class GroupTodoService {
         return TodoResponseDto.of(groupTodo);
     }
 
-    public TodoDetailsResponseDto getOneGroupTodo(Long memberId, Long groupId, Long todoId) {
+    public TodoForGroupResponseDto getOneGroupTodo(Long memberId, Long groupId, Long todoId) {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
                 .orElseThrow(() -> {
                     groupRepository.findById(groupId)
@@ -84,7 +84,7 @@ public class GroupTodoService {
         return TodoForGroupResponseDto.of(groupTodo);
     }
 
-    public TodoDetailsResponseDto getOneGroupMemberTodo(Long loginId, Long memberId, Long groupId, Long todoId) {
+    public TodoForGroupResponseDto getOneGroupMemberTodo(Long loginId, Long memberId, Long groupId, Long todoId) {
         GroupMember loginMember = groupMemberRepository.findByMemberIdAndGroupId(loginId, groupId)
                 .orElseThrow(() -> {
                     groupRepository.findById(groupId)
