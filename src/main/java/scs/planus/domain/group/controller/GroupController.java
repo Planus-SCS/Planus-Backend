@@ -24,7 +24,7 @@ import java.util.List;
 public class GroupController {
     private final GroupService groupService;
 
-    @GetMapping("/groups/search-home")
+    @GetMapping("/groups")
     @Operation(summary = "검색 홈에서 초기화면을 위한 Groups 조회 API")
     public BaseResponse<List<GroupsGetResponseDto>> getGroupsSearchHome(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                         Pageable pageable) {
