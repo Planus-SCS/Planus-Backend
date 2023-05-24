@@ -32,6 +32,18 @@ public class TodoQueryRepository {
     /**
      * Query For GroupMemberTodo
      */
+    public Optional<Todo> findOneGroupMemberTodoById(Long memberId, Long groupId, Long todoId) {
+        return Optional.ofNullable(queryFactory
+                .selectFrom(todo)
+                .join(memberTodo).on(memberTodo.eq(todo))
+                .join(todo.group, group).fetchJoin()
+                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.member, member)
+                .where(todoIdEq(todoId).and(memberIdEq(memberId).and(groupIdEq(groupId))
+                                .or(groupIdEq(groupId).and(member.isNull()))))
+                .fetchOne());
+    }
+
     public List<Todo> findGroupMemberPeriodTodosByDate(Long memberId, Long groupId, LocalDate from, LocalDate to) {
         return queryFactory
                 .selectFrom(todo)
