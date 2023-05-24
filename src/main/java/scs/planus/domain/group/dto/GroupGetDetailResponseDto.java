@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Builder
 @Slf4j
-public class GroupGetResponseDto {
+public class GroupGetDetailResponseDto {
     private Long id;
     private String name;
     private Boolean isJoined;
@@ -22,8 +22,8 @@ public class GroupGetResponseDto {
     private List<GroupTagResponseDto> groupTags;
 
 
-    public static GroupGetResponseDto of( Group group, List<GroupTagResponseDto> groupTagNameList, Boolean isJoined ) {
-        return GroupGetResponseDto.builder()
+    public static GroupGetDetailResponseDto of(Group group, List<GroupTagResponseDto> groupTagNameList, Boolean isJoined ) {
+        return GroupGetDetailResponseDto.builder()
                 .id( group.getId() )
                 .name( group.getName() )
                 .isJoined( isJoined )
