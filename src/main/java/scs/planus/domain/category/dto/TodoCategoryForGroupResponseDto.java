@@ -7,13 +7,13 @@ import scs.planus.domain.category.entity.TodoCategory;
 
 @Getter
 @Builder
-public class TodoCategorySummaryResponseDto {
+public class TodoCategoryForGroupResponseDto {
 
     private String name;
     private Color color;
 
-    public static TodoCategorySummaryResponseDto of(TodoCategory todoCategory) {
-        return TodoCategorySummaryResponseDto.builder()
+    public static TodoCategoryForGroupResponseDto of(TodoCategory todoCategory) {
+        return TodoCategoryForGroupResponseDto.builder()
                 .name(todoCategory.getName())
                 .color(todoCategory.getColor())
                 .build();
