@@ -3,6 +3,7 @@ package scs.planus.domain.group.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import scs.planus.domain.group.dto.GroupMembersCountDto;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.member.entity.Member;
@@ -53,4 +54,18 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
             "where gm.member= :member " +
             "and gm.leader= true")
     List<GroupMember> findWithGroupByLeaderMember(@Param("member") Member member);
+
+    @Query("select gm from GroupMember gm " +
+            "join gm.group g " +
+            "join fetch gm.member m " +
+            "where gm.leader= true " +
+            "and g in :groups")
+    List<GroupMember> findAllGroupLeaderInGroups(@Param("groups") List<Group> groups);
+
+    @Query("select g.id as groupId, COUNT(*) as count from GroupMember gm " +
+            "join gm.group g " +
+            "where g in :groups " +
+            "group by g.id ")
+    List<GroupMembersCountDto> findAllGroupMembersCount(@Param("groups") List<Group> groups);
+
 }
