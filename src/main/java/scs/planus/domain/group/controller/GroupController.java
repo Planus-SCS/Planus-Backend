@@ -31,11 +31,11 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{groupId}")
-    public BaseResponse<GroupGetResponseDto> getGroupDetailForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                        @PathVariable("groupId") Long groupId) {
+    public BaseResponse<GroupGetDetailResponseDto> getGroupDetailForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                              @PathVariable("groupId") Long groupId) {
 
         Long memberId = principalDetails.getId();
-        GroupGetResponseDto responseDto = groupService.getGroupDetailForNonMember(memberId, groupId);
+        GroupGetDetailResponseDto responseDto = groupService.getGroupDetailForNonMember(memberId, groupId);
 
         return new BaseResponse<>(responseDto);
     }
