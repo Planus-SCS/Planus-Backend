@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
+import scs.planus.domain.todo.dto.TodoForGroupResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.service.GroupTodoService;
@@ -42,12 +43,23 @@ public class GroupTodoController {
     }
 
     @GetMapping("/my-groups/{groupId}/todos/{todoId}")
-    @Operation(summary = "Group Todo 조회 API")
-    public BaseResponse<TodoDetailsResponseDto>  getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    @Operation(summary = "단일 Group Todo 조회 API")
+    public BaseResponse<TodoForGroupResponseDto>  getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                @PathVariable Long groupId,
                                                                @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
-        TodoDetailsResponseDto responseDto = groupTodoService.getOneTodo(memberId, groupId, todoId);
+        TodoForGroupResponseDto responseDto = groupTodoService.getOneGroupTodo(memberId, groupId, todoId);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @GetMapping("/my-groups/{groupId}/members/{memberId}/todos/{todoId}")
+    @Operation(summary = "단일 GroupMember Todo 조회 API")
+    public BaseResponse<TodoForGroupResponseDto> getGroupMemberTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                          @PathVariable Long groupId,
+                                                                          @PathVariable Long memberId,
+                                                                          @PathVariable Long todoId) {
+        Long loginId = principalDetails.getId();
+        TodoForGroupResponseDto responseDto = groupTodoService.getOneGroupMemberTodo(loginId, memberId, groupId, todoId);
         return new BaseResponse<>(responseDto);
     }
 
