@@ -12,7 +12,7 @@ import java.time.LocalTime;
 public class TodoDailyScheduleDto {
 
     private Long todoId;
-    private Long categoryId;
+    private String categoryColor;
     private String title;
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
     private LocalTime startTime;
@@ -25,7 +25,7 @@ public class TodoDailyScheduleDto {
     public static TodoDailyScheduleDto of(Todo todo) {
         return TodoDailyScheduleDto.builder()
                 .todoId(todo.getId())
-                .categoryId(todo.getTodoCategory().getId())
+                .categoryColor(todo.getTodoCategory().getColor().toString())
                 .title(todo.getTitle())
                 .startTime(todo.getStartTime())
                 .hasGroup(todo.getGroup() != null)

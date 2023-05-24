@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class TodoPeriodResponseDto {
 
     private Long todoId;
-    private Long categoryId;
+    private String categoryColor;
     private String title;
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate startDate;
@@ -22,7 +22,7 @@ public class TodoPeriodResponseDto {
     public static TodoPeriodResponseDto of(Todo todo) {
         return TodoPeriodResponseDto.builder()
                 .todoId(todo.getId())
-                .categoryId(todo.getTodoCategory().getId())
+                .categoryColor(todo.getTodoCategory().getColor().toString())
                 .title(todo.getTitle())
                 .startDate(todo.getStartDate())
                 .endDate(todo.getEndDate())

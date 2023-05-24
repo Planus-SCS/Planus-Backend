@@ -9,7 +9,7 @@ import scs.planus.domain.todo.entity.Todo;
 public class TodoDailyDto {
 
     private Long todoId;
-    private Long categoryId;
+    private String categoryColor;
     private String title;
 
     private Boolean hasGroup;
@@ -20,7 +20,7 @@ public class TodoDailyDto {
     public static TodoDailyDto of(Todo todo) {
         return TodoDailyDto.builder()
                 .todoId(todo.getId())
-                .categoryId(todo.getTodoCategory().getId())
+                .categoryColor(todo.getTodoCategory().getColor().toString())
                 .title(todo.getTitle())
                 .hasGroup(todo.getGroup() != null)
                 .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
