@@ -3,7 +3,6 @@ package scs.planus.domain.todo.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
-import scs.planus.domain.category.dto.TodoCategorySummaryResponseDto;
 import scs.planus.domain.todo.entity.Todo;
 
 import java.time.LocalDate;
@@ -15,8 +14,8 @@ public class TodoDetailsResponseDto {
 
     private Long todoId;
     private String title;
-    private TodoCategorySummaryResponseDto todoCategory;
-    private String groupName;
+    private Long categoryId;
+    private Long groupId;
 
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate startDate;
@@ -30,8 +29,8 @@ public class TodoDetailsResponseDto {
         return TodoDetailsResponseDto.builder()
                 .todoId(todo.getId())
                 .title(todo.getTitle())
-                .todoCategory(TodoCategorySummaryResponseDto.of(todo.getTodoCategory()))
-                .groupName(todo.getGroup().getName())
+                .categoryId(todo.getTodoCategory().getId())
+                .groupId(todo.getGroup() == null ? null : todo.getGroup().getId())
                 .startDate(todo.getStartDate())
                 .endDate(todo.getEndDate())
                 .startTime(todo.getStartTime())
