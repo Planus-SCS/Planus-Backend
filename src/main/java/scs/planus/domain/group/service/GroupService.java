@@ -41,7 +41,7 @@ public class GroupService {
     private final GroupTagService groupTagService;
     private final TagService tagService;
 
-    public List<GroupsGetResponseDto> getGroupsOrderByNumOfMembers(Pageable pageable) {
+    public List<GroupsGetResponseDto> getGroupsSearchHome(Pageable pageable) {
 
         List<Group> groups = groupRepository.findAllByActiveOrderByNumOfMembersAndId(pageable);
 

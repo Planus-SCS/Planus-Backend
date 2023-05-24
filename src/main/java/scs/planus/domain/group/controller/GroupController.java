@@ -29,7 +29,7 @@ public class GroupController {
     public BaseResponse<List<GroupsGetResponseDto>> getGroupsSearchHome(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                         Pageable pageable) {
 
-        List<GroupsGetResponseDto> responseDtos = groupService.getGroupsOrderByNumOfMembers(pageable);
+        List<GroupsGetResponseDto> responseDtos = groupService.getGroupsSearchHome(pageable);
 
         return new BaseResponse<>(responseDtos);
     }
