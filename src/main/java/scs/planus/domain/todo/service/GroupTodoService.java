@@ -11,6 +11,7 @@ import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
+import scs.planus.domain.todo.dto.TodoForGroupResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
@@ -80,7 +81,7 @@ public class GroupTodoService {
 
         GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
-        return TodoDetailsResponseDto.of(groupTodo);
+        return TodoForGroupResponseDto.of(groupTodo);
     }
 
     public TodoDetailsResponseDto getOneGroupMemberTodo(Long loginId, Long memberId, Long groupId, Long todoId) {
@@ -96,7 +97,7 @@ public class GroupTodoService {
 
         Todo todo = todoQueryRepository.findOneGroupMemberTodoById(groupId, memberId, todoId)
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
-        return TodoDetailsResponseDto.of(todo);
+        return TodoForGroupResponseDto.of(todo);
     }
 
     @Transactional
