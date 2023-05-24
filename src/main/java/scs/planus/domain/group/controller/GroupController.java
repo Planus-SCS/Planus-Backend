@@ -2,6 +2,7 @@ package scs.planus.domain.group.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,15 @@ import java.util.List;
 @Slf4j
 public class GroupController {
     private final GroupService groupService;
+
+    @GetMapping("/groups/search-home")
+    public BaseResponse<List<GroupsGetResponseDto>> getGroupsSearchHome(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                        Pageable pageable) {
+
+        List<GroupsGetResponseDto> responseDtos = groupService.getGroupsOrderByNumOfMembers(pageable);
+
+        return new BaseResponse<>(responseDtos);
+    }
 
     @PostMapping("/groups")
     public BaseResponse<GroupResponseDto> createGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
