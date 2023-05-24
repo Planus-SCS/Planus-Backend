@@ -4,8 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
-import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
@@ -181,35 +179,5 @@ public class MyGroupService {
                 .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
                 .filter(GroupMember::isOnlineStatus)
                 .count();
-    }
-
-    public List<TodoCategoryGetResponseDto> findAllTargetMemberTodoCategories(Long loginMemberId, Long groupId, Long memberId ) {
-        Member loginMember = memberRepository.findById( loginMemberId )
-                .orElseThrow(() -> new PlanusException( NONE_USER ));
-
-        Group group = groupRepository.findByIdAndStatus( groupId )
-                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP ));
-
-        Member targetMember = memberRepository.findById( memberId )
-                .orElseThrow(() -> new PlanusException( NONE_USER ));
-
-        // Member 가 그룹 회원인지 확인
-        Boolean isMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( loginMember.getId(), group.getId() );
-        if (!isMemberJoined) {
-            throw new PlanusException( NOT_JOINED_GROUP );
-        }
-
-        // TargetMember 가 그룹 회원인지 확인
-        Boolean isTargetMemberJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( targetMember.getId(), group.getId() );
-        if (!isTargetMemberJoined) {
-            throw new PlanusException( NOT_JOINED_MEMBER_IN_GROUP );
-        }
-
-        List<MemberTodoCategory> targetMemberTodoCategories = todoCategoryRepository.findMemberTodoCategoryAllByMember( targetMember );
-
-        // TODO : 그룹 개인 투두 용으로만 쓴 카테고리 뿐 만 아니라 모두 응답으로 주는 것에 대한 보안 문제
-        return targetMemberTodoCategories.stream()
-                .map( TodoCategoryGetResponseDto::of )
-                .collect( Collectors.toList() );
     }
 }
