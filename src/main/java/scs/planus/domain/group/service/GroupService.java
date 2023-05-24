@@ -47,17 +47,11 @@ public class GroupService {
 
         List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(groups);
 
-        List<GroupMember> allGroupLeaders = groupMemberRepository.findAllGroupLeaderInGroups(groups);
-
-        List<GroupMembersCountDto> allGroupMembersCount = groupMemberRepository.findAllGroupMembersCount(groups);
-
         List<GroupsGetResponseDto> groupsGetResponseDtos = groups.stream()
                 .map(group -> {
                     List<GroupTagResponseDto> eachGroupTags = getEachGroupTags(group, allGroupTags);
-                    Member eachGroupLeader = getEachGroupLeader(group, allGroupLeaders);
-                    int eachGroupMembersCount = getEachGroupMembersCount(group, allGroupMembersCount);
 
-                    return GroupsGetResponseDto.of(group, eachGroupMembersCount, eachGroupLeader, eachGroupTags);
+                    return GroupsGetResponseDto.of(group, eachGroupTags);
                 })
                 .collect(Collectors.toList());
 
@@ -279,24 +273,6 @@ public class GroupService {
                 .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
                 .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
-    }
-
-    private Member getEachGroupLeader(Group group, List<GroupMember> allGroupLeaders) {
-        GroupMember groupLeader = allGroupLeaders.stream()
-                .filter(gm -> gm.getGroup().getId().equals(group.getId()))
-                .findFirst()
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_LEADER));
-
-        return groupLeader.getMember();
-    }
-
-    private int getEachGroupMembersCount(Group group, List<GroupMembersCountDto> allGroupMembersCount) {
-        GroupMembersCountDto groupMembersCountDto = allGroupMembersCount.stream()
-                .filter(c -> c.getGroupId().equals(group.getId()))
-                .findFirst()
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
-
-        return groupMembersCountDto.getCount();
     }
 
     private void validateLeaderPermission( Member member, Group group ) {
