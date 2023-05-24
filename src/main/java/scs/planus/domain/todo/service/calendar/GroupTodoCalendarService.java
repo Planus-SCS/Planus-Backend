@@ -21,8 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_GROUP;
-import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_GROUP;
+import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -76,7 +75,7 @@ public class GroupTodoCalendarService {
                 });
 
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
-                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_MEMBER_IN_GROUP));
 
         Validator.validateStartDateBeforeEndDate(from, to);
         List<Todo> todos = todoQueryRepository.findGroupMemberPeriodTodosByDate(memberId, groupId, from, to);
@@ -96,7 +95,7 @@ public class GroupTodoCalendarService {
                 });
 
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
-                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+                .orElseThrow(() -> new PlanusException(NOT_JOINED_MEMBER_IN_GROUP));
 
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
 
