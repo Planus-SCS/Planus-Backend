@@ -95,7 +95,7 @@ public class GroupTodoService {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
                 .orElseThrow(() -> new PlanusException(NOT_JOINED_MEMBER_IN_GROUP));
 
-        Todo todo = todoQueryRepository.findOneGroupMemberTodoById(groupId, memberId, todoId)
+        Todo todo = todoQueryRepository.findOneGroupMemberTodoById(memberId, groupId, todoId)
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
         return TodoForGroupResponseDto.of(todo);
     }

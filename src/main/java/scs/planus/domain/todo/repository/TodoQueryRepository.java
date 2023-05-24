@@ -32,7 +32,7 @@ public class TodoQueryRepository {
     /**
      * Query For GroupMemberTodo
      */
-    public Optional<Todo> findOneGroupMemberTodoById(Long groupId, Long memberId, Long todoId) {
+    public Optional<Todo> findOneGroupMemberTodoById(Long memberId, Long groupId, Long todoId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(todo)
                 .join(memberTodo).on(memberTodo.eq(todo))
