@@ -2,6 +2,7 @@ package scs.planus.domain.group.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,29 @@ public class GroupService {
     private final GroupJoinRepository groupJoinRepository;
     private final GroupTagService groupTagService;
     private final TagService tagService;
+
+    public List<GroupsGetResponseDto> getGroupsOrderByNumOfMembers(Pageable pageable) {
+
+        List<Group> groups = groupRepository.findAllByActiveOrderByNumOfMembersAndId(pageable);
+
+        List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(groups);
+
+        List<GroupMember> allGroupLeaders = groupMemberRepository.findAllGroupLeaderInGroups(groups);
+
+        List<GroupMembersCountDto> allGroupMembersCount = groupMemberRepository.findAllGroupMembersCount(groups);
+
+        List<GroupsGetResponseDto> groupsGetResponseDtos = groups.stream()
+                .map(group -> {
+                    List<GroupTagResponseDto> eachGroupTags = getEachGroupTags(group, allGroupTags);
+                    Member eachGroupLeader = getEachGroupLeader(group, allGroupLeaders);
+                    int eachGroupMembersCount = getEachGroupMembersCount(group, allGroupMembersCount);
+
+                    return GroupsGetResponseDto.of(group, eachGroupMembersCount, eachGroupLeader, eachGroupTags);
+                })
+                .collect(Collectors.toList());
+
+        return groupsGetResponseDtos;
+    }
 
     @Transactional
     public GroupResponseDto createGroup(Long memberId, GroupCreateRequestDto requestDto, MultipartFile multipartFile ) {
@@ -248,6 +272,31 @@ public class GroupService {
         withdrawGroupMember.changeStatusToInactive();
 
         return GroupMemberResponseDto.of( withdrawGroupMember );
+    }
+
+    private List<GroupTagResponseDto> getEachGroupTags(Group group, List<GroupTag> allGroupTags) {
+        return allGroupTags.stream()
+                .filter(groupTag -> groupTag.getGroup().getId().equals(group.getId()))
+                .map(GroupTagResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
+    private Member getEachGroupLeader(Group group, List<GroupMember> allGroupLeaders) {
+        GroupMember groupLeader = allGroupLeaders.stream()
+                .filter(gm -> gm.getGroup().getId().equals(group.getId()))
+                .findFirst()
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_LEADER));
+
+        return groupLeader.getMember();
+    }
+
+    private int getEachGroupMembersCount(Group group, List<GroupMembersCountDto> allGroupMembersCount) {
+        GroupMembersCountDto groupMembersCountDto = allGroupMembersCount.stream()
+                .filter(c -> c.getGroupId().equals(group.getId()))
+                .findFirst()
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+
+        return groupMembersCountDto.getCount();
     }
 
     private void validateLeaderPermission( Member member, Group group ) {
