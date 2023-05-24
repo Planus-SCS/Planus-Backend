@@ -30,7 +30,7 @@ public class MyGroupResponseDto {
                 .onlineCount(onlineCount)
                 .memberCount(group.getGroupMembers().size()) // 추가쿼리 발생
                 .limitCount(group.getLimitCount())
-                .leaderName(group.getLeaderName()) // 추가쿼리 발생
+                .leaderName(group.getLeader().getNickname()) // 추가쿼리 발생
                 .groupTags(eachGroupTagDtos)
                 .build();
     }

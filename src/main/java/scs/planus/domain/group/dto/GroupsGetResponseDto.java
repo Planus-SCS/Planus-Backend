@@ -26,8 +26,8 @@ public class GroupsGetResponseDto {
                 .groupImageUrl( group.getGroupImageUrl() )
                 .memberCount( memberCount )
                 .limitCount( group.getLimitCount() )
-                .leaderId( groupLeader.getId() )
-                .leaderName( groupLeader.getNickname() )
+                .leaderId( group.getLeader().getId() )
+                .leaderName( group.getLeader().getNickname() )
                 .groupTags( groupTagNameList )
                 .build();
     }

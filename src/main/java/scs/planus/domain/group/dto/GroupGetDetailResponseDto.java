@@ -31,7 +31,7 @@ public class GroupGetDetailResponseDto {
                 .groupImageUrl( group.getGroupImageUrl() )
                 .memberCount( group.getGroupMembers().size() )
                 .limitCount( group.getLimitCount() )
-                .leaderName( group.getLeaderName() )
+                .leaderName( group.getLeader().getNickname() )
                 .groupTags( groupTagNameList )
                 .build();
     }
