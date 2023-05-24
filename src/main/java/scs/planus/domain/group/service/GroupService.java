@@ -5,25 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import scs.planus.domain.group.dto.GroupCreateRequestDto;
-import scs.planus.domain.group.dto.GroupDetailUpdateRequestDto;
-import scs.planus.domain.group.dto.GroupGetMemberResponseDto;
-import scs.planus.domain.group.dto.GroupGetResponseDto;
-import scs.planus.domain.group.dto.GroupJoinGetResponseDto;
-import scs.planus.domain.group.dto.GroupJoinResponseDto;
-import scs.planus.domain.group.dto.GroupMemberResponseDto;
-import scs.planus.domain.group.dto.GroupNoticeUpdateRequestDto;
-import scs.planus.domain.group.dto.GroupResponseDto;
-import scs.planus.domain.group.dto.GroupTagResponseDto;
+import scs.planus.domain.group.dto.*;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupJoin;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
-import scs.planus.domain.group.repository.GroupJoinRepository;
-import scs.planus.domain.group.repository.GroupMemberQueryRepository;
-import scs.planus.domain.group.repository.GroupMemberRepository;
-import scs.planus.domain.group.repository.GroupRepository;
-import scs.planus.domain.group.repository.GroupTagRepository;
+import scs.planus.domain.group.repository.*;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.tag.dto.TagCreateRequestDto;
@@ -74,7 +61,7 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    public GroupGetResponseDto getGroupDetailForNonMember( Long memberId, Long groupId ) {
+    public GroupGetDetailResponseDto getGroupDetailForNonMember(Long memberId, Long groupId ) {
         Group group = groupRepository.findWithGroupMemberById( groupId )
                 .orElseThrow(() ->  new PlanusException( NOT_EXIST_GROUP ));
 
@@ -91,7 +78,7 @@ public class GroupService {
                         .map( GroupTagResponseDto::of )
                         .collect( Collectors.toList() );
 
-        return GroupGetResponseDto.of( group, groupTagResponseDtos, isJoined );
+        return GroupGetDetailResponseDto.of( group, groupTagResponseDtos, isJoined );
     }
 
     public List<GroupGetMemberResponseDto> getGroupMemberForNonMember(Long groupId) {
