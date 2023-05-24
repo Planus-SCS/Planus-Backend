@@ -1,5 +1,7 @@
 package scs.planus.domain.group.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -18,10 +20,12 @@ import java.util.List;
 @RequestMapping("/app")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Group", description = "Group API Document")
 public class GroupController {
     private final GroupService groupService;
 
     @GetMapping("/groups/search-home")
+    @Operation(summary = "검색 홈에서 초기화면을 위한 Groups 조회 API")
     public BaseResponse<List<GroupsGetResponseDto>> getGroupsSearchHome(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                         Pageable pageable) {
 
@@ -31,6 +35,7 @@ public class GroupController {
     }
 
     @PostMapping("/groups")
+    @Operation(summary = "그룹 생성 API")
     public BaseResponse<GroupResponseDto> createGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                       @RequestPart(value = "image") MultipartFile multipartFile,
                                                       @Valid @RequestPart(value = "groupCreateRequestDto") GroupCreateRequestDto requestDto) {
@@ -41,6 +46,7 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{groupId}")
+    @Operation(summary = "(비회원용) 그룹 상세 정보 조회 API")
     public BaseResponse<GroupGetDetailResponseDto> getGroupDetailForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                               @PathVariable("groupId") Long groupId) {
 
@@ -51,6 +57,7 @@ public class GroupController {
     }
 
     @GetMapping("/groups/{groupId}/members")
+    @Operation(summary = "(비회원용) 그룹 회원 정보 조회 API")
     public BaseResponse<List<GroupGetMemberResponseDto>> getGroupMemberForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                                     @PathVariable("groupId") Long groupId) {
 
@@ -60,6 +67,7 @@ public class GroupController {
     }
 
     @PatchMapping("/groups/{groupId}")
+    @Operation(summary = "(리더용) 그룹 상세 정보 수정 API")
     public BaseResponse<GroupResponseDto> updateGroupDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @PathVariable("groupId") Long groupId,
                                                             @RequestPart(value = "image", required = false) MultipartFile multipartFile,
@@ -71,6 +79,7 @@ public class GroupController {
     }
 
     @PatchMapping("/groups/{groupId}/notice")
+    @Operation(summary = "(리더용) 그룹 공지 수정 API")
     public BaseResponse<GroupResponseDto> updateGroupNotice(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                             @PathVariable("groupId") Long groupId,
                                                             @Valid @RequestBody GroupNoticeUpdateRequestDto requestDto ) {
@@ -82,6 +91,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/groups/{groupId}")
+    @Operation(summary = "(리더용) 그룹 삭제 API")
     public BaseResponse<GroupResponseDto> softDeleteGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                           @PathVariable("groupId") Long groupId ){
 
@@ -92,6 +102,7 @@ public class GroupController {
     }
 
     @PostMapping("/groups/{groupId}/joins")
+    @Operation(summary = "그룹 가입 요청 API")
     public BaseResponse<GroupJoinResponseDto> joinGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                         @PathVariable("groupId") Long groupId ) {
         Long memberId = principalDetails.getId();
@@ -101,6 +112,7 @@ public class GroupController {
     }
 
     @GetMapping("/groups/joins")
+    @Operation(summary = "(리더용) 그룹의 모든 가입 요청 조회 API")
     public BaseResponse<List<GroupJoinGetResponseDto>> getAllGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
         Long memberId = principalDetails.getId();
@@ -110,6 +122,7 @@ public class GroupController {
     }
 
     @PostMapping("/groups/joins/{groupJoinId}/accept")
+    @Operation(summary = "(리더용) 그룹 가입 요청 수락 API")
     public BaseResponse<GroupMemberResponseDto> acceptGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                 @PathVariable("groupJoinId") Long groupJoinId ){
 
@@ -120,6 +133,7 @@ public class GroupController {
     }
 
     @PostMapping("/groups/joins/{groupJoinId}/reject")
+    @Operation(summary = "(리더용) 그룹 가입 요청 거절 API")
     public BaseResponse<GroupJoinResponseDto> rejectGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                               @PathVariable("groupJoinId") Long groupJoinId ){
 
@@ -130,6 +144,7 @@ public class GroupController {
     }
 
     @DeleteMapping("/groups/{groupId}/members/{memberId}")
+    @Operation(summary = "(리더용) 그룹 회원 강제 탈퇴 API")
     public BaseResponse<GroupMemberResponseDto> withdrawGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                     @PathVariable("groupId") Long groupId,
                                                                     @PathVariable("memberId") Long memberId) {
