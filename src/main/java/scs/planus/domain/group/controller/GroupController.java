@@ -101,48 +101,6 @@ public class GroupController {
         return new BaseResponse<>( responseDto );
     }
 
-    @PostMapping("/groups/{groupId}/joins")
-    @Operation(summary = "그룹 가입 요청 API")
-    public BaseResponse<GroupJoinResponseDto> joinGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                        @PathVariable("groupId") Long groupId ) {
-        Long memberId = principalDetails.getId();
-        GroupJoinResponseDto responseDto = groupService.joinGroup( memberId, groupId );
-
-        return new BaseResponse<>( responseDto );
-    }
-
-    @GetMapping("/groups/joins")
-    @Operation(summary = "(리더용) 그룹의 모든 가입 요청 조회 API")
-    public BaseResponse<List<GroupJoinGetResponseDto>> getAllGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
-        Long memberId = principalDetails.getId();
-        List<GroupJoinGetResponseDto> responseDto = groupService.getAllGroupJoin( memberId );
-
-        return new BaseResponse<>( responseDto );
-    }
-
-    @PostMapping("/groups/joins/{groupJoinId}/accept")
-    @Operation(summary = "(리더용) 그룹 가입 요청 수락 API")
-    public BaseResponse<GroupMemberResponseDto> acceptGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                @PathVariable("groupJoinId") Long groupJoinId ){
-
-        Long memberId = principalDetails.getId();
-        GroupMemberResponseDto responseDto = groupService.acceptGroupJoin( memberId, groupJoinId );
-
-        return new BaseResponse<>( responseDto );
-    }
-
-    @PostMapping("/groups/joins/{groupJoinId}/reject")
-    @Operation(summary = "(리더용) 그룹 가입 요청 거절 API")
-    public BaseResponse<GroupJoinResponseDto> rejectGroupJoin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                              @PathVariable("groupJoinId") Long groupJoinId ){
-
-        Long memberId = principalDetails.getId();
-        GroupJoinResponseDto responseDto = groupService.rejectGroupJoin( memberId, groupJoinId );
-
-        return new BaseResponse<>( responseDto );
-    }
-
     @DeleteMapping("/groups/{groupId}/members/{memberId}")
     @Operation(summary = "(리더용) 그룹 회원 강제 탈퇴 API")
     public BaseResponse<GroupMemberResponseDto> withdrawGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,

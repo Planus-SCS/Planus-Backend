@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import scs.planus.domain.group.dto.*;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.entity.GroupJoin;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
 import scs.planus.domain.group.repository.*;
@@ -37,7 +36,6 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupMemberQueryRepository groupMemberQueryRepository;
     private final GroupTagRepository groupTagRepository;
-    private final GroupJoinRepository groupJoinRepository;
     private final GroupTagService groupTagService;
     private final TagService tagService;
 
@@ -170,84 +168,6 @@ public class GroupService {
     }
 
     @Transactional
-    public GroupJoinResponseDto joinGroup( Long memberId, Long groupId ) {
-        Group group = groupRepository.findByIdAndStatus(groupId)
-                .orElseThrow(() -> { throw new PlanusException( NOT_EXIST_GROUP ); });
-
-        Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
-
-        groupJoinRepository.findByMemberIdAndGroupId(memberId, groupId)
-                .ifPresent(groupJoin -> {
-                    throw new PlanusException(ALREADY_APPLY_JOINED_GROUP);});
-
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus( group );
-
-        // 제한 인원 초과 검증
-        validateExceedLimit( group, allGroupMembers );
-
-        // 가입 여부 검증
-        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
-        if (isJoined) {throw new PlanusException( ALREADY_JOINED_GROUP );}
-
-        GroupJoin groupJoin = GroupJoin.createGroupJoin( member, group );
-        GroupJoin saveGroupJoin = groupJoinRepository.save( groupJoin );
-
-        return GroupJoinResponseDto.of( saveGroupJoin );
-    }
-
-    public List<GroupJoinGetResponseDto> getAllGroupJoin(Long memberId ) {
-        Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
-
-        // 내가 리더인 그룹들 조회
-        List<GroupMember> groupMembers = groupMemberRepository.findWithGroupByLeaderMember(member);
-        List<Group> groups = groupMembers.stream()
-                .map(GroupMember::getGroup)
-                .collect(Collectors.toList());
-
-        // 내가 리더인 그룹에 들어온 가입 신청 조회
-        List<GroupJoin> allGroupJoinsOfGroups = groupJoinRepository.findAllByGroupIn(groups);
-
-        return allGroupJoinsOfGroups.stream()
-                .map(GroupJoinGetResponseDto::of)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public GroupMemberResponseDto acceptGroupJoin( Long memberId, Long groupJoinId ) {
-        Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
-
-        GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
-                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
-
-        validateLeaderPermission( member, groupJoin.getGroup() );
-
-        GroupMember groupMember = GroupMember.creatGroupMember( groupJoin.getMember(), groupJoin.getGroup() );
-        GroupMember saveGroupMember = groupMemberRepository.save( groupMember );
-
-        groupJoinRepository.delete( groupJoin );
-
-        return GroupMemberResponseDto.of( saveGroupMember );
-    }
-
-    @Transactional
-    public GroupJoinResponseDto rejectGroupJoin( Long memberId, Long groupJoinId ) {
-        Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
-
-        GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
-                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
-
-        validateLeaderPermission( member, groupJoin.getGroup() );
-
-        groupJoinRepository.delete( groupJoin );
-
-        return GroupJoinResponseDto.of( groupJoin );
-    }
-
-    @Transactional
     public GroupMemberResponseDto withdrawGroupMember(Long leaderId, Long memberId, Long groupId) {
         Member leader = memberRepository.findById( leaderId )
                 .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
@@ -282,12 +202,5 @@ public class GroupService {
 
         if ( !member.equals( groupLeader.getMember() ) )
             throw new PlanusException( NOT_GROUP_LEADER_PERMISSION );
-    }
-
-    private void validateExceedLimit( Group group, List<GroupMember> allGroupMembers ) {
-        // 제한 인원을 초과하지 않았는지
-        if ( allGroupMembers.size() >= group.getLimitCount() ) {
-            throw new PlanusException( EXCEED_GROUP_LIMIT_COUNT );
-        }
     }
 }
