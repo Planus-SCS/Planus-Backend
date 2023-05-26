@@ -75,7 +75,7 @@ public class TodoQueryRepository {
     /**
      * Query For MemberTodo
      */
-    public Optional<MemberTodo> findOneMemberTodoById(Long todoId, Long memberId) {
+    public Optional<MemberTodo> findOneMemberTodoById(Long memberId, Long todoId) {
         return Optional.ofNullable(queryFactory
                 .selectFrom(memberTodo)
                 .join(memberTodo.member, member)
