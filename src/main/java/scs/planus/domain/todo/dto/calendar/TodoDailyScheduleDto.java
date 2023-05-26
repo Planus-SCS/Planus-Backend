@@ -3,6 +3,7 @@ package scs.planus.domain.todo.dto.calendar;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
+import scs.planus.domain.category.entity.Color;
 import scs.planus.domain.todo.entity.Todo;
 
 import java.time.LocalTime;
@@ -12,7 +13,7 @@ import java.time.LocalTime;
 public class TodoDailyScheduleDto {
 
     private Long todoId;
-    private String categoryColor;
+    private Color categoryColor;
     private String title;
     @JsonFormat(pattern = "HH:mm", shape = JsonFormat.Shape.STRING)
     private LocalTime startTime;
@@ -25,7 +26,7 @@ public class TodoDailyScheduleDto {
     public static TodoDailyScheduleDto of(Todo todo) {
         return TodoDailyScheduleDto.builder()
                 .todoId(todo.getId())
-                .categoryColor(todo.getTodoCategory().getColor().toString())
+                .categoryColor(todo.getTodoCategory().getColor())
                 .title(todo.getTitle())
                 .startTime(todo.getStartTime())
                 .hasGroup(todo.getGroup() != null)

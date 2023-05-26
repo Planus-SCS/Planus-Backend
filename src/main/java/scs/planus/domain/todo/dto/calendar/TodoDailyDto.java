@@ -2,6 +2,7 @@ package scs.planus.domain.todo.dto.calendar;
 
 import lombok.Builder;
 import lombok.Getter;
+import scs.planus.domain.category.entity.Color;
 import scs.planus.domain.todo.entity.Todo;
 
 @Getter
@@ -9,7 +10,7 @@ import scs.planus.domain.todo.entity.Todo;
 public class TodoDailyDto {
 
     private Long todoId;
-    private String categoryColor;
+    private Color categoryColor;
     private String title;
 
     private Boolean hasGroup;
@@ -20,7 +21,7 @@ public class TodoDailyDto {
     public static TodoDailyDto of(Todo todo) {
         return TodoDailyDto.builder()
                 .todoId(todo.getId())
-                .categoryColor(todo.getTodoCategory().getColor().toString())
+                .categoryColor(todo.getTodoCategory().getColor())
                 .title(todo.getTitle())
                 .hasGroup(todo.getGroup() != null)
                 .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
