@@ -22,14 +22,16 @@ import java.time.LocalTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberTodo extends Todo{
 
+    private boolean completion;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
     @Builder
-    public MemberTodo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate, boolean showDDay, boolean completion,
-                      TodoCategory todoCategory, Group group, Member member) {
-        super(title, description, startTime, startDate, endDate, showDDay, completion, todoCategory, group);
+    public MemberTodo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate,
+                      boolean isGroupTodo, TodoCategory todoCategory, Group group, Member member) {
+        super(title, description, startTime, startDate, endDate, isGroupTodo, todoCategory, group);
         this.member = member;
     }
 }
