@@ -56,6 +56,22 @@ public class GroupService {
         return groupsGetResponseDtos;
     }
 
+    public List<GroupsGetResponseDto> getGroupsSearchByKeyword(String keyword, Pageable pageable) {
+
+        List<Group> groups = groupRepository.findAllByKeywordAndActiveOrderByNumOfMembersAndId(keyword, pageable);
+
+        List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(groups);
+
+        List<GroupsGetResponseDto> groupsGetResponseDtos = groups.stream()
+                .map(group -> {
+                    List<GroupTagResponseDto> eachGroupTags = getEachGroupTags(group, allGroupTags);
+
+                    return GroupsGetResponseDto.of(group, eachGroupTags);
+                }).collect(Collectors.toList());
+
+        return groupsGetResponseDtos;
+    }
+
     @Transactional
     public GroupResponseDto createGroup(Long memberId, GroupCreateRequestDto requestDto, MultipartFile multipartFile ) {
         Member member = memberRepository.findById( memberId )

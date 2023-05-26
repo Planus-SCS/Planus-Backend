@@ -34,6 +34,17 @@ public class GroupController {
         return new BaseResponse<>(responseDtos);
     }
 
+    @GetMapping("/groups/search")
+    @Operation(summary = "그룹 이름 검색 API")
+    public BaseResponse<List<GroupsGetResponseDto>> getGroupsSearch(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                    @RequestParam("keyword") String keyword,
+                                                                    Pageable pageable) {
+
+        List<GroupsGetResponseDto> responseDtos = groupService.getGroupsSearchByKeyword(keyword, pageable);
+
+        return new BaseResponse<>(responseDtos);
+    }
+
     @PostMapping("/groups")
     @Operation(summary = "그룹 생성 API")
     public BaseResponse<GroupResponseDto> createGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
