@@ -27,7 +27,7 @@ public class GroupTodo extends Todo {
 
     @Builder
     public GroupTodo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate,
-                     boolean showDDay, boolean completion, TodoCategory todoCategory, Group group) {
-        super(title, description, startTime, startDate, endDate, showDDay, completion, todoCategory, group);
+                     boolean isGroupTodo, TodoCategory todoCategory, Group group) {
+        super(title, description, startTime, startDate, endDate, isGroupTodo, todoCategory, group);
     }
 }
