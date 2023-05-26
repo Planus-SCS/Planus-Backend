@@ -74,6 +74,16 @@ public class GroupTodoController {
         return new BaseResponse<>(responseDto);
     }
 
+    @PatchMapping("/my-groups/{groupId}/todos/{todoId}/group-completion")
+    @Operation(summary = "Group Todo 완료 API")
+    public BaseResponse<TodoResponseDto> checkCompletion(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                 @PathVariable Long groupId,
+                                                                 @PathVariable Long todoId) {
+        Long memberId = principalDetails.getId();
+        TodoResponseDto responseDto = groupTodoService.checkGroupTodo(memberId, groupId, todoId);
+        return new BaseResponse<>(responseDto);
+    }
+
     @DeleteMapping("/my-groups/{groupId}/todos/{todoId}")
     @Operation(summary = "Group Todo 삭제 API")
     public BaseResponse<TodoResponseDto> deleteTodo(@AuthenticationPrincipal PrincipalDetails principalDetails,
