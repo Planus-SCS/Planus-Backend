@@ -17,6 +17,7 @@ import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
 import scs.planus.global.exception.PlanusException;
@@ -34,6 +35,7 @@ public class GroupTodoService {
 
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
     private final TodoCategoryRepository todoCategoryRepository;
     private final TodoRepository todoRepository;
     private final TodoQueryRepository todoQueryRepository;
@@ -127,6 +129,25 @@ public class GroupTodoService {
                 requestDto.getStartDate(), requestDto.getEndDate(), groupTodoCategory, group);
 
         return TodoDetailsResponseDto.of(groupTodo);
+    }
+
+    @Transactional
+    public TodoResponseDto checkGroupTodo(Long memberId, Long groupId, Long todoId) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        GroupTodoCompletion groupTodoCompletion = groupTodoCompletionRepository.findByMemberIdAndTodoId(memberId, groupTodo.getId())
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+
+        groupTodoCompletion.changeCompletion();
+        return TodoResponseDto.of(groupTodo);
     }
 
     @Transactional
