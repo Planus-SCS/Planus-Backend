@@ -9,17 +9,21 @@ import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.service.MyGroupService;
-import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.domain.todo.dto.calendar.AllTodoResponseDto;
 import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
+import scs.planus.domain.todo.dto.calendar.AllTodoResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
+import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.entity.MemberTodo;
+import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
+import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.validator.Validator;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_GROUP_TODO;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,14 +32,13 @@ import java.util.stream.Collectors;
 public class MemberTodoCalendarService {
 
     private final MyGroupService myGroupService;
-    private final MemberRepository memberRepository;
     private final TodoQueryRepository todoQueryRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
 
     public AllTodoResponseDto getPeriodDetailTodos(Long memberId, LocalDate from, LocalDate to) {
         Validator.validateStartDateBeforeEndDate(from, to);
 
-        // 내가 속한 모든 그룹 조회
         List<GroupMember> groupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(memberId);
         List<Group> groups = groupMembers.stream()
                 .map(GroupMember::getGroup)
@@ -43,13 +46,20 @@ public class MemberTodoCalendarService {
 
         List<MemberTodo> todos = todoQueryRepository.findAllPeriodMemberTodosByDate(memberId, from, to);
         List<GroupTodo> groupTodos = todoQueryRepository.findAllPeriodGroupTodosByDate(groups, from, to);
+        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdAndInGroupTodos(memberId, groupTodos);
 
         List<TodoDetailsResponseDto> memberTodos = todos.stream()
                 .map(TodoDetailsResponseDto::of)
                 .collect(Collectors.toList());
 
         List<TodoDetailsResponseDto> myGroupTodos = groupTodos.stream()
-                .map(TodoDetailsResponseDto::of)
+                .map(todo -> {
+                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
+                            .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
+                            .findFirst()
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                    return TodoDetailsResponseDto.ofGroupTodo(todo, todoCompletion);
+                })
                 .collect(Collectors.toList());
         return AllTodoResponseDto.of(memberTodos, myGroupTodos);
     }
