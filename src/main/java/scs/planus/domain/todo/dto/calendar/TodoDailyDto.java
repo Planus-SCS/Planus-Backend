@@ -22,7 +22,7 @@ public class TodoDailyDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalTime startTime;
 
-    private Boolean hasGroup;
+    private Boolean isGroupTodo;
     private Boolean isPeriodTodo;
     private Boolean hasDescription;
 
@@ -35,10 +35,10 @@ public class TodoDailyDto {
                 .categoryColor(todo.getTodoCategory().getColor())
                 .title(todo.getTitle())
                 .startTime(todo.getStartTime())
-                .hasGroup(todo.getGroup() != null)
+                .isGroupTodo(todo.isGroupTodo())
                 .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
                 .hasDescription(todo.getDescription() != null)
-                .isCompleted(todo.isCompletion())
+                .isCompleted(((MemberTodo)todo).isCompletion())
                 .build();
     }
 }
