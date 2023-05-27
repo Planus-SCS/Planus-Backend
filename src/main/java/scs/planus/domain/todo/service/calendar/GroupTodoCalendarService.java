@@ -11,6 +11,7 @@ import scs.planus.domain.todo.dto.calendar.TodoDailyDto;
 import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
 import scs.planus.domain.todo.dto.calendar.TodoPeriodResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
+import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
@@ -113,10 +114,34 @@ public class GroupTodoCalendarService {
                 .collect(Collectors.toList());
     }
 
+    private List<TodoDailyDto> getDailyGroupSchedules(List<GroupTodo> todos, List<GroupTodoCompletion> groupTodoCompletions) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() != null)
+                .map(todo -> {
+                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
+                            .filter(gtc -> gtc.getGroupTodo().equals(todo))
+                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                    return TodoDailyDto.ofGroupTodo(todo, todoCompletion);
+                })
+                .collect(Collectors.toList());
+    }
+
     private List<TodoDailyDto> getDailyGroupTodos(List<GroupTodo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() == null)
                 .map(TodoDailyDto::ofGroupTodo)
+                .collect(Collectors.toList());
+    }
+
+    private List<TodoDailyDto> getDailyGroupTodos(List<GroupTodo> todos, List<GroupTodoCompletion> groupTodoCompletions) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() == null)
+                .map(todo -> {
+                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
+                            .filter(gtc -> gtc.getGroupTodo().equals(todo))
+                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                    return TodoDailyDto.ofGroupTodo(todo, todoCompletion);
+                })
                 .collect(Collectors.toList());
     }
 
