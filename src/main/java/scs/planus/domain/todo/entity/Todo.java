@@ -42,7 +42,7 @@ public abstract class Todo extends BaseTimeEntity {
 
     private LocalDate endDate;
 
-    private Boolean isGroupTodo;
+    private boolean isGroupTodo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_category_id")
