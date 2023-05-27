@@ -9,10 +9,10 @@ import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.todo.dto.calendar.TodoDailyDto;
 import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.calendar.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.calendar.TodoPeriodResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.validator.Validator;
@@ -32,6 +32,7 @@ public class GroupTodoCalendarService {
     private final TodoQueryRepository todoQueryRepository;
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
 
     public List<TodoPeriodResponseDto> getPeriodGroupTodos(Long memberId, Long groupId, LocalDate from, LocalDate to) {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
@@ -59,8 +60,8 @@ public class GroupTodoCalendarService {
                 });
 
         List<GroupTodo> todos = todoQueryRepository.findDailyGroupTodosByDate(groupId, date);
-        List<TodoDailyScheduleDto> todoDailyScheduleDtos = getDailySchedules(todos);
-        List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
+        List<TodoDailyDto> todoDailyScheduleDtos = getDailyGroupSchedules(todos);
+        List<TodoDailyDto> todoDailyDtos = getDailyGroupTodos(todos);
 
         return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
     }
@@ -99,20 +100,34 @@ public class GroupTodoCalendarService {
 
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
 
-        List<TodoDailyScheduleDto> dailySchedules = getDailySchedules(todos);
+        List<TodoDailyDto> dailySchedules = getDailySchedules(todos);
         List<TodoDailyDto> dailyTodos = getDailyTodos(todos);
 
         return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
     }
 
-    private List<TodoDailyScheduleDto> getDailySchedules(List<? extends Todo> todos) {
+    private List<TodoDailyDto> getDailyGroupSchedules(List<GroupTodo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() != null)
-                .map(TodoDailyScheduleDto::of)
+                .map(TodoDailyDto::ofGroupTodo)
                 .collect(Collectors.toList());
     }
 
-    private List<TodoDailyDto> getDailyTodos(List<? extends Todo> todos) {
+    private List<TodoDailyDto> getDailyGroupTodos(List<GroupTodo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() == null)
+                .map(TodoDailyDto::ofGroupTodo)
+                .collect(Collectors.toList());
+    }
+
+    private List<TodoDailyDto> getDailySchedules(List<Todo> todos) {
+        return todos.stream()
+                .filter(todo -> todo.getStartTime() != null)
+                .map(TodoDailyDto::of)
+                .collect(Collectors.toList());
+    }
+
+    private List<TodoDailyDto> getDailyTodos(List<Todo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() == null)
                 .map(TodoDailyDto::of)
