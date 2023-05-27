@@ -34,4 +34,8 @@ public class MemberTodo extends Todo{
         super(title, description, startTime, startDate, endDate, isGroupTodo, todoCategory, group);
         this.member = member;
     }
+
+    public void changeCompletion() {
+        this.completion = !this.completion;
+    }
 }
