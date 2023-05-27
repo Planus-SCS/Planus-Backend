@@ -44,7 +44,7 @@ public class GroupTodoController {
 
     @GetMapping("/my-groups/{groupId}/todos/{todoId}")
     @Operation(summary = "단일 Group Todo 조회 API")
-    public BaseResponse<TodoForGroupResponseDto>  getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<TodoForGroupResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                @PathVariable Long groupId,
                                                                @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
@@ -74,11 +74,11 @@ public class GroupTodoController {
         return new BaseResponse<>(responseDto);
     }
 
-    @PatchMapping("/my-groups/{groupId}/todos/{todoId}/group-completion")
-    @Operation(summary = "Group Todo 완료 API")
+    @PatchMapping("/my-groups/{groupId}/todos/{todoId}/completion")
+    @Operation(summary = "Group Todo 완료 API (GroupTodoCompletion)")
     public BaseResponse<TodoResponseDto> checkCompletion(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                 @PathVariable Long groupId,
-                                                                 @PathVariable Long todoId) {
+                                                         @PathVariable Long groupId,
+                                                         @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
         TodoResponseDto responseDto = groupTodoService.checkGroupTodo(memberId, groupId, todoId);
         return new BaseResponse<>(responseDto);
