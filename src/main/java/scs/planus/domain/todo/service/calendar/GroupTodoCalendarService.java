@@ -88,6 +88,7 @@ public class GroupTodoCalendarService {
         return responseDtos;
     }
 
+    // TODO 리팩토링 절실..
     public TodoDailyResponseDto getGroupMemberDailyTodos(Long loginId, Long groupId, Long memberId, LocalDate date) {
         GroupMember loginGroupMember = groupMemberRepository.findByMemberIdAndGroupId(loginId, groupId)
                 .orElseThrow(() -> {
@@ -101,8 +102,23 @@ public class GroupTodoCalendarService {
 
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
 
+        List<GroupTodo> groupTodos = todos.stream()
+                .filter(Todo::isGroupTodo)
+                .map(todo -> (GroupTodo) todo)
+                .collect(Collectors.toList());
+
+        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findByMemberIdAndInGroupTodos(memberId, groupTodos);
+
+        todos.removeAll(groupTodos);
+
+        List<TodoDailyDto> dailyGroupMemberSchedules = getDailyGroupSchedules(groupTodos, groupTodoCompletions);
+        List<TodoDailyDto> dailyGroupMemberTodos = getDailyGroupTodos(groupTodos, groupTodoCompletions);
+
         List<TodoDailyDto> dailySchedules = getDailySchedules(todos);
         List<TodoDailyDto> dailyTodos = getDailyTodos(todos);
+
+        dailySchedules.addAll(dailyGroupMemberSchedules);
+        dailyTodos.addAll(dailyGroupMemberTodos);
 
         return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
     }
