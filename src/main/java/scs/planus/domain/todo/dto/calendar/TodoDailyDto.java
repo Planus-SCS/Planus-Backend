@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import scs.planus.domain.category.entity.Color;
 import scs.planus.domain.todo.entity.GroupTodo;
+import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.entity.Todo;
 
@@ -52,6 +53,19 @@ public class TodoDailyDto {
                 .isGroupTodo(todo.isGroupTodo())
                 .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
                 .hasDescription(todo.getDescription() != null)
+                .build();
+    }
+
+    public static TodoDailyDto ofGroupTodo(GroupTodo todo, GroupTodoCompletion completion) {
+        return TodoDailyDto.builder()
+                .todoId(todo.getId())
+                .categoryColor(todo.getTodoCategory().getColor())
+                .title(todo.getTitle())
+                .startTime(todo.getStartTime())
+                .isGroupTodo(todo.isGroupTodo())
+                .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
+                .hasDescription(todo.getDescription() != null)
+                .isCompleted(completion.isCompletion())
                 .build();
     }
 }
