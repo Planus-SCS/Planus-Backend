@@ -107,7 +107,7 @@ public class GroupTodoCalendarService {
                 .map(todo -> (GroupTodo) todo)
                 .collect(Collectors.toList());
 
-        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findByMemberIdAndInGroupTodos(memberId, groupTodos);
+        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdAndInGroupTodos(memberId, groupTodos);
 
         todos.removeAll(groupTodos);
 
