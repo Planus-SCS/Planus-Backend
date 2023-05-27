@@ -10,7 +10,6 @@ import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
-import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoForGroupResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
@@ -103,7 +102,7 @@ public class GroupTodoService {
     }
 
     @Transactional
-    public TodoDetailsResponseDto updateTodo(Long memberId, Long groupId, Long todoId, TodoRequestDto requestDto) {
+    public TodoResponseDto updateTodo(Long memberId, Long groupId, Long todoId, TodoRequestDto requestDto) {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
                 .orElseThrow(() -> {
                     groupRepository.findById(groupId)
@@ -128,7 +127,7 @@ public class GroupTodoService {
         groupTodo.update(requestDto.getTitle(), requestDto.getDescription(), requestDto.getStartTime(),
                 requestDto.getStartDate(), requestDto.getEndDate(), groupTodoCategory, group);
 
-        return TodoDetailsResponseDto.of(groupTodo);
+        return TodoResponseDto.of(groupTodo);
     }
 
     @Transactional
