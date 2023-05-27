@@ -18,9 +18,9 @@ public interface TodoCategoryRepository extends JpaRepository<TodoCategory, Long
      * Query For Member Todo Category
      */
     @Query("select mc from MemberTodoCategory mc " +
-            "where mc.id = :categoryId and mc.member= :member and mc.status = 'ACTIVE'")
-    Optional<MemberTodoCategory> findMemberTodoCategoryByIdAndMember(@Param("categoryId") Long categoryId,
-                                                                     @Param("member") Member member);
+            "where mc.id = :categoryId and mc.member.id= :memberId and mc.status = 'ACTIVE'")
+    Optional<MemberTodoCategory> findMemberTodoCategoryByIdAndMember(@Param("memberId") Long memberId,
+                                                                     @Param("categoryId") Long categoryId);
 
     @Query("select mc from MemberTodoCategory mc " +
             "where mc.member= :member")
