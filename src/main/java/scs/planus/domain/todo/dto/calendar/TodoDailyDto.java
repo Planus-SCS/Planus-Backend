@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import scs.planus.domain.category.entity.Color;
+import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.entity.Todo;
 
@@ -39,6 +40,18 @@ public class TodoDailyDto {
                 .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
                 .hasDescription(todo.getDescription() != null)
                 .isCompleted(((MemberTodo)todo).isCompletion())
+                .build();
+    }
+
+    public static TodoDailyDto ofGroupTodo(GroupTodo todo) {
+        return TodoDailyDto.builder()
+                .todoId(todo.getId())
+                .categoryColor(todo.getTodoCategory().getColor())
+                .title(todo.getTitle())
+                .startTime(todo.getStartTime())
+                .isGroupTodo(todo.isGroupTodo())
+                .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
+                .hasDescription(todo.getDescription() != null)
                 .build();
     }
 }
