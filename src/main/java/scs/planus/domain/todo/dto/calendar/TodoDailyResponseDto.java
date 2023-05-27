@@ -9,10 +9,10 @@ import java.util.List;
 @Builder
 public class TodoDailyResponseDto {
 
-    private List<TodoDailyScheduleDto> dailySchedules;
+    private List<TodoDailyDto> dailySchedules;
     private List<TodoDailyDto> dailyTodos;
 
-    public static TodoDailyResponseDto of(List<TodoDailyScheduleDto> todoDailyScheduleDtos,
+    public static TodoDailyResponseDto of(List<TodoDailyDto> todoDailyScheduleDtos,
                                           List<TodoDailyDto> todoDailyDtos) {
         return TodoDailyResponseDto.builder()
                 .dailySchedules(todoDailyScheduleDtos)
