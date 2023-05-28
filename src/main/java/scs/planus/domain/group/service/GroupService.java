@@ -206,12 +206,14 @@ public class GroupService {
 
     @Transactional
     public GroupMemberResponseDto softWithdraw( Long memberId, Long groupId ) {
-        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId( memberId, groupId )
                 .orElseThrow(() -> {
-                    groupRepository.findByIdAndStatus(groupId)
-                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
-                    return new PlanusException(NOT_JOINED_GROUP);
+                    groupRepository.findByIdAndStatus( groupId )
+                            .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP ));
+                    return new PlanusException( NOT_JOINED_GROUP );
                 });
+
+        if ( groupMember.isLeader() ) {throw new PlanusException( CANNOT_WITHDRAW );}
 
         groupMember.changeStatusToInactive();
 
