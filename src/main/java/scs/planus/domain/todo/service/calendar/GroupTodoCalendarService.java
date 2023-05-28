@@ -89,7 +89,6 @@ public class GroupTodoCalendarService {
         return responseDtos;
     }
 
-    // TODO 리팩토링 절실..
     public TodoDailyResponseDto getGroupMemberDailyTodos(Long loginId, Long groupId, Long memberId, LocalDate date) {
         GroupMember loginGroupMember = groupMemberRepository.findByMemberIdAndGroupId(loginId, groupId)
                 .orElseThrow(() -> {
@@ -104,17 +103,7 @@ public class GroupTodoCalendarService {
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
         List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdOnGroupId(memberId, groupId);
 
-        List<TodoDailyDto> allTodos = todos.stream()
-                .map(todo -> {
-                    if (!todo.isGroupTodo()) {
-                        return TodoDailyDto.of(todo);
-                    }
-                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
-                            .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
-                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
-                    return TodoDailyDto.ofGroupTodo((GroupTodo) todo, todoCompletion);
-                })
-                .collect(Collectors.toList());
+        List<TodoDailyDto> allTodos = getAllGroupMemberTodos(todos, groupTodoCompletions);
 
         List<TodoDailyDto> dailySchedules = allTodos.stream()
                 .filter(todoDailyDto -> todoDailyDto.getStartTime() != null)
@@ -178,6 +167,20 @@ public class GroupTodoCalendarService {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() == null)
                 .map(TodoDailyDto::of)
+                .collect(Collectors.toList());
+    }
+
+    private List<TodoDailyDto> getAllGroupMemberTodos(List<Todo> todos, List<GroupTodoCompletion> groupTodoCompletions) {
+        return todos.stream()
+                .map(todo -> {
+                    if (!todo.isGroupTodo()) {
+                        return TodoDailyDto.of(todo);
+                    }
+                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
+                            .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
+                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                    return TodoDailyDto.ofGroupTodo((GroupTodo) todo, todoCompletion);
+                })
                 .collect(Collectors.toList());
     }
 }
