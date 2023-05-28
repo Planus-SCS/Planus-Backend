@@ -16,6 +16,12 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             "order by g.groupMembers.size desc, g.id desc ")
     List<Group> findAllByActiveOrderByNumOfMembersAndId(Pageable pageable);
 
+    @Query("select g from Group g " +
+            "where g.status= 'ACTIVE' " +
+            "and g.name like %:keyword% " +
+            "order by g.groupMembers.size desc, g.id desc ")
+    List<Group> findAllByKeywordAndActiveOrderByNumOfMembersAndId(@Param("keyword") String keyword, Pageable pageable);
+
     @Query("select distinct g " +
             "from Group g " +
             "join fetch g.groupMembers gm " +

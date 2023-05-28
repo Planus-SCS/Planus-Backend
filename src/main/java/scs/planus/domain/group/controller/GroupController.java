@@ -34,6 +34,17 @@ public class GroupController {
         return new BaseResponse<>(responseDtos);
     }
 
+    @GetMapping("/groups/search")
+    @Operation(summary = "그룹 이름 검색 API")
+    public BaseResponse<List<GroupsGetResponseDto>> getGroupsSearch(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                    @RequestParam("keyword") String keyword,
+                                                                    Pageable pageable) {
+
+        List<GroupsGetResponseDto> responseDtos = groupService.getGroupsSearchByKeyword(keyword, pageable);
+
+        return new BaseResponse<>(responseDtos);
+    }
+
     @PostMapping("/groups")
     @Operation(summary = "그룹 생성 API")
     public BaseResponse<GroupResponseDto> createGroup(@AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -108,6 +119,16 @@ public class GroupController {
                                                                     @PathVariable("memberId") Long memberId) {
         Long leaderId = principalDetails.getId();
         GroupMemberResponseDto responseDto = groupService.withdrawGroupMember(leaderId, memberId, groupId);
+
+        return new BaseResponse<>(responseDto);
+    }
+
+    @DeleteMapping("/groups/{groupId}/withdraw")
+    @Operation(summary = "(회원용) 그룹 자발적 탈퇴 API")
+    public BaseResponse<GroupMemberResponseDto> withdraw(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                         @PathVariable("groupId") Long groupId) {
+        Long memberId = principalDetails.getId();
+        GroupMemberResponseDto responseDto = groupService.softWithdraw(memberId, groupId);
 
         return new BaseResponse<>(responseDto);
     }

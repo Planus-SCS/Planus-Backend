@@ -56,6 +56,22 @@ public class GroupService {
         return groupsGetResponseDtos;
     }
 
+    public List<GroupsGetResponseDto> getGroupsSearchByKeyword(String keyword, Pageable pageable) {
+
+        List<Group> groups = groupRepository.findAllByKeywordAndActiveOrderByNumOfMembersAndId(keyword, pageable);
+
+        List<GroupTag> allGroupTags = groupTagRepository.findAllTagInGroups(groups);
+
+        List<GroupsGetResponseDto> groupsGetResponseDtos = groups.stream()
+                .map(group -> {
+                    List<GroupTagResponseDto> eachGroupTags = getEachGroupTags(group, allGroupTags);
+
+                    return GroupsGetResponseDto.of(group, eachGroupTags);
+                }).collect(Collectors.toList());
+
+        return groupsGetResponseDtos;
+    }
+
     @Transactional
     public GroupResponseDto createGroup(Long memberId, GroupCreateRequestDto requestDto, MultipartFile multipartFile ) {
         Member member = memberRepository.findById( memberId )
@@ -186,6 +202,22 @@ public class GroupService {
         withdrawGroupMember.changeStatusToInactive();
 
         return GroupMemberResponseDto.of( withdrawGroupMember );
+    }
+
+    @Transactional
+    public GroupMemberResponseDto softWithdraw( Long memberId, Long groupId ) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId( memberId, groupId )
+                .orElseThrow(() -> {
+                    groupRepository.findByIdAndStatus( groupId )
+                            .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP ));
+                    return new PlanusException( NOT_JOINED_GROUP );
+                });
+
+        if ( groupMember.isLeader() ) {throw new PlanusException( CANNOT_WITHDRAW );}
+
+        groupMember.changeStatusToInactive();
+
+        return GroupMemberResponseDto.of( groupMember );
     }
 
     // TODO MyGroupService 내 동일 메서드 존재 -> 추후 통합 리펙토링 고려
