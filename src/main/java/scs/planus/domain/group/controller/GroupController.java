@@ -123,4 +123,14 @@ public class GroupController {
         return new BaseResponse<>(responseDto);
     }
 
+    @DeleteMapping("/groups/{groupId}/withdraw")
+    @Operation(summary = "(회원용) 그룹 자발적 탈퇴 API")
+    public BaseResponse<GroupMemberResponseDto> withdraw(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                         @PathVariable("groupId") Long groupId) {
+        Long memberId = principalDetails.getId();
+        GroupMemberResponseDto responseDto = groupService.softWithdraw(memberId, groupId);
+
+        return new BaseResponse<>(responseDto);
+    }
+
 }
