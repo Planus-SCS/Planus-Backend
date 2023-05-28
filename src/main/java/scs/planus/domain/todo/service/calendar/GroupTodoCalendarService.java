@@ -125,48 +125,10 @@ public class GroupTodoCalendarService {
                 .collect(Collectors.toList());
     }
 
-    private List<TodoDailyDto> getDailyGroupSchedules(List<GroupTodo> todos, List<GroupTodoCompletion> groupTodoCompletions) {
-        return todos.stream()
-                .filter(todo -> todo.getStartTime() != null)
-                .map(todo -> {
-                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
-                            .filter(gtc -> gtc.getGroupTodo().equals(todo))
-                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
-                    return TodoDailyDto.ofGroupTodo(todo, todoCompletion);
-                })
-                .collect(Collectors.toList());
-    }
-
     private List<TodoDailyDto> getDailyGroupTodos(List<GroupTodo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() == null)
                 .map(TodoDailyDto::ofGroupTodo)
-                .collect(Collectors.toList());
-    }
-
-    private List<TodoDailyDto> getDailyGroupTodos(List<GroupTodo> todos, List<GroupTodoCompletion> groupTodoCompletions) {
-        return todos.stream()
-                .filter(todo -> todo.getStartTime() == null)
-                .map(todo -> {
-                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
-                            .filter(gtc -> gtc.getGroupTodo().equals(todo))
-                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
-                    return TodoDailyDto.ofGroupTodo(todo, todoCompletion);
-                })
-                .collect(Collectors.toList());
-    }
-
-    private List<TodoDailyDto> getDailySchedules(List<Todo> todos) {
-        return todos.stream()
-                .filter(todo -> todo.getStartTime() != null)
-                .map(TodoDailyDto::of)
-                .collect(Collectors.toList());
-    }
-
-    private List<TodoDailyDto> getDailyTodos(List<Todo> todos) {
-        return todos.stream()
-                .filter(todo -> todo.getStartTime() == null)
-                .map(TodoDailyDto::of)
                 .collect(Collectors.toList());
     }
 
