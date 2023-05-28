@@ -204,6 +204,20 @@ public class GroupService {
         return GroupMemberResponseDto.of( withdrawGroupMember );
     }
 
+    @Transactional
+    public GroupMemberResponseDto softWithdraw( Long memberId, Long groupId ) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findByIdAndStatus(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        groupMember.changeStatusToInactive();
+
+        return GroupMemberResponseDto.of( groupMember );
+    }
+
     // TODO MyGroupService 내 동일 메서드 존재 -> 추후 통합 리펙토링 고려
     private List<GroupTagResponseDto> getEachGroupTags(Group group, List<GroupTag> allGroupTags) {
         return allGroupTags.stream()
