@@ -19,6 +19,7 @@ import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.validator.Validator;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -120,7 +121,15 @@ public class GroupTodoCalendarService {
         dailySchedules.addAll(dailyGroupMemberSchedules);
         dailyTodos.addAll(dailyGroupMemberTodos);
 
-        return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
+        List<TodoDailyDto> sortedDailySchedule = dailySchedules.stream()
+                .sorted(Comparator.comparing(TodoDailyDto::getStartTime))
+                .collect(Collectors.toList());
+
+        List<TodoDailyDto> sortedDailyTodos = dailyTodos.stream()
+                .sorted(Comparator.comparing(TodoDailyDto::getTodoId))
+                .collect(Collectors.toList());
+
+        return TodoDailyResponseDto.of(sortedDailySchedule, sortedDailyTodos);
     }
 
     private List<TodoDailyDto> getDailyGroupSchedules(List<GroupTodo> todos) {
