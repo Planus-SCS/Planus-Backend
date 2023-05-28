@@ -102,34 +102,31 @@ public class GroupTodoCalendarService {
                 .orElseThrow(() -> new PlanusException(NOT_JOINED_MEMBER_IN_GROUP));
 
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
+        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdOnGroupId(memberId, groupId);
 
-        List<GroupTodo> groupTodos = todos.stream()
-                .filter(Todo::isGroupTodo)
-                .map(todo -> (GroupTodo) todo)
+        List<TodoDailyDto> allTodos = todos.stream()
+                .map(todo -> {
+                    if (!todo.isGroupTodo()) {
+                        return TodoDailyDto.of(todo);
+                    }
+                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
+                            .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
+                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                    return TodoDailyDto.ofGroupTodo((GroupTodo) todo, todoCompletion);
+                })
                 .collect(Collectors.toList());
 
-        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdAndInGroupTodos(memberId, groupTodos);
-
-        todos.removeAll(groupTodos);
-
-        List<TodoDailyDto> dailyGroupMemberSchedules = getDailyGroupSchedules(groupTodos, groupTodoCompletions);
-        List<TodoDailyDto> dailyGroupMemberTodos = getDailyGroupTodos(groupTodos, groupTodoCompletions);
-
-        List<TodoDailyDto> dailySchedules = getDailySchedules(todos);
-        List<TodoDailyDto> dailyTodos = getDailyTodos(todos);
-
-        dailySchedules.addAll(dailyGroupMemberSchedules);
-        dailyTodos.addAll(dailyGroupMemberTodos);
-
-        List<TodoDailyDto> sortedDailySchedule = dailySchedules.stream()
+        List<TodoDailyDto> dailySchedules = allTodos.stream()
+                .filter(todoDailyDto -> todoDailyDto.getStartTime() != null)
                 .sorted(Comparator.comparing(TodoDailyDto::getStartTime))
                 .collect(Collectors.toList());
 
-        List<TodoDailyDto> sortedDailyTodos = dailyTodos.stream()
+        List<TodoDailyDto> dailyTodos = allTodos.stream()
+                .filter(todoDailyDto -> todoDailyDto.getStartTime() == null)
                 .sorted(Comparator.comparing(TodoDailyDto::getTodoId))
                 .collect(Collectors.toList());
 
-        return TodoDailyResponseDto.of(sortedDailySchedule, sortedDailyTodos);
+        return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
     }
 
     private List<TodoDailyDto> getDailyGroupSchedules(List<GroupTodo> todos) {
