@@ -23,5 +23,12 @@ public interface GroupTodoCompletionRepository extends JpaRepository<GroupTodoCo
             "join gtc.groupTodo gt " +
             "where m.id= :memberId and gt in :todos")
     List<GroupTodoCompletion> findAllByMemberIdAndInGroupTodos(@Param("memberId") Long memberId,
-                                                               @Param("todos")List<GroupTodo> groupTodos);
+                                                               @Param("todos") List<GroupTodo> groupTodos);
+
+    @Query("select gtc from GroupTodoCompletion gtc " +
+            "join gtc.member m " +
+            "join gtc.groupTodo gt on gt.group.id = :groupId " +
+            "where m.id= :memberId")
+    List<GroupTodoCompletion> findAllByMemberIdOnGroupId(@Param("memberId") Long memberId,
+                                                         @Param("groupId") Long groupId);
 }
