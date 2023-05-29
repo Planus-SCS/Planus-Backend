@@ -23,7 +23,7 @@ public class GroupMemberQueryRepository {
                 .from(groupMember)
                 .join(groupMember.member, member)
                 .join(groupMember.group, group)
-                .where(isActiveGroup(), memberIdEq(memberId), groupIdEq(groupId))
+                .where(isActiveGroup(), memberIdEq(memberId), groupIdEq(groupId), groupMember.status.eq(Status.ACTIVE))
                 .fetchFirst();
         return fetchOne != null;
     }
