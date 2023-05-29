@@ -102,9 +102,6 @@ public class GroupTodoCalendarService {
 
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
 
-        for (Todo todo : todos) {
-            log.info("todo={}", todo.getTitle());
-        }
         List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdOnGroupId(memberId, groupId);
 
         List<TodoDailyDto> allTodos = getAllGroupMemberTodos(todos, groupTodoCompletions);
