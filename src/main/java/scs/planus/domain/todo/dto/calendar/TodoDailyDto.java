@@ -65,7 +65,7 @@ public class TodoDailyDto {
                 .isGroupTodo(todo.isGroupTodo())
                 .isPeriodTodo(todo.getEndDate().isAfter(todo.getStartDate()))
                 .hasDescription(todo.getDescription() != null)
-                .isCompleted(completion.isCompletion())
+                .isCompleted(completion == null ? null : completion.isCompletion())
                 .build();
     }
 }
