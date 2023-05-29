@@ -101,6 +101,10 @@ public class GroupTodoCalendarService {
                 .orElseThrow(() -> new PlanusException(NOT_JOINED_MEMBER_IN_GROUP));
 
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
+
+        for (Todo todo : todos) {
+            log.info("todo={}", todo.getTitle());
+        }
         List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdOnGroupId(memberId, groupId);
 
         List<TodoDailyDto> allTodos = getAllGroupMemberTodos(todos, groupTodoCompletions);
@@ -140,7 +144,7 @@ public class GroupTodoCalendarService {
                     }
                     GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
                             .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
-                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO_COMPLETION));
+                            .findFirst().orElse(null);
                     return TodoDailyDto.ofGroupTodo((GroupTodo) todo, todoCompletion);
                 })
                 .collect(Collectors.toList());

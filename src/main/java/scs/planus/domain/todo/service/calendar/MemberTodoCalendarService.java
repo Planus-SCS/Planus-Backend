@@ -16,14 +16,11 @@ import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
-import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.validator.Validator;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_GROUP_TODO_COMPLETION;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,8 +53,7 @@ public class MemberTodoCalendarService {
                 .map(todo -> {
                     GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
                             .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
-                            .findFirst()
-                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO_COMPLETION));
+                            .findFirst().orElse(null);
                     return TodoDetailsResponseDto.ofGroupTodo(todo, todoCompletion);
                 })
                 .collect(Collectors.toList());
