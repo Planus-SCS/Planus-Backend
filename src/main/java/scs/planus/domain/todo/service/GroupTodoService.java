@@ -143,7 +143,7 @@ public class GroupTodoService {
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
         GroupTodoCompletion groupTodoCompletion = groupTodoCompletionRepository.findByMemberIdAndTodoId(memberId, groupTodo.getId())
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO_COMPLETION));
 
         groupTodoCompletion.changeCompletion();
         return TodoResponseDto.of(groupTodo);

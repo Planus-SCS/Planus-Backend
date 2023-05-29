@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_GROUP_TODO;
+import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_GROUP_TODO_COMPLETION;
 
 @Service
 @Transactional(readOnly = true)
@@ -57,7 +57,7 @@ public class MemberTodoCalendarService {
                     GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
                             .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
                             .findFirst()
-                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO_COMPLETION));
                     return TodoDetailsResponseDto.ofGroupTodo(todo, todoCompletion);
                 })
                 .collect(Collectors.toList());

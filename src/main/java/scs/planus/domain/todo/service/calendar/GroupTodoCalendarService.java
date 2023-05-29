@@ -140,7 +140,7 @@ public class GroupTodoCalendarService {
                     }
                     GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
                             .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
-                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO));
+                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO_COMPLETION));
                     return TodoDailyDto.ofGroupTodo((GroupTodo) todo, todoCompletion);
                 })
                 .collect(Collectors.toList());
