@@ -51,11 +51,11 @@ public class MemberTodoController {
 
     @PatchMapping("/todos/{todoId}")
     @Operation(summary = "MemberTodo 변경 API")
-    public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<TodoResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                  @PathVariable Long todoId,
                                                                  @Valid @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
-        TodoDetailsResponseDto responseDto = memberTodoService.updateTodo(memberId, todoId, todoRequestDto);
+        TodoResponseDto responseDto = memberTodoService.updateTodo(memberId, todoId, todoRequestDto);
         return new BaseResponse<>(responseDto);
     }
 
