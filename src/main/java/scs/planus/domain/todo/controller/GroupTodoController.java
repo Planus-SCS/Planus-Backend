@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoForGroupResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
@@ -44,7 +43,7 @@ public class GroupTodoController {
 
     @GetMapping("/my-groups/{groupId}/todos/{todoId}")
     @Operation(summary = "단일 Group Todo 조회 API")
-    public BaseResponse<TodoForGroupResponseDto>  getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<TodoForGroupResponseDto> getTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                @PathVariable Long groupId,
                                                                @PathVariable Long todoId) {
         Long memberId = principalDetails.getId();
@@ -65,12 +64,22 @@ public class GroupTodoController {
 
     @PatchMapping("/my-groups/{groupId}/todos/{todoId}")
     @Operation(summary = "Group Todo 변경 API")
-    public BaseResponse<TodoDetailsResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+    public BaseResponse<TodoResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                  @PathVariable Long groupId,
                                                                  @PathVariable Long todoId,
                                                                  @Valid @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
-        TodoDetailsResponseDto responseDto = groupTodoService.updateTodo(memberId, groupId, todoId, todoRequestDto);
+        TodoResponseDto responseDto = groupTodoService.updateTodo(memberId, groupId, todoId, todoRequestDto);
+        return new BaseResponse<>(responseDto);
+    }
+
+    @PatchMapping("/my-groups/{groupId}/todos/{todoId}/completion")
+    @Operation(summary = "Group Todo 완료 API (GroupTodoCompletion)")
+    public BaseResponse<TodoResponseDto> checkCompletion(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                         @PathVariable Long groupId,
+                                                         @PathVariable Long todoId) {
+        Long memberId = principalDetails.getId();
+        TodoResponseDto responseDto = groupTodoService.checkGroupTodo(memberId, groupId, todoId);
         return new BaseResponse<>(responseDto);
     }
 

@@ -48,6 +48,7 @@ public class TodoRequestDto {
                 .description(description)
                 .member(member)
                 .group(group)
+                .isGroupTodo(false)
                 .build();
     }
 
@@ -60,6 +61,7 @@ public class TodoRequestDto {
                 .startTime(startTime)
                 .description(description)
                 .group(group)
+                .isGroupTodo(true)
                 .build();
     }
 }

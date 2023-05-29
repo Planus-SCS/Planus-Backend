@@ -3,6 +3,9 @@ package scs.planus.domain.todo.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
+import scs.planus.domain.todo.entity.GroupTodo;
+import scs.planus.domain.todo.entity.GroupTodoCompletion;
+import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.entity.Todo;
 
 import java.time.LocalDate;
@@ -25,6 +28,8 @@ public class TodoDetailsResponseDto {
     private LocalTime startTime;
     private String description;
 
+    private Boolean isCompleted;
+
     public static TodoDetailsResponseDto of(Todo todo) {
         return TodoDetailsResponseDto.builder()
                 .todoId(todo.getId())
@@ -35,6 +40,21 @@ public class TodoDetailsResponseDto {
                 .endDate(todo.getEndDate())
                 .startTime(todo.getStartTime())
                 .description(todo.getDescription())
+                .isCompleted(((MemberTodo) todo).isCompletion())
+                .build();
+    }
+
+    public static TodoDetailsResponseDto ofGroupTodo(GroupTodo todo, GroupTodoCompletion completion) {
+        return TodoDetailsResponseDto.builder()
+                .todoId(todo.getId())
+                .title(todo.getTitle())
+                .categoryId(todo.getTodoCategory().getId())
+                .groupId(todo.getGroup() == null ? null : todo.getGroup().getId())
+                .startDate(todo.getStartDate())
+                .endDate(todo.getEndDate())
+                .startTime(todo.getStartTime())
+                .description(todo.getDescription())
+                .isCompleted(completion.isCompletion())
                 .build();
     }
 }

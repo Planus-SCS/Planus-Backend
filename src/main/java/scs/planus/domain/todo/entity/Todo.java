@@ -42,9 +42,7 @@ public abstract class Todo extends BaseTimeEntity {
 
     private LocalDate endDate;
 
-    private boolean showDDay;
-
-    private boolean completion;
+    private boolean isGroupTodo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "todo_category_id")
@@ -55,7 +53,7 @@ public abstract class Todo extends BaseTimeEntity {
     private Group group;
 
     public Todo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate,
-                boolean showDDay, boolean completion, TodoCategory todoCategory, Group group) {
+                boolean isGroupTodo, TodoCategory todoCategory, Group group) {
         this.title = title;
         this.description = description;
         this.startTime = startTime;
@@ -64,8 +62,7 @@ public abstract class Todo extends BaseTimeEntity {
         if (endDate == null) {
             this.endDate = startDate;
         }
-        this.showDDay = showDDay;
-        this.completion = completion;
+        this.isGroupTodo = isGroupTodo;
         this.todoCategory = todoCategory;
         this.group = group;
     }
@@ -82,9 +79,5 @@ public abstract class Todo extends BaseTimeEntity {
         }
         this.todoCategory = todoCategory;
         this.group = group;
-    }
-
-    public void changeCompletion() {
-        this.completion =  !this.completion;
     }
 }

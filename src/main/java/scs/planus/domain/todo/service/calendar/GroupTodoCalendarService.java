@@ -9,15 +9,17 @@ import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.todo.dto.calendar.TodoDailyDto;
 import scs.planus.domain.todo.dto.calendar.TodoDailyResponseDto;
-import scs.planus.domain.todo.dto.calendar.TodoDailyScheduleDto;
 import scs.planus.domain.todo.dto.calendar.TodoPeriodResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
+import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.validator.Validator;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,7 @@ public class GroupTodoCalendarService {
     private final TodoQueryRepository todoQueryRepository;
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
 
     public List<TodoPeriodResponseDto> getPeriodGroupTodos(Long memberId, Long groupId, LocalDate from, LocalDate to) {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
@@ -59,8 +62,8 @@ public class GroupTodoCalendarService {
                 });
 
         List<GroupTodo> todos = todoQueryRepository.findDailyGroupTodosByDate(groupId, date);
-        List<TodoDailyScheduleDto> todoDailyScheduleDtos = getDailySchedules(todos);
-        List<TodoDailyDto> todoDailyDtos = getDailyTodos(todos);
+        List<TodoDailyDto> todoDailyScheduleDtos = getDailyGroupSchedules(todos);
+        List<TodoDailyDto> todoDailyDtos = getDailyGroupTodos(todos);
 
         return TodoDailyResponseDto.of(todoDailyScheduleDtos, todoDailyDtos);
     }
@@ -98,24 +101,48 @@ public class GroupTodoCalendarService {
                 .orElseThrow(() -> new PlanusException(NOT_JOINED_MEMBER_IN_GROUP));
 
         List<Todo> todos = todoQueryRepository.findGroupMemberDailyTodosByDate(memberId, groupId, date);
+        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository.findAllByMemberIdOnGroupId(memberId, groupId);
 
-        List<TodoDailyScheduleDto> dailySchedules = getDailySchedules(todos);
-        List<TodoDailyDto> dailyTodos = getDailyTodos(todos);
+        List<TodoDailyDto> allTodos = getAllGroupMemberTodos(todos, groupTodoCompletions);
+
+        List<TodoDailyDto> dailySchedules = allTodos.stream()
+                .filter(todoDailyDto -> todoDailyDto.getStartTime() != null)
+                .sorted(Comparator.comparing(TodoDailyDto::getStartTime))
+                .collect(Collectors.toList());
+
+        List<TodoDailyDto> dailyTodos = allTodos.stream()
+                .filter(todoDailyDto -> todoDailyDto.getStartTime() == null)
+                .sorted(Comparator.comparing(TodoDailyDto::getTodoId))
+                .collect(Collectors.toList());
 
         return TodoDailyResponseDto.of(dailySchedules, dailyTodos);
     }
 
-    private List<TodoDailyScheduleDto> getDailySchedules(List<? extends Todo> todos) {
+    private List<TodoDailyDto> getDailyGroupSchedules(List<GroupTodo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() != null)
-                .map(TodoDailyScheduleDto::of)
+                .map(TodoDailyDto::ofGroupTodo)
                 .collect(Collectors.toList());
     }
 
-    private List<TodoDailyDto> getDailyTodos(List<? extends Todo> todos) {
+    private List<TodoDailyDto> getDailyGroupTodos(List<GroupTodo> todos) {
         return todos.stream()
                 .filter(todo -> todo.getStartTime() == null)
-                .map(TodoDailyDto::of)
+                .map(TodoDailyDto::ofGroupTodo)
+                .collect(Collectors.toList());
+    }
+
+    private List<TodoDailyDto> getAllGroupMemberTodos(List<Todo> todos, List<GroupTodoCompletion> groupTodoCompletions) {
+        return todos.stream()
+                .map(todo -> {
+                    if (!todo.isGroupTodo()) {
+                        return TodoDailyDto.of(todo);
+                    }
+                    GroupTodoCompletion todoCompletion = groupTodoCompletions.stream()
+                            .filter(groupTodoCompletion -> groupTodoCompletion.getGroupTodo().equals(todo))
+                            .findFirst().orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO_COMPLETION));
+                    return TodoDailyDto.ofGroupTodo((GroupTodo) todo, todoCompletion);
+                })
                 .collect(Collectors.toList());
     }
 }

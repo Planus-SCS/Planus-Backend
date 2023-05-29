@@ -45,4 +45,8 @@ public class GroupTodoCompletion {
                 .groupTodo(groupTodo)
                 .build();
     }
+
+    public void changeCompletion(){
+        this.completion = !this.completion;
+    }
 }

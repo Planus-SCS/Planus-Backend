@@ -10,13 +10,13 @@ import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
-import scs.planus.domain.todo.dto.TodoDetailsResponseDto;
 import scs.planus.domain.todo.dto.TodoForGroupResponseDto;
 import scs.planus.domain.todo.dto.TodoRequestDto;
 import scs.planus.domain.todo.dto.TodoResponseDto;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.domain.todo.entity.Todo;
+import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
 import scs.planus.global.exception.PlanusException;
@@ -34,6 +34,7 @@ public class GroupTodoService {
 
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
+    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
     private final TodoCategoryRepository todoCategoryRepository;
     private final TodoRepository todoRepository;
     private final TodoQueryRepository todoQueryRepository;
@@ -101,7 +102,7 @@ public class GroupTodoService {
     }
 
     @Transactional
-    public TodoDetailsResponseDto updateTodo(Long memberId, Long groupId, Long todoId, TodoRequestDto requestDto) {
+    public TodoResponseDto updateTodo(Long memberId, Long groupId, Long todoId, TodoRequestDto requestDto) {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
                 .orElseThrow(() -> {
                     groupRepository.findById(groupId)
@@ -126,7 +127,26 @@ public class GroupTodoService {
         groupTodo.update(requestDto.getTitle(), requestDto.getDescription(), requestDto.getStartTime(),
                 requestDto.getStartDate(), requestDto.getEndDate(), groupTodoCategory, group);
 
-        return TodoDetailsResponseDto.of(groupTodo);
+        return TodoResponseDto.of(groupTodo);
+    }
+
+    @Transactional
+    public TodoResponseDto checkGroupTodo(Long memberId, Long groupId, Long todoId) {
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
+
+        GroupTodo groupTodo = todoQueryRepository.findOneGroupTodoById(groupId, todoId)
+                .orElseThrow(() -> new PlanusException(NONE_TODO));
+
+        GroupTodoCompletion groupTodoCompletion = groupTodoCompletionRepository.findByMemberIdAndTodoId(memberId, groupTodo.getId())
+                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP_TODO_COMPLETION));
+
+        groupTodoCompletion.changeCompletion();
+        return TodoResponseDto.of(groupTodo);
     }
 
     @Transactional
