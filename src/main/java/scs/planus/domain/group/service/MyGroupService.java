@@ -79,16 +79,15 @@ public class MyGroupService {
     }
 
     public MyGroupDetailResponseDto getMyEachGroupDetail(Long memberId, Long groupId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
 
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
-
-        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
-        if (!isJoined) {
-            throw new PlanusException(NOT_JOINED_GROUP);
-        }
+        // TODO Query를 group이 아닌, groupId로 한다면 생략가능한 코드 코드
+        Group group = groupMember.getGroup();
 
         List<GroupMember> myGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
         List<GroupTag> groupTags = groupTagRepository.findAllByGroup(group);
@@ -97,12 +96,9 @@ public class MyGroupService {
                 .map(GroupTagResponseDto::of)
                 .collect(Collectors.toList());
 
-        Boolean isLeader = isGroupLeader(member, myGroupMembers);
-        Boolean onlineStatus = isOnlineStatus(member, group, myGroupMembers);
         int onlineCount = getOnlineCount(group, myGroupMembers);
 
-        // TODO 파라미터가 너무 많음 -> 리팩토링 필요
-        return MyGroupDetailResponseDto.of(group, groupTagResponseDtos, isLeader, onlineStatus, onlineCount);
+        return MyGroupDetailResponseDto.of(group, groupMember, onlineCount, groupTagResponseDtos);
     }
 
     public List<MyGroupGetMemberResponseDto> getGroupMembersForMember(Long memberId, Long groupId) {
@@ -161,7 +157,7 @@ public class MyGroupService {
 
     private int getOnlineCount(Group group, List<GroupMember> allGroupMembers) {
         return (int) allGroupMembers.stream()
-                .filter(groupMember -> groupMember.getGroup().getId().equals(group.getId()))
+                .filter(groupMember -> groupMember.getGroup().equals(group))
                 .filter(GroupMember::isOnlineStatus)
                 .count();
     }
