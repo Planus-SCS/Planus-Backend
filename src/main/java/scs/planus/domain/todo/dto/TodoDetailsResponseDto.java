@@ -1,6 +1,7 @@
 package scs.planus.domain.todo.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import scs.planus.domain.todo.entity.GroupTodo;
@@ -28,6 +29,7 @@ public class TodoDetailsResponseDto {
     private LocalTime startTime;
     private String description;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean isCompleted;
 
     public static TodoDetailsResponseDto of(Todo todo) {
@@ -54,7 +56,7 @@ public class TodoDetailsResponseDto {
                 .endDate(todo.getEndDate())
                 .startTime(todo.getStartTime())
                 .description(todo.getDescription())
-                .isCompleted(completion.isCompletion())
+                .isCompleted(completion == null ? null : completion.isCompletion())
                 .build();
     }
 }
