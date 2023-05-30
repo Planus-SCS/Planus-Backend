@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.entity.GroupMember;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class MyGroupDetailResponseDto {
     private String groupImageUrl;
     private String groupName;
     private Boolean isLeader;
+    private Boolean hasTodoAuthority;
     private Boolean isOnline;
     private int onlineCount;
     private int memberCount;
@@ -23,14 +25,15 @@ public class MyGroupDetailResponseDto {
     private String notice;
     private List<GroupTagResponseDto> groupTags;
 
-    public static MyGroupDetailResponseDto of(Group group, List<GroupTagResponseDto> eachGroupTagDtos,
-                                              Boolean isLeader, Boolean onlineStatus, int onlineCount) {
+    public static MyGroupDetailResponseDto of(Group group, GroupMember groupMember,
+                                              int onlineCount, List<GroupTagResponseDto> eachGroupTagDtos) {
         return MyGroupDetailResponseDto.builder()
                 .groupId(group.getId())
                 .groupImageUrl(group.getGroupImageUrl())
                 .groupName(group.getName())
-                .isLeader(isLeader)
-                .isOnline(onlineStatus)
+                .isLeader(groupMember.isLeader())
+                .hasTodoAuthority(groupMember.isTodoAuthority())
+                .isOnline(groupMember.isOnlineStatus())
                 .onlineCount(onlineCount)
                 .memberCount(group.getGroupMembers().size()) // 추가쿼리 발생
                 .limitCount(group.getLimitCount())
