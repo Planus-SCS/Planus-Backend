@@ -115,11 +115,12 @@ public class MyGroupService {
 
     @Transactional
     public MyGroupOnlineStatusResponseDto changeOnlineStatus(Long memberId, Long groupId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(member.getId(), groupId)
-                .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
 
         groupMember.changeOnlineStatus();
 
