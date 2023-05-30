@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import scs.planus.domain.group.dto.GroupMemberResponseDto;
 import scs.planus.domain.group.dto.groupJoin.GroupJoinGetResponseDto;
 import scs.planus.domain.group.dto.groupJoin.GroupJoinResponseDto;
-import scs.planus.domain.group.dto.GroupMemberResponseDto;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupJoin;
 import scs.planus.domain.group.entity.GroupMember;
@@ -80,21 +80,29 @@ public class GroupJoinService {
     }
 
     @Transactional
-    public GroupMemberResponseDto acceptGroupJoin(Long memberId, Long groupJoinId ) {
-        Member member = memberRepository.findById( memberId )
+    public GroupMemberResponseDto acceptGroupJoin( Long leaderId, Long groupJoinId ) {
+        Member leader = memberRepository.findById( leaderId )
                 .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
         GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
 
-        validateLeaderPermission( member, groupJoin.getGroup() );
+        validateLeaderPermission( leader, groupJoin.getGroup() );
 
-        GroupMember groupMember = GroupMember.creatGroupMember( groupJoin.getMember(), groupJoin.getGroup() );
-        GroupMember saveGroupMember = groupMemberRepository.save( groupMember );
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupIdAndInactive( groupJoin.getMember().getId(),
+                                                                                             groupJoin.getGroup().getId() )
+                .map(existedGroupMember -> {
+                    existedGroupMember.changeStatusToActive();
+                    return existedGroupMember;
+                })
+                .orElseGet(() -> {
+                    GroupMember createGroupMember = GroupMember.creatGroupMember( groupJoin.getMember(), groupJoin.getGroup() );
+                    return groupMemberRepository.save(createGroupMember);
+                });
 
         groupJoinRepository.delete( groupJoin );
 
-        return GroupMemberResponseDto.of( saveGroupMember );
+        return GroupMemberResponseDto.of( groupMember );
     }
 
     @Transactional
