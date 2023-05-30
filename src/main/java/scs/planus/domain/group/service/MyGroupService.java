@@ -82,7 +82,7 @@ public class MyGroupService {
                     return new PlanusException(NOT_JOINED_GROUP);
                 });
 
-        // TODO Query를 group이 아닌, groupId로 한다면 생략가능한 코드 코드
+        // TODO Query를 group이 아닌, groupId로 한다면 생략가능한 코드 코드 -> 나중에 엔티티를 id로 삭 바꿀 필요 존재
         Group group = groupMember.getGroup();
 
         List<GroupMember> myGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
@@ -98,20 +98,16 @@ public class MyGroupService {
     }
 
     public List<MyGroupGetMemberResponseDto> getGroupMembersForMember(Long memberId, Long groupId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
+        GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
+                .orElseThrow(() -> {
+                    groupRepository.findById(groupId)
+                            .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
+                    return new PlanusException(NOT_JOINED_GROUP);
+                });
 
-        Group group = groupRepository.findWithGroupMemberById(groupId)
-                .orElseThrow(() -> new PlanusException(NOT_EXIST_GROUP));
-
-        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId(member.getId(), groupId);
-        if (!isJoined) {
-            throw new PlanusException(NOT_JOINED_GROUP);
-        }
-
-        List<GroupMember> groupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
+        List<GroupMember> groupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(groupMember.getGroup());
         List<MyGroupGetMemberResponseDto> responseDtos = groupMembers.stream()
-                .map(gm -> MyGroupGetMemberResponseDto.of(gm.getMember(), gm.isLeader(), gm.isOnlineStatus()))
+                .map(MyGroupGetMemberResponseDto::of)
                 .collect(Collectors.toList());
 
         return responseDtos;
