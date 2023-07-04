@@ -21,8 +21,8 @@ class MemberTest {
                 .build();
     }
 
-    @Test
     @DisplayName("멤버 프로필 업데이트가 제대로 진행되어야 한다.")
+    @Test
     void updateProfileTest() {
         //when
         member.updateProfile("newNick", "new description", "new.png");
@@ -33,8 +33,8 @@ class MemberTest {
         assertThat(member.getProfileImageUrl()).isEqualTo("new.png");
     }
 
-    @Test
     @DisplayName("멤버 탈퇴시, status가 제대로 INACTIVE로 변경되어야 한다.")
+    @Test
     void changeStatusToInactiveTest() {
         //when
         member.changeStatusToInactive();
@@ -43,8 +43,8 @@ class MemberTest {
         assertThat(member.getStatus()).isEqualTo(Status.INACTIVE);
     }
 
-    @Test
     @DisplayName("멤버 탈퇴 후, 재가입 시, 제대로 초기화되어야 한다.")
+    @Test
     void initMemberTest() {
         //when
         member.init("newNick");
