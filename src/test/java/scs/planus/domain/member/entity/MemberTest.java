@@ -17,6 +17,7 @@ class MemberTest {
                 .nickname("test1")
                 .description("test test")
                 .profileImageUrl("test.jpg")
+                .status(Status.ACTIVE)
                 .build();
     }
 
