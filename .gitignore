@@ -26,6 +26,8 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+**/src/test/resources/**
+
 **/src/main/generated/**
 **/src/main/resources/application.yml
 **/src/main/resources/application-aws.yml
