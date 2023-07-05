@@ -18,8 +18,8 @@ class TodoCategoryTest {
                 .build();
     }
 
-    @Test
     @DisplayName("카테고리의 명과 색이 변경되어야 한다.")
+    @Test
     void change() {
         //given
         //when
@@ -30,8 +30,8 @@ class TodoCategoryTest {
         assertThat(todoCategory.getColor()).isEqualTo(Color.GOLD);
     }
 
-    @Test
     @DisplayName("카테고리의 상태(Status)가 Inactive 로 변경되어야 한다.")
+    @Test
     void changeStatusToInactive() {
         //given
         //when
