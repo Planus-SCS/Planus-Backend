@@ -30,8 +30,9 @@ public class MemberTodo extends Todo{
 
     @Builder
     public MemberTodo(String title, String description, LocalTime startTime, LocalDate startDate, LocalDate endDate,
-                      boolean isGroupTodo, TodoCategory todoCategory, Group group, Member member) {
+                      boolean isGroupTodo, TodoCategory todoCategory, Group group, boolean completion, Member member) {
         super(title, description, startTime, startDate, endDate, isGroupTodo, todoCategory, group);
+        this.completion = completion;
         this.member = member;
     }
 
