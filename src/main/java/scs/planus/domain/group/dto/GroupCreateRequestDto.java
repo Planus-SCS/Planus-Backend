@@ -1,13 +1,20 @@
 package scs.planus.domain.group.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import scs.planus.domain.tag.dto.TagCreateRequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.util.List;
 
+@Builder
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GroupCreateRequestDto {
 
     @NotBlank(message = "[request] 그룹명을 입력해 주세요.")
