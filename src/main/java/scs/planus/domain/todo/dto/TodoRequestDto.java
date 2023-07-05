@@ -2,7 +2,11 @@ package scs.planus.domain.todo.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.member.entity.Member;
@@ -15,7 +19,10 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@Builder
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TodoRequestDto {
 
     @NotBlank(message = "투두 제목을 입력해주세요.")
