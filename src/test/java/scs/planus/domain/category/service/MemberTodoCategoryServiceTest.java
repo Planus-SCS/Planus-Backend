@@ -23,7 +23,6 @@ import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.global.exception.PlanusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,21 +70,19 @@ class MemberTodoCategoryServiceTest {
                 .color(Color.RED)
                 .build();
 
-        List<MemberTodoCategory> memberTodoCategoryList = new ArrayList<>(
-                List.of(memberTodoCategory1, memberTodoCategory2)
-        );
+        List<MemberTodoCategory> memberTodoCategories = List.of(memberTodoCategory1, memberTodoCategory2);
 
         when(memberRepository.findById(TEST_ID)).thenReturn(Optional.of(member));
-        when(todoCategoryRepository.findMemberTodoCategoryAllByMember(member)).thenReturn(memberTodoCategoryList);
+        when(todoCategoryRepository.findMemberTodoCategoryAllByMember(member)).thenReturn(memberTodoCategories);
 
         //when
-        List<TodoCategoryGetResponseDto> responseDtoList = memberTodoCategoryService.findAll(TEST_ID);
+        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAll(TEST_ID);
 
         //then
         verify(todoCategoryRepository).findMemberTodoCategoryAllByMember(member);
-        assertThat(responseDtoList.size()).isEqualTo(memberTodoCategoryList.size());
-        assertThat(responseDtoList.get(0).getName()).isEqualTo(memberTodoCategory1.getName());
-        assertThat(responseDtoList.get(0).getStatus()).isEqualTo(Status.ACTIVE);
+        assertThat(responseDtos.size()).isEqualTo(memberTodoCategories.size());
+        assertThat(responseDtos.get(0).getName()).isEqualTo(memberTodoCategory1.getName());
+        assertThat(responseDtos.get(0).getStatus()).isEqualTo(Status.ACTIVE);
     }
 
     @DisplayName("회원 소유의 카테고리가 없을 경우, 빈 리스트를 반환해야 한다.")
@@ -94,16 +91,16 @@ class MemberTodoCategoryServiceTest {
         //given
         when(memberRepository.findById(TEST_ID)).thenReturn(Optional.of(member));
 
-        List<MemberTodoCategory> emptyList = List.of();
-        when(todoCategoryRepository.findMemberTodoCategoryAllByMember(member)).thenReturn(emptyList);
+        List<MemberTodoCategory> empties = List.of();
+        when(todoCategoryRepository.findMemberTodoCategoryAllByMember(member)).thenReturn(empties);
 
         //when
-        List<TodoCategoryGetResponseDto> responseDtoList = memberTodoCategoryService.findAll(TEST_ID);
+        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAll(TEST_ID);
 
         //then
         verify(memberRepository).findById(TEST_ID);
         verify(todoCategoryRepository).findMemberTodoCategoryAllByMember(member);
-        assertThat(responseDtoList.size()).isEqualTo(0);
+        assertThat(responseDtos.size()).isEqualTo(0);
     }
 
     @DisplayName("회원정보가 없을 시, NON_USER Exception 을 발생시켜야 한다.")
@@ -145,21 +142,21 @@ class MemberTodoCategoryServiceTest {
                 .member(member)
                 .group(mockGroup2).build();
 
-        List<GroupMember> groupMemberList = List.of(group1Member, group2Member);
+        List<GroupMember> groupMembers = List.of(group1Member, group2Member);
 
-        List<GroupTodoCategory> groupTodoCategoryList =
+        List<GroupTodoCategory> groupTodoCategories =
                 List.of(group1TodoCategory1, group1TodoCategory2, group2TodoCategory1, group2TodoCategory2);
 
-        when(groupMemberRepository.findAllByActiveGroupAndMemberId(TEST_ID)).thenReturn(groupMemberList);
-        when(todoCategoryRepository.findAllGroupTodoCategoriesInGroups(any())).thenReturn(groupTodoCategoryList);
+        when(groupMemberRepository.findAllByActiveGroupAndMemberId(TEST_ID)).thenReturn(groupMembers);
+        when(todoCategoryRepository.findAllGroupTodoCategoriesInGroups(any())).thenReturn(groupTodoCategories);
 
         //when
-        List<TodoCategoryGetResponseDto> responseDtoList = memberTodoCategoryService.findAllGroupTodoCategories(TEST_ID);
+        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAllGroupTodoCategories(TEST_ID);
 
         //then
         verify(groupMemberRepository).findAllByActiveGroupAndMemberId(TEST_ID);
         verify(todoCategoryRepository).findAllGroupTodoCategoriesInGroups(any());
-        assertThat(responseDtoList.size()).isEqualTo(4);
+        assertThat(responseDtos.size()).isEqualTo(4);
     }
 
     @DisplayName("회원의 카테고리를 생성할 수 있다.")

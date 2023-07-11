@@ -101,12 +101,12 @@ class TodoCategoryRepositoryTest {
             todoCategoryRepository.save(testMemberTodoCategory2);
 
             //when
-            List<MemberTodoCategory> findMemberTodoCategoryList = todoCategoryRepository.findMemberTodoCategoryAllByMember(member);
+            List<MemberTodoCategory> findMemberTodoCategories = todoCategoryRepository.findMemberTodoCategoryAllByMember(member);
 
             //then
-            assertThat(findMemberTodoCategoryList.size()).isEqualTo(2);
-            assertThat(findMemberTodoCategoryList.get(0).getName()).isEqualTo(testMemberTodoCategory1.getName());
-            assertThat(findMemberTodoCategoryList.get(1).getName()).isEqualTo(testMemberTodoCategory2.getName());
+            assertThat(findMemberTodoCategories.size()).isEqualTo(2);
+            assertThat(findMemberTodoCategories.get(0).getName()).isEqualTo(testMemberTodoCategory1.getName());
+            assertThat(findMemberTodoCategories.get(1).getName()).isEqualTo(testMemberTodoCategory2.getName());
 
         }
 
@@ -156,13 +156,13 @@ class TodoCategoryRepositoryTest {
             todoCategoryRepository.save(testGroupTodoCategory2);
 
             //when
-            List<GroupTodoCategory> findGroupTodoCategoryList = todoCategoryRepository
+            List<GroupTodoCategory> findGroupTodoCategories = todoCategoryRepository
                     .findGroupTodoCategoryAllByGroup(group.getId());
 
             //then
-            assertThat(findGroupTodoCategoryList.size()).isEqualTo(2);
-            assertThat(findGroupTodoCategoryList.get(0).getName()).isEqualTo(testGroupTodoCategory1.getName());
-            assertThat(findGroupTodoCategoryList.get(1).getName()).isEqualTo(testGroupTodoCategory2.getName());
+            assertThat(findGroupTodoCategories.size()).isEqualTo(2);
+            assertThat(findGroupTodoCategories.get(0).getName()).isEqualTo(testGroupTodoCategory1.getName());
+            assertThat(findGroupTodoCategories.get(1).getName()).isEqualTo(testGroupTodoCategory2.getName());
         }
 
         @DisplayName("Group 으로 조회되는 그룹의 카테고리가 존재하지 않는 경우 빈 리스트를 반환 해야 한다.")
@@ -170,11 +170,11 @@ class TodoCategoryRepositoryTest {
         void findGroupTodoCategoryAllByGroup_Empty() {
             //given
             //when
-            List<GroupTodoCategory> findGroupTodoCategoryList = todoCategoryRepository
+            List<GroupTodoCategory> findGroupTodoCategories = todoCategoryRepository
                     .findGroupTodoCategoryAllByGroup(group.getId());
 
             //then
-            assertThat(findGroupTodoCategoryList.size()).isEqualTo(0);
+            assertThat(findGroupTodoCategories.size()).isEqualTo(0);
         }
 
         @DisplayName("TodoCategoryId 로 그룹의 카테고리를 조회할 수 있어야 한다.")
@@ -238,16 +238,16 @@ class TodoCategoryRepositoryTest {
             todoCategoryRepository.save(testGroup1TodoCategory);
             todoCategoryRepository.save(testGroup2TodoCategory);
 
-            List<Group> groupList = List.of(group, group2);
+            List<Group> groups = List.of(group, group2);
 
             //when
-            List<GroupTodoCategory> findAllGroupTodoCategoriesList = todoCategoryRepository
-                    .findAllGroupTodoCategoriesInGroups(groupList);
+            List<GroupTodoCategory> findAllGroupTodoCategories = todoCategoryRepository
+                    .findAllGroupTodoCategoriesInGroups(groups);
 
             //then
-            assertThat(findAllGroupTodoCategoriesList.size()).isEqualTo(2);
-            assertThat(findAllGroupTodoCategoriesList.get(0).getGroup()).isEqualTo(group);
-            assertThat(findAllGroupTodoCategoriesList.get(1).getGroup()).isEqualTo(group2);
+            assertThat(findAllGroupTodoCategories.size()).isEqualTo(2);
+            assertThat(findAllGroupTodoCategories.get(0).getGroup()).isEqualTo(group);
+            assertThat(findAllGroupTodoCategories.get(1).getGroup()).isEqualTo(group2);
         }
 
         @DisplayName("List<Group> 으로 조회되는 그룹의 카테고리가 존재하지 않는 경우 빈 리스트를 반환 해야 한다.")
@@ -261,14 +261,14 @@ class TodoCategoryRepositoryTest {
 
             groupRepository.save(group2);
 
-            List<Group> groupList = List.of(group, group2);
+            List<Group> groups = List.of(group, group2);
 
             //when
-            List<GroupTodoCategory> findAllGroupTodoCategoriesList = todoCategoryRepository
-                    .findAllGroupTodoCategoriesInGroups(groupList);
+            List<GroupTodoCategory> findAllGroupTodoCategories = todoCategoryRepository
+                    .findAllGroupTodoCategoriesInGroups(groups);
 
             //then
-            assertThat(findAllGroupTodoCategoriesList.size()).isEqualTo(0);
+            assertThat(findAllGroupTodoCategories.size()).isEqualTo(0);
         }
     }
 }
