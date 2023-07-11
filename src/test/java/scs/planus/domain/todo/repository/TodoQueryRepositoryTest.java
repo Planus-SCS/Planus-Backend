@@ -64,8 +64,8 @@ class TodoQueryRepositoryTest {
     }
 
     @Nested
-    @DisplayName("MemberTodo 테스트")
-    class MemberTodoTest {
+    @DisplayName("MemberTodoQuery 테스트")
+    class MemberTodoQueryTest {
 
         @BeforeEach
         void init() {
@@ -124,8 +124,8 @@ class TodoQueryRepositoryTest {
     }
 
     @Nested
-    @DisplayName("GroupTodo 테스트")
-    class GroupTodoTest {
+    @DisplayName("GroupTodoQuery 테스트")
+    class GroupTodoQueryTest {
 
         @BeforeEach
         void init() {
@@ -274,8 +274,8 @@ class TodoQueryRepositoryTest {
     }
 
     @Nested
-    @DisplayName("GroupMemberTodo 테스트")
-    class GroupMemberTodoTest {
+    @DisplayName("GroupMemberTodoQuery 테스트")
+    class GroupMemberTodoQueryTest {
 
         @BeforeEach
         void init() {
