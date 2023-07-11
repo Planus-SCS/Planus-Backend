@@ -42,7 +42,7 @@ public class MemberTodoService {
         Member member = memberRepository.findById(memberId)
                         .orElseThrow(() -> new PlanusException(NONE_USER));
 
-        TodoCategory todoCategory = todoCategoryRepository.findMemberTodoCategoryByIdAndMember(memberId, requestDto.getCategoryId())
+        TodoCategory todoCategory = todoCategoryRepository.findMemberTodoCategoryByMemberIdAndId(memberId, requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         Group group = checkAndGetGroup(memberId, requestDto.getGroupId());
@@ -70,7 +70,7 @@ public class MemberTodoService {
         MemberTodo todo = todoQueryRepository.findOneMemberTodoById(memberId, todoId)
                 .orElseThrow(() -> new PlanusException(NONE_TODO));
 
-        TodoCategory todoCategory = todoCategoryRepository.findMemberTodoCategoryByIdAndMember(memberId, requestDto.getCategoryId())
+        TodoCategory todoCategory = todoCategoryRepository.findMemberTodoCategoryByMemberIdAndId(memberId, requestDto.getCategoryId())
                 .orElseThrow(() -> new PlanusException(NOT_EXIST_CATEGORY));
 
         Group group = checkAndGetGroup(memberId, requestDto.getGroupId());
