@@ -69,7 +69,7 @@ class GroupTodoCompletionRepositoryTest {
         //when
         groupTodoCompletion = groupTodoCompletionRepository
                 .findByMemberIdAndTodoId(member.getId(), groupTodo.getId())
-                .orElseThrow(null);
+                .orElse(null);
 
         //then
         assertThat(groupTodoCompletion).isNotNull();
@@ -88,8 +88,8 @@ class GroupTodoCompletionRepositoryTest {
         List<GroupTodo> groupTodos = List.of(groupTodo, groupTodo2);
 
         //when
-        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository
-                .findAllByMemberIdAndInGroupTodos(member.getId(), groupTodos);
+        List<GroupTodoCompletion> groupTodoCompletions =
+                groupTodoCompletionRepository.findAllByMemberIdAndInGroupTodos(member.getId(), groupTodos);
 
         //then
         assertThat(groupTodoCompletions.size()).isEqualTo(2);
@@ -101,8 +101,8 @@ class GroupTodoCompletionRepositoryTest {
     @Test
     void findAllByMemberIdOnGroupId(){
         //when
-        List<GroupTodoCompletion> groupTodoCompletions = groupTodoCompletionRepository
-                .findAllByMemberIdOnGroupId(member.getId(), group.getId());
+        List<GroupTodoCompletion> groupTodoCompletions =
+                groupTodoCompletionRepository.findAllByMemberIdOnGroupId(member.getId(), group.getId());
 
         //then
         assertThat(groupTodoCompletions).isNotEmpty();

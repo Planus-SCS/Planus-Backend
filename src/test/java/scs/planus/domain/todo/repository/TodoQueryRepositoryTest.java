@@ -88,8 +88,8 @@ class TodoQueryRepositoryTest {
             todoRepository.save(todo);
 
             //when
-            MemberTodo findTodo = todoQueryRepository.findOneMemberTodoById(member.getId(), todo.getId())
-                    .orElseThrow(null);
+            MemberTodo findTodo =
+                    todoQueryRepository.findOneMemberTodoById(member.getId(), todo.getId()).orElse(null);
 
             //then
             assertThat(findTodo).isNotNull();
@@ -154,8 +154,8 @@ class TodoQueryRepositoryTest {
             todoRepository.save(todo);
 
             //when
-            GroupTodo findTodo = todoQueryRepository.findOneGroupTodoById(group.getId(), todo.getId())
-                    .orElse(null);
+            GroupTodo findTodo =
+                    todoQueryRepository.findOneGroupTodoById(group.getId(), todo.getId()).orElse(null);
 
             //then
             assertThat(findTodo).isNotNull();
@@ -310,7 +310,8 @@ class TodoQueryRepositoryTest {
             todoRepository.save(todo);
 
             //when
-            Todo findTodo = todoQueryRepository.findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
+            Todo findTodo = todoQueryRepository
+                    .findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
                     .orElse(null);
 
             //then
@@ -337,7 +338,8 @@ class TodoQueryRepositoryTest {
             todoRepository.save(todo);
 
             //when
-            Todo findTodo = todoQueryRepository.findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
+            Todo findTodo = todoQueryRepository
+                    .findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
                     .orElse(null);
 
             //then
@@ -363,7 +365,8 @@ class TodoQueryRepositoryTest {
             todoRepository.save(todo);
 
             //when
-            Todo findTodo = todoQueryRepository.findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
+            Todo findTodo = todoQueryRepository
+                    .findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
                     .orElse(null);
 
             //then
@@ -395,7 +398,8 @@ class TodoQueryRepositoryTest {
             //when
             LocalDate from = LocalDate.of(2023, 1, 1);
             LocalDate to = LocalDate.of(2023, 1, 5);
-            List<Todo> groupMemberTodos = todoQueryRepository.findGroupMemberPeriodTodosByDate(member.getId(), group.getId(), from, to);
+            List<Todo> groupMemberTodos =
+                    todoQueryRepository.findGroupMemberPeriodTodosByDate(member.getId(), group.getId(), from, to);
 
             //then
             assertThat(groupMemberTodos.size()).isEqualTo(5);
