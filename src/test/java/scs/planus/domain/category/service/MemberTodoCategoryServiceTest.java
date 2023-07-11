@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_CATEGORY;
 
 @ExtendWith(MockitoExtension.class)
 @Slf4j
@@ -169,7 +170,7 @@ class MemberTodoCategoryServiceTest {
         when(memberRepository.findById(TEST_ID)).thenReturn(Optional.of(member));
         when(todoCategoryRepository.save(any())).thenReturn(mockTodoCategory);
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
-                .name("카테고리1")
+                .name("카테고리")
                 .color("BLUE")
                 .build();
 
@@ -187,7 +188,7 @@ class MemberTodoCategoryServiceTest {
     void createCategory_Fail_Invalid_Color() {
         //given
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
-                .name("그룹 카테고리1")
+                .name("그룹 카테고리")
                 .color(INVALID_COLOR)
                 .build();
 
@@ -214,10 +215,16 @@ class MemberTodoCategoryServiceTest {
     void changeMemberTodoCategory_Success() {
         //given
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
+                .name("수정된 카테고리")
                 .color("RED")
                 .build();
 
-        when(todoCategoryRepository.findById(TEST_ID)).thenReturn(Optional.of(mockTodoCategory));
+        MemberTodoCategory category = MemberTodoCategory.builder()
+                .name("기존 카테고리")
+                .color(Color.BLUE)
+                .build();
+
+        when(todoCategoryRepository.findById(TEST_ID)).thenReturn(Optional.of(category));
 
         //when
         TodoCategoryResponseDto responseDto =
@@ -225,7 +232,9 @@ class MemberTodoCategoryServiceTest {
 
         //then
         verify(todoCategoryRepository).findById(TEST_ID);
-        assertThat(responseDto.getId()).isEqualTo(mockTodoCategory.getId());
+        assertThat(responseDto.getId()).isEqualTo(category.getId());
+        assertThat(category.getColor()).isEqualTo(Color.RED);
+        assertThat(category.getName()).isEqualTo("수정된 카테고리");
     }
 
     @DisplayName("존재하지 않는 Category 의 경우, Exception 을 발생시켜야 한다.")
@@ -237,7 +246,9 @@ class MemberTodoCategoryServiceTest {
         //when
         //then
         assertThatThrownBy(() -> memberTodoCategoryService.changeCategory(TEST_ID, mockTodoCategoryRequestDto))
-                .isInstanceOf(PlanusException.class);
+                .isInstanceOf(PlanusException.class)
+                .extracting("status")
+                .isEqualTo(NOT_EXIST_CATEGORY);
     }
 
     @DisplayName("존재하지 않는 Color 인 경우, Exception 을 발생시켜야 한다.")
@@ -281,7 +292,9 @@ class MemberTodoCategoryServiceTest {
         //when
         //then
         assertThatThrownBy(() -> memberTodoCategoryService.changeCategory(TEST_ID, mockTodoCategoryRequestDto))
-                .isInstanceOf(PlanusException.class);
+                .isInstanceOf(PlanusException.class)
+                .extracting("status")
+                .isEqualTo(NOT_EXIST_CATEGORY);
     }
 
 }
