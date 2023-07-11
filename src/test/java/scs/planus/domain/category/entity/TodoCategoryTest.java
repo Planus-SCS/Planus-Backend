@@ -11,7 +11,7 @@ class TodoCategoryTest {
     private TodoCategory todoCategory;
 
     @BeforeEach
-    void TodoCategorySetUP() {
+    void init() {
         todoCategory = MemberTodoCategory.builder()
                 .name("카테고리1")
                 .color(Color.BLUE)
