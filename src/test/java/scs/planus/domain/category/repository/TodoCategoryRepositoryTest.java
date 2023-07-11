@@ -1,5 +1,6 @@
 package scs.planus.domain.category.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -18,7 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@TestClassOrder(ClassOrderer.OrderAnnotation.class) // Group 을 먼저하면 Member 쪽 첫번째 테스트가 계속 실패함..
+@Slf4j
 class TodoCategoryRepositoryTest {
     private static final Long NOT_EXIST_ID = 0L;
     @Autowired
@@ -29,7 +30,6 @@ class TodoCategoryRepositoryTest {
     private GroupRepository groupRepository;
 
     @DisplayName("MemberTodoCategoryRepository 테스트")
-    @Order(1)
     @Nested
     class MemberTodoCategoryRepositoryTest {
         private Member member;
@@ -57,7 +57,7 @@ class TodoCategoryRepositoryTest {
 
             //when
             MemberTodoCategory findMemberTodoCategory = todoCategoryRepository
-                    .findMemberTodoCategoryByIdAndMember(testMemberTodoCategory.getId(), member.getId())
+                    .findMemberTodoCategoryByMemberIdAndId(member.getId(), testMemberTodoCategory.getId())
                     .orElse(null);
 
             //then
@@ -72,7 +72,7 @@ class TodoCategoryRepositoryTest {
             //given
             //when
             MemberTodoCategory findMemberTodoCategory = todoCategoryRepository
-                    .findMemberTodoCategoryByIdAndMember(NOT_EXIST_ID, member.getId())
+                    .findMemberTodoCategoryByMemberIdAndId(NOT_EXIST_ID, member.getId())
                     .orElse(null);
 
             //then
@@ -121,7 +121,6 @@ class TodoCategoryRepositoryTest {
     }
 
     @DisplayName("GroupTodoCategoryRepository 테스트")
-    @Order(2)
     @Nested
     class GroupTodoCategoryRepositoryTest {
         private Group group;
