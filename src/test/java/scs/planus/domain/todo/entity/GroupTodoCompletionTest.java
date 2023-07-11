@@ -38,7 +38,7 @@ class GroupTodoCompletionTest {
         assertThat(groupTodoCompletion.isCompletion()).isTrue();
     }
 
-    @DisplayName("그룹 투두 완료가 제대로 생성되어야 한다.")
+    @DisplayName("GroupTodoCompletion이 제대로 생성되어야 한다.")
     @Test
     void createGroupTodoCompletion(){
         //given
