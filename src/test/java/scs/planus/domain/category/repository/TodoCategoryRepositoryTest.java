@@ -1,7 +1,10 @@
 package scs.planus.domain.category.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import scs.planus.domain.Status;
@@ -13,7 +16,6 @@ import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -236,9 +238,7 @@ class TodoCategoryRepositoryTest {
             todoCategoryRepository.save(testGroup1TodoCategory);
             todoCategoryRepository.save(testGroup2TodoCategory);
 
-            List<Group> groupList = new ArrayList<>();
-            groupList.add(group);
-            groupList.add(group2);
+            List<Group> groupList = List.of(group, group2);
 
             //when
             List<GroupTodoCategory> findAllGroupTodoCategoriesList = todoCategoryRepository
@@ -261,9 +261,7 @@ class TodoCategoryRepositoryTest {
 
             groupRepository.save(group2);
 
-            List<Group> groupList = new ArrayList<>();
-            groupList.add(group);
-            groupList.add(group2);
+            List<Group> groupList = List.of(group, group2);
 
             //when
             List<GroupTodoCategory> findAllGroupTodoCategoriesList = todoCategoryRepository

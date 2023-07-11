@@ -145,11 +145,10 @@ class MemberTodoCategoryServiceTest {
                 .member(member)
                 .group(mockGroup2).build();
 
-        List<GroupMember> groupMemberList = new ArrayList<>(
-                List.of(group1Member, group2Member));
+        List<GroupMember> groupMemberList = List.of(group1Member, group2Member);
 
-        List<GroupTodoCategory> groupTodoCategoryList = new ArrayList<>(
-                List.of(group1TodoCategory1, group1TodoCategory2, group2TodoCategory1, group2TodoCategory2));
+        List<GroupTodoCategory> groupTodoCategoryList =
+                List.of(group1TodoCategory1, group1TodoCategory2, group2TodoCategory1, group2TodoCategory2);
 
         when(groupMemberRepository.findAllByActiveGroupAndMemberId(TEST_ID)).thenReturn(groupMemberList);
         when(todoCategoryRepository.findAllGroupTodoCategoriesInGroups(any())).thenReturn(groupTodoCategoryList);
