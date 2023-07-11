@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GroupTodoCompletionTest {
 
-    @DisplayName("그룹 투두 완료 상태를 true에서 false로 변경할 수 있어야 한다.")
+    @DisplayName("GroupTodoCompletion 상태를 true에서 false로 변경할 수 있어야 한다.")
     @Test
     void changeCompletion_From_True_To_False(){
         //given
@@ -23,7 +23,7 @@ class GroupTodoCompletionTest {
         assertThat(groupTodoCompletion.isCompletion()).isFalse();
     }
 
-    @DisplayName("그룹 투두 완료 상태를 false에서 true로 변경할 수 있어야 한다.")
+    @DisplayName("GroupTodoCompletion 상태를 false에서 true로 변경할 수 있어야 한다.")
     @Test
     void changeCompletion_From_False_To_True(){
         //given
