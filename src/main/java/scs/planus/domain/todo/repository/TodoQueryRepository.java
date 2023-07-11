@@ -30,49 +30,6 @@ public class TodoQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     /**
-     * Query For GroupMemberTodo
-     */
-    public Optional<Todo> findOneGroupMemberTodoById(Long memberId, Long groupId, Long todoId) {
-        return Optional.ofNullable(queryFactory
-                .selectFrom(todo)
-                .join(memberTodo).on(memberTodo.eq(todo))
-                .join(todo.group, group).fetchJoin()
-                .join(todo.todoCategory, todoCategory).fetchJoin()
-                .leftJoin(memberTodo.member, member)
-                .where(todoIdEq(todoId).and(memberIdEq(memberId).and(groupIdEq(groupId))
-                                .or(groupIdEq(groupId).and(member.isNull()))))
-                .fetchOne());
-    }
-
-    public List<Todo> findGroupMemberPeriodTodosByDate(Long memberId, Long groupId, LocalDate from, LocalDate to) {
-        return queryFactory
-                .selectFrom(todo)
-                .join(memberTodo).on(memberTodo.eq(todo))
-                .join(todo.group, group).on(groupIdEq(groupId))
-                .join(todo.todoCategory, todoCategory).fetchJoin()
-                .leftJoin(memberTodo.member, member)
-                .where((memberIdEq(memberId).and(groupIdEq(groupId)))
-                                .or(groupIdEq(groupId).and(member.isNull())),
-                        todoPeriodBetween(from, to))
-                .orderBy(todo.startDate.asc(), todo.endDate.desc())
-                .fetch();
-    }
-
-    public List<Todo> findGroupMemberDailyTodosByDate(Long memberId, Long groupId, LocalDate date) {
-        return queryFactory
-                .selectFrom(todo)
-                .join(memberTodo).on(memberTodo.eq(todo))
-                .join(todo.group, group).on(groupIdEq(groupId))
-                .join(todo.todoCategory, todoCategory).fetchJoin()
-                .leftJoin(memberTodo.member, member)
-                .where((memberIdEq(memberId).and(groupIdEq(groupId)))
-                                .or(groupIdEq(groupId).and(member.isNull())),
-                        todoDateBetween(date))
-                .orderBy(todo.startTime.asc())
-                .fetch();
-    }
-
-    /**
      * Query For MemberTodo
      */
     public Optional<MemberTodo> findOneMemberTodoById(Long memberId, Long todoId) {
@@ -130,6 +87,49 @@ public class TodoQueryRepository {
                 .join(groupTodo.group, group)
                 .where(groupsIn(groups), groupTodoPeriodBetween(from, to))
                 .orderBy(groupTodo.startDate.asc())
+                .fetch();
+    }
+
+    /**
+     * Query For GroupMemberTodo
+     */
+    public Optional<Todo> findOneGroupMemberTodoById(Long memberId, Long groupId, Long todoId) {
+        return Optional.ofNullable(queryFactory
+                .selectFrom(todo)
+                .join(memberTodo).on(memberTodo.eq(todo))
+                .join(todo.group, group).fetchJoin()
+                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.member, member)
+                .where(todoIdEq(todoId).and(memberIdEq(memberId).and(groupIdEq(groupId))
+                        .or(groupIdEq(groupId).and(member.isNull()))))
+                .fetchOne());
+    }
+
+    public List<Todo> findGroupMemberPeriodTodosByDate(Long memberId, Long groupId, LocalDate from, LocalDate to) {
+        return queryFactory
+                .selectFrom(todo)
+                .join(memberTodo).on(memberTodo.eq(todo))
+                .join(todo.group, group).on(groupIdEq(groupId))
+                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.member, member)
+                .where((memberIdEq(memberId).and(groupIdEq(groupId)))
+                                .or(groupIdEq(groupId).and(member.isNull())),
+                        todoPeriodBetween(from, to))
+                .orderBy(todo.startDate.asc(), todo.endDate.desc())
+                .fetch();
+    }
+
+    public List<Todo> findGroupMemberDailyTodosByDate(Long memberId, Long groupId, LocalDate date) {
+        return queryFactory
+                .selectFrom(todo)
+                .join(memberTodo).on(memberTodo.eq(todo))
+                .join(todo.group, group).on(groupIdEq(groupId))
+                .join(todo.todoCategory, todoCategory).fetchJoin()
+                .leftJoin(memberTodo.member, member)
+                .where((memberIdEq(memberId).and(groupIdEq(groupId)))
+                                .or(groupIdEq(groupId).and(member.isNull())),
+                        todoDateBetween(date))
+                .orderBy(todo.startTime.asc())
                 .fetch();
     }
 
