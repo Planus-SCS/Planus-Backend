@@ -1,54 +1,26 @@
 package scs.planus.domain.todo.repository;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import scs.planus.domain.Status;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.entity.TodoCategory;
-import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
-import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.entity.Todo;
-import scs.planus.global.config.QueryDslConfig;
+import scs.planus.support.RepositoryTest;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Import(QueryDslConfig.class)
-@Slf4j
-class TodoQueryRepositoryTest {
-
-    private TodoQueryRepository todoQueryRepository;
-
-    @Autowired
-    private JPAQueryFactory queryFactory;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
-    private TodoRepository todoRepository;
-
-    @Autowired
-    private TodoCategoryRepository todoCategoryRepository;
+class TodoQueryRepositoryTest extends RepositoryTest {
 
     private Member member;
 
@@ -57,11 +29,6 @@ class TodoQueryRepositoryTest {
     private Group group;
 
     private TodoCategory todoCategory;
-
-    @BeforeEach
-    void initRepository() {
-        todoQueryRepository = new TodoQueryRepository(queryFactory);
-    }
 
     @Nested
     @DisplayName("MemberTodoQuery 테스트")
