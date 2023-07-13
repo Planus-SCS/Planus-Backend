@@ -3,19 +3,14 @@ package scs.planus.domain.member.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.entity.Role;
+import scs.planus.support.RepositoryTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-class MemberRepositoryTest {
-
-    @Autowired
-    private MemberRepository memberRepository;
+class MemberRepositoryTest extends RepositoryTest {
 
     private Member member;
 

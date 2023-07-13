@@ -1,38 +1,20 @@
 package scs.planus.domain.todo.repository;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import scs.planus.domain.Status;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
-import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.GroupTodoCompletion;
+import scs.planus.support.RepositoryTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Slf4j
-class GroupTodoCompletionRepositoryTest {
-
-    @Autowired
-    private GroupTodoCompletionRepository groupTodoCompletionRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
-    private TodoRepository todoRepository;
+class GroupTodoCompletionRepositoryTest extends RepositoryTest {
 
     private Member member;
 
@@ -44,10 +26,7 @@ class GroupTodoCompletionRepositoryTest {
 
     @BeforeEach
     void init() {
-        member = Member.builder()
-                .status(Status.ACTIVE)
-                .build();
-        memberRepository.save(member);
+        member = memberRepository.findById(1L).orElse(null);
 
         group = Group.builder()
                 .status(Status.ACTIVE)

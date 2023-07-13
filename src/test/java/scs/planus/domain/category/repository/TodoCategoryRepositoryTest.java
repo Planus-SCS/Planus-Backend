@@ -1,35 +1,23 @@
 package scs.planus.domain.category.repository;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import scs.planus.domain.Status;
 import scs.planus.domain.category.entity.Color;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
-import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.support.RepositoryTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Slf4j
-class TodoCategoryRepositoryTest {
+class TodoCategoryRepositoryTest extends RepositoryTest {
     private static final Long NOT_EXIST_ID = 0L;
-    @Autowired
-    private TodoCategoryRepository todoCategoryRepository;
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private GroupRepository groupRepository;
 
     @DisplayName("MemberTodoCategoryRepository 테스트")
     @Nested
