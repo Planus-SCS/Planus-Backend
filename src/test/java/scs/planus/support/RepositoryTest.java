@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
+import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
@@ -29,6 +30,9 @@ public abstract class RepositoryTest {
 
     @Autowired
     protected GroupRepository groupRepository;
+
+    @Autowired
+    protected GroupMemberRepository groupMemberRepository;
 
     @Autowired
     protected TodoRepository todoRepository;
