@@ -29,13 +29,9 @@ class GroupTodoCompletionRepositoryTest {
     @Autowired
     private TodoRepository todoRepository;
 
-
     private Member member;
-
     private Group group;
-
     private GroupTodo groupTodo;
-
     private GroupTodoCompletion groupTodoCompletion;
 
     @BeforeEach

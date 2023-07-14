@@ -45,11 +45,8 @@ class TodoQueryRepositoryTest {
     private TodoQueryRepository todoQueryRepository;
 
     private Member member;
-
     private Todo todo;
-
     private Group group;
-
     private TodoCategory todoCategory;
 
     @BeforeEach
