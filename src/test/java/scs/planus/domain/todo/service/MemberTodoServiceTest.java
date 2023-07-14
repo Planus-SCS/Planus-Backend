@@ -95,7 +95,7 @@ class MemberTodoServiceTest {
         assertThat(memberTodo.getTodoId()).isNotNull();
     }
 
-    @DisplayName("존재하지 않는 그룹 id로 Todo를 생성시, 예외를 던진다.")
+    @DisplayName("존재하지 않는 그룹 id로 MemberTodo를 생성시, 예외를 던진다.")
     @Test
     void createMemberTodo_Throw_Exception_If_Not_Existed_Group(){
         //given
@@ -113,7 +113,7 @@ class MemberTodoServiceTest {
                 .isEqualTo(NOT_EXIST_GROUP);
     }
 
-    @DisplayName("가입하지 않는 그룹 id로 Todo를 생성시, 예외를 던진다.")
+    @DisplayName("가입하지 않는 그룹 id로 MemberTodo를 생성시, 예외를 던진다.")
     @Test
     void createMemberTodo_Throw_Exception_If_Not_Joined_Group(){
         //given
@@ -134,7 +134,7 @@ class MemberTodoServiceTest {
                 .isEqualTo(NOT_JOINED_GROUP);
     }
 
-    @DisplayName("Todo를 생성할 때 endDate가 startDate보다 빠를 시, 예외를 던진다.")
+    @DisplayName("MemberTodo를 생성할 때 endDate가 startDate보다 빠를 시, 예외를 던진다.")
     @Test
     void createMemberTodo_Throw_Exception_EndDate_Earlier_Than_StartDate(){
         //given
@@ -205,7 +205,7 @@ class MemberTodoServiceTest {
                 .isEqualTo(NONE_TODO);
     }
 
-    @DisplayName("Todo 변경이 제대로 이루어져야한다.")
+    @DisplayName("MemberTodo 변경이 제대로 이루어져야한다.")
     @Test
     void updateTodo(){
         //given
@@ -269,7 +269,7 @@ class MemberTodoServiceTest {
         assertThat(todo.isCompletion()).isFalse();
     }
 
-    @DisplayName("Todo가 제대로 삭제되어야 한다.")
+    @DisplayName("MemberTodo가 제대로 삭제되어야 한다.")
     @Test
     void deleteTodo(){
         //given
