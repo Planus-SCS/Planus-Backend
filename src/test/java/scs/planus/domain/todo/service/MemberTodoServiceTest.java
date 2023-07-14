@@ -134,7 +134,7 @@ class MemberTodoServiceTest {
                 .isEqualTo(NOT_JOINED_GROUP);
     }
 
-    @DisplayName("endDate가 startDate보다 빠를 시, 그룹 id로 Todo를 생성시, 예외를 던진다.")
+    @DisplayName("Todo를 생성할 때 endDate가 startDate보다 빠를 시, 예외를 던진다.")
     @Test
     void createMemberTodo_Throw_Exception_EndDate_Earlier_Than_StartDate(){
         //given
