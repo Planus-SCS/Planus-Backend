@@ -3,9 +3,12 @@ package scs.planus.domain.todo.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import scs.planus.domain.Status;
 import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.GroupTodoCompletion;
 import scs.planus.support.RepositoryTest;
@@ -14,7 +17,18 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GroupTodoCompletionRepositoryTest extends RepositoryTest {
+@RepositoryTest
+class GroupTodoCompletionRepositoryTest {
+
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private GroupTodoCompletionRepository groupTodoCompletionRepository;
+    @Autowired
+    private TodoRepository todoRepository;
+
 
     private Member member;
 
