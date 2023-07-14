@@ -96,7 +96,7 @@ public class GroupJoinService {
                     return existedGroupMember;
                 })
                 .orElseGet(() -> {
-                    GroupMember createGroupMember = GroupMember.creatGroupMember( groupJoin.getMember(), groupJoin.getGroup() );
+                    GroupMember createGroupMember = GroupMember.createGroupMember( groupJoin.getMember(), groupJoin.getGroup() );
                     return groupMemberRepository.save(createGroupMember);
                 });
 
