@@ -36,6 +36,7 @@ class MemberTodoServiceTest {
 
     private static final Long NOT_EXIST_ID = 0L;
     private static final Long MEMBER_ID = 1L;
+    private static final Long MEMBER_TODO_CATEGORY_ID = 1L;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -70,12 +71,7 @@ class MemberTodoServiceTest {
         );
 
         member = memberRepository.findById(MEMBER_ID).orElse(null);
-
-        memberTodoCategory = MemberTodoCategory.builder()
-                .member(member)
-                .build();
-
-        todoCategoryRepository.save(memberTodoCategory);
+        memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(MEMBER_TODO_CATEGORY_ID).orElse(null);
     }
 
     @DisplayName("MemberTodo가 제대로 생성되어야 한다.")
@@ -84,7 +80,7 @@ class MemberTodoServiceTest {
         //given
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
-                .categoryId(memberTodoCategory.getId())
+                .categoryId(MEMBER_TODO_CATEGORY_ID)
                 .startDate(LocalDate.now())
                 .build();
 
@@ -102,7 +98,7 @@ class MemberTodoServiceTest {
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
                 .groupId(NOT_EXIST_ID)
-                .categoryId(memberTodoCategory.getId())
+                .categoryId(MEMBER_TODO_CATEGORY_ID)
                 .startDate(LocalDate.now())
                 .build();
 
@@ -123,7 +119,7 @@ class MemberTodoServiceTest {
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
                 .groupId(group.getId())
-                .categoryId(memberTodoCategory.getId())
+                .categoryId(MEMBER_TODO_CATEGORY_ID)
                 .startDate(LocalDate.now())
                 .build();
 
@@ -145,7 +141,7 @@ class MemberTodoServiceTest {
                 .title("memberTodo")
                 .startDate(startDate)
                 .endDate(endDate)
-                .categoryId(memberTodoCategory.getId())
+                .categoryId(MEMBER_TODO_CATEGORY_ID)
                 .startDate(LocalDate.now())
                 .build();
 
@@ -192,7 +188,7 @@ class MemberTodoServiceTest {
         //then
         assertThat(findTodo.getTitle()).isEqualTo(todo.getTitle());
         assertThat(findTodo.getTodoId()).isEqualTo(todo.getId());
-        assertThat(findTodo.getCategoryId()).isEqualTo(memberTodoCategory.getId());
+        assertThat(findTodo.getCategoryId()).isEqualTo(MEMBER_TODO_CATEGORY_ID);
     }
 
     @DisplayName("잘못된 todoId로 조회시, 예외를 던진다.")
@@ -219,7 +215,7 @@ class MemberTodoServiceTest {
 
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("new MemberTodo")
-                .categoryId(memberTodoCategory.getId())
+                .categoryId(MEMBER_TODO_CATEGORY_ID)
                 .build();
 
         //when
