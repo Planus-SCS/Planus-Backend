@@ -5,12 +5,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import scs.planus.domain.Status;
 import scs.planus.domain.category.entity.Color;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.group.entity.Group;
+import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.support.RepositoryTest;
 
 import java.util.List;
@@ -18,8 +21,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-class TodoCategoryRepositoryTest extends RepositoryTest {
+@RepositoryTest
+class TodoCategoryRepositoryTest {
     private static final Long NOT_EXIST_ID = 0L;
+
+    @Autowired
+    private MemberRepository memberRepository;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private TodoCategoryRepository todoCategoryRepository;
 
     @DisplayName("MemberTodoCategoryRepository 테스트")
     @Nested

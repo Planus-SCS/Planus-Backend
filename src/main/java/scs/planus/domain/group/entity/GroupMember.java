@@ -45,7 +45,7 @@ public class GroupMember extends BaseTimeEntity {
         if (group != null) { group.getGroupMembers().add(this); }
     }
 
-    public static GroupMember creatGroupLeader(Member member, Group group ) {
+    public static GroupMember createGroupLeader(Member member, Group group ) {
         return GroupMember.builder()
                 .leader(true)
                 .todoAuthority(true)
@@ -54,7 +54,7 @@ public class GroupMember extends BaseTimeEntity {
                 .build();
     }
 
-    public static GroupMember creatGroupMember(Member member, Group group ) {
+    public static GroupMember createGroupMember(Member member, Group group ) {
         return GroupMember.builder()
                 .leader(false)
                 .todoAuthority(false)
