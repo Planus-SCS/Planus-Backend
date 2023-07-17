@@ -12,7 +12,6 @@ import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
@@ -44,10 +43,6 @@ import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_MEMBE
 @Slf4j
 class GroupTodoCalendarServiceTest {
 
-    private static final Long MEMBER_ID = 1L;
-    private static final Long GROUP_ID = 1L;
-    private static final Long GROUP_TODO_CATEGORY_ID = 2L;
-
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -66,7 +61,8 @@ class GroupTodoCalendarServiceTest {
     private TodoQueryRepository todoQueryRepository;
     private GroupTodoCalendarService groupTodoCalendarService;
 
-    private Member member;
+    private Member groupLeader;
+    private Member groupMember;
     private Group group;
     private GroupTodoCategory groupTodoCategory;
 
@@ -81,11 +77,11 @@ class GroupTodoCalendarServiceTest {
                 groupTodoCompletionRepository
         );
 
-        member = memberRepository.findById(MEMBER_ID).orElse(null);
-        group = groupRepository.findById(GROUP_ID).orElse(null);
-        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(GROUP_TODO_CATEGORY_ID).orElse(null);
+        groupLeader = memberRepository.findById(1L).orElse(null);
+        groupMember = memberRepository.findById(2L).orElse(null);
 
-        GroupMember.createGroupLeader(member, group);
+        group = groupRepository.findById(1L).orElse(null);
+        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(2L).orElse(null);
     }
 
     @DisplayName("기간 내의 모든 GroupTodo들을 조회할 수 있어야 한다.")
@@ -100,14 +96,14 @@ class GroupTodoCalendarServiceTest {
                     .startDate(from.plusDays(i))
                     .group(group)
                     .todoCategory(groupTodoCategory)
+                    .isGroupTodo(true)
                     .build();
-
             todoRepository.save(groupTodo);
         }
 
         //when
         List<TodoPeriodResponseDto> periodGroupTodos
-                = groupTodoCalendarService.getPeriodGroupTodos(MEMBER_ID, GROUP_ID, from, to);
+                = groupTodoCalendarService.getPeriodGroupTodos(groupLeader.getId(), group.getId(), from, to);
 
         //then
         assertThat(periodGroupTodos.size()).isEqualTo(7);
@@ -124,14 +120,14 @@ class GroupTodoCalendarServiceTest {
                     .startDate(date)
                     .group(group)
                     .todoCategory(groupTodoCategory)
+                    .isGroupTodo(true)
                     .build();
-
             todoRepository.save(groupTodo);
         }
 
         //when
         TodoDailyResponseDto dailyGroupTodos
-                = groupTodoCalendarService.getDailyGroupTodos(MEMBER_ID, GROUP_ID, date);
+                = groupTodoCalendarService.getDailyGroupTodos(groupLeader.getId(), group.getId(), date);
 
         //then
         assertThat(dailyGroupTodos.getDailyTodos().size()).isEqualTo(7);
@@ -151,6 +147,7 @@ class GroupTodoCalendarServiceTest {
                     .startTime(time)
                     .group(group)
                     .todoCategory(groupTodoCategory)
+                    .isGroupTodo(true)
                     .build();
 
             todoRepository.save(groupTodo);
@@ -158,7 +155,7 @@ class GroupTodoCalendarServiceTest {
 
         //when
         TodoDailyResponseDto dailyGroupTodos
-                = groupTodoCalendarService.getDailyGroupTodos(MEMBER_ID, GROUP_ID, date);
+                = groupTodoCalendarService.getDailyGroupTodos(groupLeader.getId(), group.getId(), date);
 
         //then
         assertThat(dailyGroupTodos.getDailySchedules().size()).isEqualTo(7);
@@ -172,25 +169,19 @@ class GroupTodoCalendarServiceTest {
         LocalDate from = LocalDate.of(2023, 1,1);
         LocalDate to = LocalDate.of(2023, 1, 7);
 
-        Member anotherMember = Member.builder().status(Status.ACTIVE).build();
-        memberRepository.save(anotherMember);
-
-        GroupMember groupMember = GroupMember.createGroupMember(anotherMember, group);
-        groupMemberRepository.save(groupMember);
-
         for (int i = 0; i < 7; i++) {
             GroupTodo groupTodo = GroupTodo.builder()
                     .startDate(from)
                     .group(group)
                     .todoCategory(groupTodoCategory)
+                    .isGroupTodo(true)
                     .build();
-
             todoRepository.save(groupTodo);
         }
 
         //when
         List<TodoPeriodResponseDto> groupMemberPeriodTodos
-                = groupTodoCalendarService.getGroupMemberPeriodTodos(anotherMember.getId(), GROUP_ID, MEMBER_ID, from, to);
+                = groupTodoCalendarService.getGroupMemberPeriodTodos(groupMember.getId(), group.getId(), groupLeader.getId(), from, to);
 
         //then
         assertThat(groupMemberPeriodTodos.size()).isEqualTo(7);
@@ -205,16 +196,10 @@ class GroupTodoCalendarServiceTest {
 
         MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
 
-        Member loginMember = Member.builder().status(Status.ACTIVE).build();
-        memberRepository.save(loginMember);
-
-        GroupMember groupMember = GroupMember.createGroupMember(loginMember, group);
-        groupMemberRepository.save(groupMember);
-
         for (int i = 0; i < 7; i++) {
             MemberTodo memberTodo = MemberTodo.builder()
                     .startDate(from)
-                    .member(member)
+                    .member(groupLeader)
                     .group(group)
                     .todoCategory(memberTodoCategory)
                     .build();
@@ -223,7 +208,7 @@ class GroupTodoCalendarServiceTest {
 
         //when
         List<TodoPeriodResponseDto> groupMemberPeriodTodos
-                = groupTodoCalendarService.getGroupMemberPeriodTodos(loginMember.getId(), GROUP_ID, MEMBER_ID, from, to);
+                = groupTodoCalendarService.getGroupMemberPeriodTodos(groupMember.getId(), group.getId(), groupLeader.getId(), from, to);
 
         //then
         assertThat(groupMemberPeriodTodos.size()).isEqualTo(7);
@@ -243,8 +228,8 @@ class GroupTodoCalendarServiceTest {
         assertThatThrownBy(() ->
                 groupTodoCalendarService.getGroupMemberPeriodTodos(
                         anotherMember.getId(),
-                        GROUP_ID,
-                        MEMBER_ID,
+                        group.getId(),
+                        groupMember.getId(),
                         from,
                         to))
                 .isInstanceOf(PlanusException.class)
@@ -265,8 +250,8 @@ class GroupTodoCalendarServiceTest {
         //then
         assertThatThrownBy(() ->
                 groupTodoCalendarService.getGroupMemberPeriodTodos(
-                        MEMBER_ID,
-                        GROUP_ID,
+                        groupMember.getId(),
+                        group.getId(),
                         anotherMember.getId(),
                         from,
                         to))
@@ -282,17 +267,11 @@ class GroupTodoCalendarServiceTest {
         LocalDate date = LocalDate.of(2023, 1, 1);
         LocalTime time = LocalTime.of(11, 0);
 
-        Member anotherMember = Member.builder().status(Status.ACTIVE).build();
-        memberRepository.save(anotherMember);
-
-        GroupMember groupMember = GroupMember.createGroupMember(anotherMember, group);
-        groupMemberRepository.save(groupMember);
-
         MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
 
         todoRepository.save(MemberTodo.builder()
                 .startDate(date)
-                .member(member)
+                .member(groupLeader)
                 .group(group)
                 .todoCategory(memberTodoCategory)
                 .build());
@@ -301,13 +280,13 @@ class GroupTodoCalendarServiceTest {
                 .startDate(date)
                 .startTime(time)
                 .group(group)
-                .isGroupTodo(true)
                 .todoCategory(groupTodoCategory)
+                .isGroupTodo(true)
                 .build());
 
         //when
         TodoDailyResponseDto groupMemberDailyTodos
-                = groupTodoCalendarService.getGroupMemberDailyTodos(anotherMember.getId(), GROUP_ID, MEMBER_ID, date);
+                = groupTodoCalendarService.getGroupMemberDailyTodos(groupMember.getId(), group.getId(), groupLeader.getId(), date);
 
         //then
         assertThat(groupMemberDailyTodos.getDailyTodos().size()).isEqualTo(1);
@@ -321,19 +300,13 @@ class GroupTodoCalendarServiceTest {
         LocalDate date = LocalDate.of(2023, 1, 1);
         LocalTime time = LocalTime.of(11, 0);
 
-        Member anotherMember = Member.builder().status(Status.ACTIVE).build();
-        memberRepository.save(anotherMember);
-
-        GroupMember groupMember = GroupMember.createGroupMember(anotherMember, group);
-        groupMemberRepository.save(groupMember);
-
         MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
 
         for (int i = 0; i < 7; i++) {
             MemberTodo memberTodo = MemberTodo.builder()
                     .startDate(date)
                     .startTime(time.minusHours(i))
-                    .member(member)
+                    .member(groupLeader)
                     .group(group)
                     .todoCategory(memberTodoCategory)
                     .build();
@@ -342,7 +315,7 @@ class GroupTodoCalendarServiceTest {
 
         //when
         TodoDailyResponseDto groupMemberDailyTodos
-                = groupTodoCalendarService.getGroupMemberDailyTodos(anotherMember.getId(), GROUP_ID, MEMBER_ID, date);
+                = groupTodoCalendarService.getGroupMemberDailyTodos(groupMember.getId(), group.getId(), groupLeader.getId(), date);
 
         List<LocalTime> startTimes = groupMemberDailyTodos.getDailySchedules().stream()
                 .map(TodoDailyDto::getStartTime)

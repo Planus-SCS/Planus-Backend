@@ -6,11 +6,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import scs.planus.domain.Status;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
@@ -38,9 +38,6 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 class GroupTodoServiceTest {
 
     private static final Long NOT_EXIST_ID = 0L;
-    private static final Long MEMBER_ID = 1L;
-    private static final Long GROUP_ID = 1L;
-    private static final Long GROUP_TODO_CATEGORY_ID = 2L;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -60,7 +57,8 @@ class GroupTodoServiceTest {
     private TodoQueryRepository todoQueryRepository;
     private GroupTodoService groupTodoService;
 
-    private Member member;
+    private Member groupLeader;
+    private Member groupMember;
     private Group group;
     private GroupTodoCategory groupTodoCategory;
 
@@ -77,27 +75,25 @@ class GroupTodoServiceTest {
                 todoQueryRepository
         );
 
-        member = memberRepository.findById(MEMBER_ID).orElse(null);
-        group = groupRepository.findById(MEMBER_ID).orElse(null);
-        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(GROUP_TODO_CATEGORY_ID).orElse(null);
+        groupLeader = memberRepository.findById(1L).orElse(null);
+        groupMember = memberRepository.findById(2L).orElse(null);
+        group = groupRepository.findById(1L).orElse(null);
+        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(2L).orElse(null);
     }
 
     @DisplayName("GroupTodo가 제대로 생성되어야 한다.")
     @Test
     void createGroupTodo(){
         //given
-        GroupMember groupLeader = GroupMember.createGroupLeader(member, group);
-        groupMemberRepository.save(groupLeader);
-
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("groupTodo")
-                .groupId(GROUP_ID)
-                .categoryId(GROUP_TODO_CATEGORY_ID)
+                .groupId(group.getId())
+                .categoryId(groupTodoCategory.getId())
                 .build();
 
         //when
         TodoResponseDto responseDto =
-                groupTodoService.createGroupTodo(MEMBER_ID, GROUP_ID, requestDto);
+                groupTodoService.createGroupTodo(groupLeader.getId(), group.getId(), requestDto);
 
         //then
         assertThat(responseDto.getTodoId()).isNotNull();
@@ -107,26 +103,23 @@ class GroupTodoServiceTest {
     @Test
     void createGroupTodo_Then_Create_GroupTodoCompletion(){
         //given
-        GroupMember groupLeader = GroupMember.createGroupLeader(member, group);
-        groupMemberRepository.save(groupLeader);
-
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("groupTodo")
-                .groupId(GROUP_ID)
-                .categoryId(GROUP_TODO_CATEGORY_ID)
+                .groupId(group.getId())
+                .categoryId(groupTodoCategory.getId())
                 .build();
 
         //when
         TodoResponseDto responseDto =
-                groupTodoService.createGroupTodo(MEMBER_ID, GROUP_ID, requestDto);
+                groupTodoService.createGroupTodo(groupLeader.getId(), group.getId(), requestDto);
 
         GroupTodoCompletion todoCompletion = groupTodoCompletionRepository
-                .findByMemberIdAndTodoId(MEMBER_ID, responseDto.getTodoId())
+                .findByMemberIdAndTodoId(groupLeader.getId(), responseDto.getTodoId())
                 .orElse(null);
 
         //then
         assertThat(todoCompletion).isNotNull();
-        assertThat(todoCompletion.getMember()).isEqualTo(member);
+        assertThat(todoCompletion.getMember()).isEqualTo(groupLeader);
         assertThat(todoCompletion.getGroupTodo().getId()).isEqualTo(responseDto.getTodoId());
     }
 
@@ -136,13 +129,13 @@ class GroupTodoServiceTest {
         //given
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("groupTodo")
-                .groupId(GROUP_ID)
-                .categoryId(GROUP_TODO_CATEGORY_ID)
+                .groupId(group.getId())
+                .categoryId(groupTodoCategory.getId())
                 .build();
 
         //then
         assertThatThrownBy(() ->
-                groupTodoService.createGroupTodo(MEMBER_ID, NOT_EXIST_ID, requestDto))
+                groupTodoService.createGroupTodo(groupLeader.getId(), NOT_EXIST_ID, requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_EXIST_GROUP);
@@ -152,15 +145,21 @@ class GroupTodoServiceTest {
     @Test
     void createGroupTodo_Throw_Exception_If_Not_Join_Group(){
         //given
+        Member anotherMember = Member.builder().status(Status.ACTIVE).build();
+        memberRepository.save(anotherMember);
+
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("groupTodo")
-                .groupId(GROUP_ID)
-                .categoryId(GROUP_TODO_CATEGORY_ID)
+                .groupId(group.getId())
+                .categoryId(groupTodoCategory.getId())
                 .build();
 
         //then
         assertThatThrownBy(() ->
-                groupTodoService.createGroupTodo(MEMBER_ID, GROUP_ID, requestDto))
+                groupTodoService.createGroupTodo(
+                        anotherMember.getId(),
+                        group.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_JOINED_GROUP);
@@ -170,18 +169,18 @@ class GroupTodoServiceTest {
     @Test
     void createGroupTodo_Throw_Exception_If_Not_Authority(){
         //given
-        GroupMember groupMember = GroupMember.createGroupMember(member, group);
-        groupMemberRepository.save(groupMember);
-
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("groupTodo")
-                .groupId(GROUP_ID)
-                .categoryId(GROUP_TODO_CATEGORY_ID)
+                .groupId(group.getId())
+                .categoryId(groupTodoCategory.getId())
                 .build();
 
         //then
         assertThatThrownBy(() ->
-                groupTodoService.createGroupTodo(MEMBER_ID, GROUP_ID, requestDto))
+                groupTodoService.createGroupTodo(
+                        groupMember.getId(),
+                        group.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(DO_NOT_HAVE_TODO_AUTHORITY);
@@ -191,18 +190,18 @@ class GroupTodoServiceTest {
     @Test
     void createGroupTodo_Throw_Exception_If_Not_Existed_Category(){
         //given
-        GroupMember groupLeader = GroupMember.createGroupLeader(member, group);
-        groupMemberRepository.save(groupLeader);
-
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("groupTodo")
-                .groupId(GROUP_ID)
+                .groupId(group.getId())
                 .categoryId(NOT_EXIST_ID)
                 .build();
 
         //then
         assertThatThrownBy(() ->
-                groupTodoService.createGroupTodo(MEMBER_ID, GROUP_ID, requestDto))
+                groupTodoService.createGroupTodo(
+                        groupLeader.getId(),
+                        group.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_EXIST_CATEGORY);
@@ -212,9 +211,6 @@ class GroupTodoServiceTest {
     @Test
     void getOneGroupTodo() {
         //given
-        GroupMember groupLeader = GroupMember.createGroupLeader(member, group);
-        groupMemberRepository.save(groupLeader);
-
         GroupTodo groupTodo = GroupTodo.builder()
                 .title("groupTodo")
                 .group(group)
@@ -225,7 +221,7 @@ class GroupTodoServiceTest {
 
         //when
         TodoForGroupResponseDto responseDto
-                = groupTodoService.getOneGroupTodo(MEMBER_ID, GROUP_ID, groupTodo.getId());
+                = groupTodoService.getOneGroupTodo(groupLeader.getId(), group.getId(), groupTodo.getId());
 
         //then
         assertThat(responseDto.getTodoId()).isEqualTo(groupTodo.getId());
@@ -236,19 +232,10 @@ class GroupTodoServiceTest {
     @Test
     void getOneGroupMemberTodo(){
         //given
-        Member loginMember = Member.builder().build();
-        memberRepository.save(loginMember);
-
-        GroupMember.createGroupMember(loginMember, group);
-        GroupMember.createGroupMember(member, group);
-
-        MemberTodoCategory memberTodoCategory = MemberTodoCategory.builder()
-                .member(member)
-                .build();
-        todoCategoryRepository.save(memberTodoCategory);
+        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
 
         MemberTodo memberTodo = MemberTodo.builder()
-                .member(member)
+                .member(groupLeader)
                 .group(group)
                 .todoCategory(memberTodoCategory)
                 .build();
@@ -256,7 +243,7 @@ class GroupTodoServiceTest {
 
         //when
         TodoForGroupResponseDto responseDto
-                = groupTodoService.getOneGroupMemberTodo(loginMember.getId(), MEMBER_ID, GROUP_ID, memberTodo.getId());
+                = groupTodoService.getOneGroupMemberTodo(groupMember.getId(), groupLeader.getId(), group.getId(), memberTodo.getId());
 
         //then
         assertThat(responseDto.getTodoId()).isEqualTo(memberTodo.getId());
@@ -266,16 +253,13 @@ class GroupTodoServiceTest {
     @DisplayName("GroupMember의 Todo가 존재하지 않을 시, 예외를 던진다.")
     @Test
     void getOneGroupMemberTodo_Throw_Exception_If_Not_Existed_Todo(){
-        //given
-        Member loginMember = Member.builder().build();
-        memberRepository.save(loginMember);
-
-        GroupMember.createGroupMember(loginMember, group);
-        GroupMember.createGroupMember(member, group);
-
         //then
         assertThatThrownBy(() ->
-                groupTodoService.getOneGroupMemberTodo(loginMember.getId(), MEMBER_ID, GROUP_ID, NOT_EXIST_ID))
+                groupTodoService.getOneGroupMemberTodo(
+                        groupMember.getId(),
+                        groupLeader.getId(),
+                        group.getId(),
+                        NOT_EXIST_ID))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NONE_TODO);
@@ -285,26 +269,27 @@ class GroupTodoServiceTest {
     @Test
     void getOneGroupMemberTodo_Throw_Exception_If_Not_Joined_Group(){
         //given
-        Member loginMember = Member.builder().build();
-        memberRepository.save(loginMember);
-
-        GroupMember groupMember = GroupMember.createGroupMember(loginMember, group);
-        groupMemberRepository.save(groupMember);
+        Member anotherMember = Member.builder().status(Status.ACTIVE).build();
+        memberRepository.save(anotherMember);
 
         MemberTodoCategory memberTodoCategory = MemberTodoCategory.builder()
-                .member(member)
+                .member(anotherMember)
                 .build();
         todoCategoryRepository.save(memberTodoCategory);
 
         MemberTodo memberTodo = MemberTodo.builder()
-                .member(member)
+                .member(anotherMember)
                 .todoCategory(memberTodoCategory)
                 .build();
         todoRepository.save(memberTodo);
 
         //then
         assertThatThrownBy(() ->
-                groupTodoService.getOneGroupMemberTodo(loginMember.getId(), MEMBER_ID, GROUP_ID, memberTodo.getId()))
+                groupTodoService.getOneGroupMemberTodo(
+                        groupLeader.getId(),
+                        anotherMember.getId(),
+                        group.getId(),
+                        memberTodo.getId()))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_JOINED_MEMBER_IN_GROUP);
@@ -314,9 +299,6 @@ class GroupTodoServiceTest {
     @Test
     void updateTodo(){
         //given
-        GroupMember groupLeader = GroupMember.createGroupLeader(member, group);
-        groupMemberRepository.save(groupLeader);
-
         GroupTodo groupTodo = GroupTodo.builder()
                 .title("groupTodo")
                 .group(group)
@@ -327,13 +309,13 @@ class GroupTodoServiceTest {
 
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("new groupTodo")
-                .groupId(GROUP_ID)
-                .categoryId(GROUP_TODO_CATEGORY_ID)
+                .groupId(group.getId())
+                .categoryId(groupTodoCategory.getId())
                 .build();
 
         //when
         TodoResponseDto responseDto =
-                groupTodoService.updateTodo(MEMBER_ID, GROUP_ID, groupTodo.getId(), requestDto);
+                groupTodoService.updateTodo(groupLeader.getId(), group.getId(), groupTodo.getId(), requestDto);
 
         //then
         assertThat(responseDto.getTodoId()).isEqualTo(groupTodo.getId());
@@ -344,9 +326,6 @@ class GroupTodoServiceTest {
     @Test
     void updateTodo_Throw_Exception_If_Not_Authority(){
         //given
-        GroupMember groupMember = GroupMember.createGroupMember(member, group);
-        groupMemberRepository.save(groupMember);
-
         GroupTodo groupTodo = GroupTodo.builder()
                 .title("groupTodo")
                 .group(group)
@@ -357,13 +336,17 @@ class GroupTodoServiceTest {
 
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("new groupTodo")
-                .groupId(GROUP_ID)
-                .categoryId(GROUP_TODO_CATEGORY_ID)
+                .groupId(group.getId())
+                .categoryId(groupTodoCategory.getId())
                 .build();
 
         //then
         assertThatThrownBy(() ->
-                groupTodoService.updateTodo(MEMBER_ID, GROUP_ID, groupTodo.getId(), requestDto))
+                groupTodoService.updateTodo(
+                        groupMember.getId(),
+                        group.getId(),
+                        groupTodo.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(DO_NOT_HAVE_TODO_AUTHORITY);
@@ -373,9 +356,6 @@ class GroupTodoServiceTest {
     @Test
     void checkGroupTodo(){
         //given
-        GroupMember groupMember = GroupMember.createGroupMember(member, group);
-        groupMemberRepository.save(groupMember);
-
         GroupTodo groupTodo = GroupTodo.builder()
                 .group(group)
                 .todoCategory(groupTodoCategory)
@@ -383,12 +363,12 @@ class GroupTodoServiceTest {
         todoRepository.save(groupTodo);
 
         GroupTodoCompletion groupTodoCompletion =
-                GroupTodoCompletion.createGroupTodoCompletion(member, groupTodo);
+                GroupTodoCompletion.createGroupTodoCompletion(groupMember, groupTodo);
         groupTodoCompletionRepository.save(groupTodoCompletion);
 
         //when
         TodoResponseDto responseDto
-                = groupTodoService.checkGroupTodo(MEMBER_ID, GROUP_ID, groupTodo.getId());
+                = groupTodoService.checkGroupTodo(groupMember.getId(), group.getId(), groupTodo.getId());
 
         //then
         assertThat(responseDto.getTodoId()).isEqualTo(groupTodo.getId());
@@ -399,9 +379,6 @@ class GroupTodoServiceTest {
     @Test
     void deleteTodo(){
         //given
-        GroupMember groupLeader = GroupMember.createGroupLeader(member, group);
-        groupMemberRepository.save(groupLeader);
-
         GroupTodo groupTodo = GroupTodo.builder()
                 .group(group)
                 .todoCategory(groupTodoCategory)
@@ -411,7 +388,7 @@ class GroupTodoServiceTest {
 
         //when
         TodoResponseDto responseDto
-                = groupTodoService.deleteTodo(MEMBER_ID, GROUP_ID, groupTodo.getId());
+                = groupTodoService.deleteTodo(groupLeader.getId(), group.getId(), groupTodo.getId());
         Todo findTodo = todoRepository.findById(groupTodo.getId()).orElse(null);
 
         //then
@@ -423,9 +400,6 @@ class GroupTodoServiceTest {
     @Test
     void deleteTodo_Throw_Exception_If_Not_Authority() {
         //given
-        GroupMember groupMember = GroupMember.createGroupMember(member, group);
-        groupMemberRepository.save(groupMember);
-
         GroupTodo groupTodo = GroupTodo.builder()
                 .group(group)
                 .todoCategory(groupTodoCategory)
@@ -434,7 +408,11 @@ class GroupTodoServiceTest {
         todoRepository.save(groupTodo);
 
         //then
-        assertThatThrownBy(() -> groupTodoService.deleteTodo(MEMBER_ID, GROUP_ID, groupTodo.getId()))
+        assertThatThrownBy(() ->
+                groupTodoService.deleteTodo(
+                        groupMember.getId(),
+                        group.getId(),
+                        groupTodo.getId()))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(DO_NOT_HAVE_TODO_AUTHORITY);
