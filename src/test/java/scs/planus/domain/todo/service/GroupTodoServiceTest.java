@@ -75,10 +75,10 @@ class GroupTodoServiceTest {
                 todoQueryRepository
         );
 
-        groupLeader = memberRepository.findById(1L).orElse(null);
-        groupMember = memberRepository.findById(2L).orElse(null);
-        group = groupRepository.findById(1L).orElse(null);
-        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(2L).orElse(null);
+        groupLeader = memberRepository.findById(1L).orElseThrow();
+        groupMember = memberRepository.findById(2L).orElseThrow();
+        group = groupRepository.findById(1L).orElseThrow();
+        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(2L).orElseThrow();
     }
 
     @DisplayName("GroupTodo가 제대로 생성되어야 한다.")
@@ -232,7 +232,7 @@ class GroupTodoServiceTest {
     @Test
     void getOneGroupMemberTodo(){
         //given
-        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
+        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
         MemberTodo memberTodo = MemberTodo.builder()
                 .member(groupLeader)

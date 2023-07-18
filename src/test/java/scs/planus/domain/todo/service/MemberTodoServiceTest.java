@@ -33,10 +33,8 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 @ServiceTest
 @Import(QueryDslConfig.class)
 class MemberTodoServiceTest {
-
-    private static final Long NOT_EXIST_ID = 0L;
-    private static final Long MEMBER_ID = 1L;
-    private static final Long MEMBER_TODO_CATEGORY_ID = 1L;
+    
+    private static final Long NOT_EXISTED_ID = 0L;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -70,8 +68,8 @@ class MemberTodoServiceTest {
                 groupRepository
         );
 
-        member = memberRepository.findById(MEMBER_ID).orElse(null);
-        memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(MEMBER_TODO_CATEGORY_ID).orElse(null);
+        member = memberRepository.findById(member.getId()).orElseThrow();
+        memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(memberTodoCategory.getId()).orElseThrow();
     }
 
     @DisplayName("MemberTodo가 제대로 생성되어야 한다.")
@@ -80,12 +78,12 @@ class MemberTodoServiceTest {
         //given
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
-                .categoryId(MEMBER_TODO_CATEGORY_ID)
+                .categoryId(memberTodoCategory.getId())
                 .startDate(LocalDate.now())
                 .build();
 
         //when
-        TodoResponseDto memberTodo = memberTodoService.createMemberTodo(MEMBER_ID, requestDto);
+        TodoResponseDto memberTodo = memberTodoService.createMemberTodo(member.getId(), requestDto);
 
         //then
         assertThat(memberTodo.getTodoId()).isNotNull();
@@ -97,13 +95,16 @@ class MemberTodoServiceTest {
         //given
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
-                .groupId(NOT_EXIST_ID)
-                .categoryId(MEMBER_TODO_CATEGORY_ID)
+                .groupId(NOT_EXISTED_ID)
+                .categoryId(memberTodoCategory.getId())
                 .startDate(LocalDate.now())
                 .build();
 
         //when
-        assertThatThrownBy(() -> memberTodoService.createMemberTodo(MEMBER_ID, requestDto))
+        assertThatThrownBy(() ->
+                memberTodoService.createMemberTodo(
+                        member.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_EXIST_GROUP);
@@ -113,18 +114,20 @@ class MemberTodoServiceTest {
     @Test
     void createMemberTodo_Throw_Exception_If_Not_Joined_Group(){
         //given
-        Group group = Group.builder().build();
-        groupRepository.save(group);
+        Group group = groupRepository.findById(1L).orElseThrow();
 
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
                 .groupId(group.getId())
-                .categoryId(MEMBER_TODO_CATEGORY_ID)
+                .categoryId(memberTodoCategory.getId())
                 .startDate(LocalDate.now())
                 .build();
 
         //when
-        assertThatThrownBy(() -> memberTodoService.createMemberTodo(MEMBER_ID, requestDto))
+        assertThatThrownBy(() ->
+                memberTodoService.createMemberTodo(
+                        member.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_JOINED_GROUP);
@@ -141,12 +144,15 @@ class MemberTodoServiceTest {
                 .title("memberTodo")
                 .startDate(startDate)
                 .endDate(endDate)
-                .categoryId(MEMBER_TODO_CATEGORY_ID)
+                .categoryId(memberTodoCategory.getId())
                 .startDate(LocalDate.now())
                 .build();
 
         //when
-        assertThatThrownBy(() -> memberTodoService.createMemberTodo(MEMBER_ID, requestDto))
+        assertThatThrownBy(() ->
+                memberTodoService.createMemberTodo(
+                        member.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(INVALID_DATE);
@@ -158,12 +164,15 @@ class MemberTodoServiceTest {
         //given
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
-                .categoryId(NOT_EXIST_ID)
+                .categoryId(NOT_EXISTED_ID)
                 .startDate(LocalDate.now())
                 .build();
 
         //then
-        assertThatThrownBy(() -> memberTodoService.createMemberTodo(MEMBER_ID, requestDto))
+        assertThatThrownBy(() ->
+                memberTodoService.createMemberTodo(
+                        member.getId(),
+                        requestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_EXIST_CATEGORY);
@@ -178,24 +187,26 @@ class MemberTodoServiceTest {
                 .todoCategory(memberTodoCategory)
                 .title("memberTodo")
                 .build();
-
         todoRepository.save(todo);
 
         //when
         TodoDetailsResponseDto findTodo
-                = memberTodoService.getOneTodo(MEMBER_ID, todo.getId());
+                = memberTodoService.getOneTodo(member.getId(), todo.getId());
 
         //then
         assertThat(findTodo.getTitle()).isEqualTo(todo.getTitle());
         assertThat(findTodo.getTodoId()).isEqualTo(todo.getId());
-        assertThat(findTodo.getCategoryId()).isEqualTo(MEMBER_TODO_CATEGORY_ID);
+        assertThat(findTodo.getCategoryId()).isEqualTo(memberTodoCategory.getId());
     }
 
     @DisplayName("잘못된 todoId로 조회시, 예외를 던진다.")
     @Test
     void getOneTodo_Throw_Exception_If_Wrong_TodoId() {
         //then
-        assertThatThrownBy(() -> memberTodoService.getOneTodo(MEMBER_ID, NOT_EXIST_ID))
+        assertThatThrownBy(() ->
+                memberTodoService.getOneTodo(
+                        member.getId(),
+                        NOT_EXISTED_ID))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NONE_TODO);
@@ -210,17 +221,16 @@ class MemberTodoServiceTest {
                 .member(member)
                 .todoCategory(memberTodoCategory)
                 .build();
-
         todoRepository.save(todo);
 
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("new MemberTodo")
-                .categoryId(MEMBER_TODO_CATEGORY_ID)
+                .categoryId(memberTodoCategory.getId())
                 .build();
 
         //when
         TodoResponseDto responseDto
-                = memberTodoService.updateTodo(MEMBER_ID, todo.getId(), requestDto);
+                = memberTodoService.updateTodo(member.getId(), todo.getId(), requestDto);
 
         //then
         assertThat(todo.getTitle()).isEqualTo(requestDto.getTitle());
@@ -236,11 +246,10 @@ class MemberTodoServiceTest {
                 .completion(false)
                 .member(member)
                 .build();
-
         todoRepository.save(todo);
 
         //when
-        memberTodoService.checkCompletion(MEMBER_ID, todo.getId());
+        memberTodoService.checkCompletion(member.getId(), todo.getId());
 
         //then
         assertThat(todo.isCompletion()).isTrue();
@@ -255,11 +264,10 @@ class MemberTodoServiceTest {
                 .completion(true)
                 .member(member)
                 .build();
-
         todoRepository.save(todo);
 
         //when
-        memberTodoService.checkCompletion(MEMBER_ID, todo.getId());
+        memberTodoService.checkCompletion(member.getId(), todo.getId());
 
         //then
         assertThat(todo.isCompletion()).isFalse();
@@ -273,11 +281,10 @@ class MemberTodoServiceTest {
                 .member(member)
                 .todoCategory(memberTodoCategory)
                 .build();
-
         todoRepository.save(todo);
 
         //when
-        memberTodoService.deleteTodo(MEMBER_ID, todo.getId());
+        memberTodoService.deleteTodo(member.getId(), todo.getId());
         Todo findTodo = todoRepository.findById(todo.getId()).orElse(null);
 
         //then

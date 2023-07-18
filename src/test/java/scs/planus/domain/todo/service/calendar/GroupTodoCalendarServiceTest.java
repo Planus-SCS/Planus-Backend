@@ -77,11 +77,10 @@ class GroupTodoCalendarServiceTest {
                 groupTodoCompletionRepository
         );
 
-        groupLeader = memberRepository.findById(1L).orElse(null);
-        groupMember = memberRepository.findById(2L).orElse(null);
-
-        group = groupRepository.findById(1L).orElse(null);
-        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(2L).orElse(null);
+        groupLeader = memberRepository.findById(1L).orElseThrow();
+        groupMember = memberRepository.findById(2L).orElseThrow();
+        group = groupRepository.findById(1L).orElseThrow();
+        groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(2L).orElseThrow();
     }
 
     @DisplayName("기간 내의 모든 GroupTodo들을 조회할 수 있어야 한다.")
@@ -194,7 +193,7 @@ class GroupTodoCalendarServiceTest {
         LocalDate from = LocalDate.of(2023, 1, 1);
         LocalDate to = LocalDate.of(2023, 1, 7);
 
-        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
+        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
         for (int i = 0; i < 7; i++) {
             MemberTodo memberTodo = MemberTodo.builder()
@@ -267,7 +266,7 @@ class GroupTodoCalendarServiceTest {
         LocalDate date = LocalDate.of(2023, 1, 1);
         LocalTime time = LocalTime.of(11, 0);
 
-        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
+        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
         todoRepository.save(MemberTodo.builder()
                 .startDate(date)
@@ -300,7 +299,7 @@ class GroupTodoCalendarServiceTest {
         LocalDate date = LocalDate.of(2023, 1, 1);
         LocalTime time = LocalTime.of(11, 0);
 
-        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElse(null);
+        MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
         for (int i = 0; i < 7; i++) {
             MemberTodo memberTodo = MemberTodo.builder()
