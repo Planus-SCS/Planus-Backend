@@ -68,8 +68,8 @@ class MemberTodoServiceTest {
                 groupRepository
         );
 
-        member = memberRepository.findById(member.getId()).orElseThrow();
-        memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(memberTodoCategory.getId()).orElseThrow();
+        member = memberRepository.findById(1L).orElseThrow();
+        memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
     }
 
     @DisplayName("MemberTodo가 제대로 생성되어야 한다.")
@@ -114,7 +114,8 @@ class MemberTodoServiceTest {
     @Test
     void createMemberTodo_Throw_Exception_If_Not_Joined_Group(){
         //given
-        Group group = groupRepository.findById(1L).orElseThrow();
+        Group group = Group.builder().build();
+        groupRepository.save(group);
 
         TodoRequestDto requestDto = TodoRequestDto.builder()
                 .title("memberTodo")
