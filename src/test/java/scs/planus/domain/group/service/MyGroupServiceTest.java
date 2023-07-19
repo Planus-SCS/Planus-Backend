@@ -145,7 +145,7 @@ class MyGroupServiceTest {
 
         //when
         List<MyGroupGetMemberResponseDto> groupMembers
-                = myGroupService.getGroupMembersForMember(member.getId(), group.getId());
+                = myGroupService.getGroupMembers(member.getId(), group.getId());
 
         //then
         assertThat(groupMembers).hasSize(2);
