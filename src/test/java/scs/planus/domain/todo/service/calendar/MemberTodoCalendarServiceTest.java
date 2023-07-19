@@ -63,7 +63,6 @@ class MemberTodoCalendarServiceTest {
 
     @BeforeEach
     void init() {
-
         todoQueryRepository = new TodoQueryRepository(queryFactory);
 
         myGroupService = new MyGroupService(
