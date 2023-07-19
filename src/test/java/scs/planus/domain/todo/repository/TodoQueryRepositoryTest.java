@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Import;
 import scs.planus.domain.Status;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
-import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.repository.GroupRepository;
@@ -31,6 +30,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(QueryDslConfig.class)
 class TodoQueryRepositoryTest {
 
+    private static final int COUNT = 7;
+
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -47,7 +48,7 @@ class TodoQueryRepositoryTest {
     private Member member;
     private Todo todo;
     private Group group;
-    private TodoCategory todoCategory;
+    private GroupTodoCategory groupTodoCategory;
 
     @BeforeEach
     void initRepository() {
@@ -60,11 +61,7 @@ class TodoQueryRepositoryTest {
 
         @BeforeEach
         void init() {
-            member = Member.builder()
-                    .status(Status.ACTIVE)
-                    .build();
-
-            memberRepository.save(member);
+            member = memberRepository.findById(1L).orElseThrow();
         }
 
         @DisplayName("단일 멤버 투두가 조회되어야 한다.")
@@ -75,7 +72,6 @@ class TodoQueryRepositoryTest {
                     .title("title")
                     .member(member)
                     .build();
-
             todoRepository.save(todo);
 
             //when
@@ -94,23 +90,23 @@ class TodoQueryRepositoryTest {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < COUNT; i++) {
                 todo = MemberTodo.builder()
                         .startDate(date.plusDays(i))
                         .member(member)
                         .build();
-
                 todoRepository.save(todo);
             }
 
             //when
             LocalDate from = LocalDate.of(2023, 1, 1);
-            LocalDate to = LocalDate.of(2023, 1, 5);
+            LocalDate to = LocalDate.of(2023, 1, 7);
+
             List<MemberTodo> memberTodos =
                     todoQueryRepository.findAllPeriodMemberTodosByDate(member.getId(), from, to);
 
             //then
-            assertThat(memberTodos.size()).isEqualTo(5);
+            assertThat(memberTodos).hasSize(COUNT);
         }
     }
 
@@ -120,17 +116,8 @@ class TodoQueryRepositoryTest {
 
         @BeforeEach
         void init() {
-            group = Group.builder()
-                    .status(Status.ACTIVE)
-                    .build();
-
-            groupRepository.save(group);
-
-            todoCategory = GroupTodoCategory.builder()
-                    .group(group)
-                    .build();
-
-            todoCategoryRepository.save(todoCategory);
+            group = groupRepository.findById(1L).orElseThrow();
+            groupTodoCategory = (GroupTodoCategory) todoCategoryRepository.findById(2L).orElseThrow();
         }
 
         @DisplayName("단일 그룹 투두가 조회되어야 한다.")
@@ -138,10 +125,9 @@ class TodoQueryRepositoryTest {
         void findOneGroupTodoById() {
             //given
             todo = GroupTodo.builder()
-                    .todoCategory(todoCategory)
+                    .todoCategory(groupTodoCategory)
                     .group(group)
                     .build();
-
             todoRepository.save(todo);
 
             //when
@@ -151,7 +137,7 @@ class TodoQueryRepositoryTest {
             //then
             assertThat(findTodo).isNotNull();
             assertThat(findTodo.getGroup()).isEqualTo(group);
-            assertThat(findTodo.getTodoCategory()).isEqualTo(todoCategory);
+            assertThat(findTodo.getTodoCategory()).isEqualTo(groupTodoCategory);
         }
 
         @DisplayName("기간 내의 그룹 투두가 리스트 형식으로 조회되어야 한다.")
@@ -160,24 +146,24 @@ class TodoQueryRepositoryTest {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < COUNT; i++) {
                 todo = GroupTodo.builder()
                         .startDate(date.plusDays(i))
-                        .todoCategory(todoCategory)
+                        .todoCategory(groupTodoCategory)
                         .group(group)
                         .build();
-
                 todoRepository.save(todo);
             }
 
             //when
             LocalDate from = LocalDate.of(2023, 1, 1);
-            LocalDate to = LocalDate.of(2023, 1, 5);
+            LocalDate to = LocalDate.of(2023, 1, 7);
+
             List<GroupTodo> groupTodos =
                     todoQueryRepository.findPeriodGroupTodosByDate(group.getId(), from, to);
 
             //then
-            assertThat(groupTodos.size()).isEqualTo(5);
+            assertThat(groupTodos).hasSize(COUNT);
         }
 
         @DisplayName("일별 그룹 투두가 존재한다면 리스트 형식으로 조회되어야 한다.")
@@ -188,17 +174,17 @@ class TodoQueryRepositoryTest {
 
             todo = GroupTodo.builder()
                     .startDate(date)
-                    .todoCategory(todoCategory)
+                    .todoCategory(groupTodoCategory)
                     .group(group)
                     .build();
-
             todoRepository.save(todo);
 
             //when
-            List<GroupTodo> groupTodos = todoQueryRepository.findDailyGroupTodosByDate(group.getId(), date);
+            List<GroupTodo> groupTodos
+                    = todoQueryRepository.findDailyGroupTodosByDate(group.getId(), date);
 
             //then
-            assertThat(groupTodos.size()).isEqualTo(1);
+            assertThat(groupTodos).hasSize(1);
         }
 
         @DisplayName("일별 조회시, 기간 투두의 경우 기간내에 조회하고자하는 일이 포함된다면 조회되어야 한다.")
@@ -210,17 +196,17 @@ class TodoQueryRepositoryTest {
             todo = GroupTodo.builder()
                     .startDate(date)
                     .endDate(date.plusDays(5))
-                    .todoCategory(todoCategory)
+                    .todoCategory(groupTodoCategory)
                     .group(group)
                     .build();
-
             todoRepository.save(todo);
 
             //when
-            List<GroupTodo> groupTodos = todoQueryRepository.findDailyGroupTodosByDate(group.getId(), date);
+            List<GroupTodo> groupTodos
+                    = todoQueryRepository.findDailyGroupTodosByDate(group.getId(), date);
 
             //then
-            assertThat(groupTodos.size()).isEqualTo(1);
+            assertThat(groupTodos).hasSize(1);
         }
 
         @DisplayName("기간 내의 여러 그룹의 그룹 투두들이 반환되어야 한다.")
@@ -232,35 +218,34 @@ class TodoQueryRepositoryTest {
             Group group2 = Group.builder().status(Status.ACTIVE).build();
             groupRepository.save(group2);
 
-            List<Group> groups = List.of(group, group2);
-
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < COUNT; i++) {
                 todo = GroupTodo.builder()
                         .startDate(date)
                         .endDate(date.plusDays(i))
-                        .todoCategory(todoCategory)
+                        .todoCategory(groupTodoCategory)
                         .group(group)
                         .build();
-
                 todoRepository.save(todo);
 
                 todo = GroupTodo.builder()
                         .startDate(date)
                         .endDate(date.plusDays(i))
-                        .todoCategory(todoCategory)
+                        .todoCategory(groupTodoCategory)
                         .group(group2)
                         .build();
-
                 todoRepository.save(todo);
             }
 
             //when
             LocalDate from = LocalDate.of(2023, 1, 1);
-            LocalDate to = LocalDate.of(2023, 1, 5);
-            List<GroupTodo> groupTodos = todoQueryRepository.findAllPeriodGroupTodosByDate(groups, from, to);
+            LocalDate to = LocalDate.of(2023, 1, 10);
+            List<Group> groups = List.of(group, group2);
+
+            List<GroupTodo> groupTodos
+                    = todoQueryRepository.findAllPeriodGroupTodosByDate(groups, from, to);
 
             //then
-            assertThat(groupTodos.size()).isEqualTo(10);
+            assertThat(groupTodos.size()).isEqualTo(COUNT * 2);
         }
     }
 
@@ -270,40 +255,28 @@ class TodoQueryRepositoryTest {
 
         @BeforeEach
         void init() {
-            member = Member.builder()
-                    .status(Status.ACTIVE)
-                    .build();
-
-            memberRepository.save(member);
-
-            group = Group.builder()
-                    .status(Status.ACTIVE)
-                    .build();
-
-            groupRepository.save(group);
+            member = memberRepository.findById(1L).orElseThrow();
+            group = groupRepository.findById(1L).orElseThrow();
         }
 
         @DisplayName("같은 그룹 멤버의 해당 그룹 투두가 조회되어야 한다.")
         @Test
         void findOneGroupMemberTodoById_GroupTodo(){
             //given
-            todoCategory = GroupTodoCategory.builder()
+            groupTodoCategory = GroupTodoCategory.builder()
                     .group(group)
                     .build();
-
-            todoCategoryRepository.save(todoCategory);
+            todoCategoryRepository.save(groupTodoCategory);
 
             todo = GroupTodo.builder()
-                    .todoCategory(todoCategory)
+                    .todoCategory(groupTodoCategory)
                     .group(group)
                     .build();
-
             todoRepository.save(todo);
 
             //when
-            Todo findTodo = todoQueryRepository
-                    .findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
-                    .orElse(null);
+            Todo findTodo
+                    = todoQueryRepository.findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId()).orElse(null);
 
             //then
             assertThat(findTodo).isNotNull();
@@ -314,24 +287,18 @@ class TodoQueryRepositoryTest {
         @Test
         void findOneGroupMemberTodoById_MemberTodo(){
             //given
-            todoCategory = MemberTodoCategory.builder()
-                    .member(member)
-                    .build();
-
-            todoCategoryRepository.save(todoCategory);
+            MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
             todo = MemberTodo.builder()
-                    .todoCategory(todoCategory)
+                    .todoCategory(memberTodoCategory)
                     .member(member)
                     .group(group)
                     .build();
-
             todoRepository.save(todo);
 
             //when
-            Todo findTodo = todoQueryRepository
-                    .findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
-                    .orElse(null);
+            Todo findTodo
+                    = todoQueryRepository.findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId()).orElse(null);
 
             //then
             assertThat(findTodo).isNotNull();
@@ -342,23 +309,17 @@ class TodoQueryRepositoryTest {
         @Test
         void findOneGroupMemberTodoById_MemberTodo_Fail_If_Not_Assign_Group(){
             //given
-            todoCategory = MemberTodoCategory.builder()
-                    .member(member)
-                    .build();
-
-            todoCategoryRepository.save(todoCategory);
+            MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
             todo = MemberTodo.builder()
-                    .todoCategory(todoCategory)
+                    .todoCategory(memberTodoCategory)
                     .member(member)
                     .build();
-
             todoRepository.save(todo);
 
             //when
-            Todo findTodo = todoQueryRepository
-                    .findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId())
-                    .orElse(null);
+            Todo findTodo
+                    = todoQueryRepository.findOneGroupMemberTodoById(member.getId(), group.getId(), todo.getId()).orElse(null);
 
             //then
             assertThat(findTodo).isNull();
@@ -369,31 +330,27 @@ class TodoQueryRepositoryTest {
         void findPeriodGroupTodosByDate(){
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
-            todoCategory = MemberTodoCategory.builder()
-                    .member(member)
-                    .build();
+            MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
-            todoCategoryRepository.save(todoCategory);
-
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < COUNT; i++) {
                 todo = MemberTodo.builder()
                         .startDate(date.plusDays(i))
-                        .todoCategory(todoCategory)
+                        .todoCategory(memberTodoCategory)
                         .member(member)
                         .group(group)
                         .build();
-
                 todoRepository.save(todo);
             }
 
             //when
             LocalDate from = LocalDate.of(2023, 1, 1);
-            LocalDate to = LocalDate.of(2023, 1, 5);
+            LocalDate to = LocalDate.of(2023, 1, 7);
+
             List<Todo> groupMemberTodos =
                     todoQueryRepository.findGroupMemberPeriodTodosByDate(member.getId(), group.getId(), from, to);
 
             //then
-            assertThat(groupMemberTodos.size()).isEqualTo(5);
+            assertThat(groupMemberTodos).hasSize(COUNT);
         }
 
         @DisplayName("일별 그룹 멤버 투두가 존재한다면 리스트 형식으로 조회되어야 한다.")
@@ -401,19 +358,14 @@ class TodoQueryRepositoryTest {
         void findGroupMemberDailyTodosByDate(){
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
-            todoCategory = MemberTodoCategory.builder()
-                    .member(member)
-                    .build();
-
-            todoCategoryRepository.save(todoCategory);
+            MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
             todo = MemberTodo.builder()
                     .startDate(date)
-                    .todoCategory(todoCategory)
+                    .todoCategory(memberTodoCategory)
                     .member(member)
                     .group(group)
                     .build();
-
             todoRepository.save(todo);
 
             //when
@@ -421,7 +373,7 @@ class TodoQueryRepositoryTest {
                     = todoQueryRepository.findGroupMemberDailyTodosByDate(member.getId(), group.getId(), date);
 
             //then
-            assertThat(groupMemberTodos.size()).isEqualTo(1);
+            assertThat(groupMemberTodos).hasSize(1);
         }
     }
 }
