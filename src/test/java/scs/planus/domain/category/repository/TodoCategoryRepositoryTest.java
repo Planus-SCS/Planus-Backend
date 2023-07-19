@@ -1,5 +1,6 @@
 package scs.planus.domain.category.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Slf4j
 @RepositoryTest
 class TodoCategoryRepositoryTest {
     private static final Long NOT_EXIST_ID = 0L;
@@ -37,11 +39,7 @@ class TodoCategoryRepositoryTest {
 
         @BeforeEach
         void init() {
-            member = Member.builder()
-                    .name("회원")
-                    .build();
-
-            memberRepository.save(member);
+            member = memberRepository.findById(1L).orElseThrow();
         }
 
         @DisplayName("TodoCategoryId, Member 로 회원의 카테고리를 조회할 수 있어야 한다.")
@@ -59,7 +57,7 @@ class TodoCategoryRepositoryTest {
             //when
             MemberTodoCategory findMemberTodoCategory = todoCategoryRepository
                     .findMemberTodoCategoryByMemberIdAndId(member.getId(), testMemberTodoCategory.getId())
-                    .orElse(null);
+                    .orElseThrow();
 
             //then
             assertThat(findMemberTodoCategory.getMember().getId()).isEqualTo(testMemberTodoCategory.getMember().getId());
@@ -96,8 +94,7 @@ class TodoCategoryRepositoryTest {
                     .color(Color.RED)
                     .build();
 
-            todoCategoryRepository.save(testMemberTodoCategory1);
-            todoCategoryRepository.save(testMemberTodoCategory2);
+            todoCategoryRepository.saveAll(List.of(testMemberTodoCategory1, testMemberTodoCategory2));
 
             //when
             List<MemberTodoCategory> findMemberTodoCategories = todoCategoryRepository.findMemberTodoCategoryAllByMember(member);
@@ -128,12 +125,7 @@ class TodoCategoryRepositoryTest {
 
         @BeforeEach
         void init() {
-            group = Group.builder()
-                    .name("그룹")
-                    .status(Status.ACTIVE)
-                    .build();
-
-            groupRepository.save(group);
+            group = groupRepository.findById(1L).orElseThrow();
         }
         @DisplayName("Group 으로 그룹의 모든 카테고리를 조회할 수 있어야 한다.")
         @Test
@@ -151,8 +143,7 @@ class TodoCategoryRepositoryTest {
                     .color(Color.RED)
                     .build();
 
-            todoCategoryRepository.save(testGroupTodoCategory1);
-            todoCategoryRepository.save(testGroupTodoCategory2);
+            todoCategoryRepository.saveAll(List.of(testGroupTodoCategory1, testGroupTodoCategory2));
 
             //when
             List<GroupTodoCategory> findGroupTodoCategories = todoCategoryRepository
@@ -191,7 +182,7 @@ class TodoCategoryRepositoryTest {
             //when
             GroupTodoCategory findGroupTodoCategory = todoCategoryRepository
                     .findGroupTodoCategoryByIdAndStatus(testGroupTodoCategory.getId())
-                    .orElse(null);
+                    .orElseThrow();
 
             //then
             assertThat(findGroupTodoCategory.getGroup()).isEqualTo(testGroupTodoCategory.getGroup());
@@ -234,8 +225,7 @@ class TodoCategoryRepositoryTest {
                     .color(Color.RED)
                     .build();
 
-            todoCategoryRepository.save(testGroup1TodoCategory);
-            todoCategoryRepository.save(testGroup2TodoCategory);
+            todoCategoryRepository.saveAll(List.of(testGroup1TodoCategory, testGroup2TodoCategory));
 
             List<Group> groups = List.of(group, group2);
 

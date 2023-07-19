@@ -1,12 +1,10 @@
 package scs.planus.domain.category.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import scs.planus.domain.Status;
 import scs.planus.domain.category.dto.TodoCategoryGetResponseDto;
 import scs.planus.domain.category.dto.TodoCategoryRequestDto;
@@ -14,93 +12,79 @@ import scs.planus.domain.category.dto.TodoCategoryResponseDto;
 import scs.planus.domain.category.entity.Color;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
-import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
+import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.global.exception.PlanusException;
+import scs.planus.support.ServiceTest;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static scs.planus.global.exception.CustomExceptionStatus.NOT_EXIST_CATEGORY;
+import static scs.planus.global.exception.CustomExceptionStatus.*;
 
-@ExtendWith(MockitoExtension.class)
 @Slf4j
+@ServiceTest
 class MemberTodoCategoryServiceTest {
-    private static final long TEST_ID = 1L;
+    private static final long NOT_EXIST_ID = 0L;
     private static final String INVALID_COLOR = "invalid color";
-    @InjectMocks
-    private MemberTodoCategoryService memberTodoCategoryService;
-    @Mock
-    private TodoCategoryRepository todoCategoryRepository;
-    @Mock
-    private MemberRepository memberRepository;
-    @Mock
-    private GroupMemberRepository groupMemberRepository;
 
-    @Mock
+    private final TodoCategoryRepository todoCategoryRepository;
+    private final MemberRepository memberRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final GroupRepository groupRepository;
+
+    private final MemberTodoCategoryService memberTodoCategoryService;
+
     private Member member;
-    @Mock
-    private TodoCategory mockTodoCategory;
-    @Mock
-    private TodoCategoryRequestDto mockTodoCategoryRequestDto;
 
+    @Autowired
+    public MemberTodoCategoryServiceTest(TodoCategoryRepository todoCategoryRepository,
+                                         MemberRepository memberRepository,
+                                         GroupMemberRepository groupMemberRepository,
+                                         GroupRepository groupRepository) {
+        this.todoCategoryRepository = todoCategoryRepository;
+        this.memberRepository = memberRepository;
+        this.groupMemberRepository = groupMemberRepository;
+        this.groupRepository = groupRepository;
+
+        memberTodoCategoryService
+                = new MemberTodoCategoryService(
+                todoCategoryRepository,
+                memberRepository,
+                groupMemberRepository
+        );
+    }
+
+    @BeforeEach
+    void init() {
+        member = memberRepository.findById(1L).orElseThrow();
+    }
 
     @DisplayName("회원 소유의 모든 카테고리를 List<Dto> 로 변환하여 반환해야 한다.")
     @Test
     void findAll_Success_Exist() {
         //given
-        MemberTodoCategory memberTodoCategory1 = MemberTodoCategory.builder()
-                .member(member)
-                .name("회원 카테고리1")
-                .color(Color.BLUE)
-                .build();
-
         MemberTodoCategory memberTodoCategory2 = MemberTodoCategory.builder()
                 .member(member)
                 .name("회원 카테고리2")
                 .color(Color.RED)
                 .build();
 
-        List<MemberTodoCategory> memberTodoCategories = List.of(memberTodoCategory1, memberTodoCategory2);
-
-        when(memberRepository.findById(TEST_ID)).thenReturn(Optional.of(member));
-        when(todoCategoryRepository.findMemberTodoCategoryAllByMember(member)).thenReturn(memberTodoCategories);
+        todoCategoryRepository.save(memberTodoCategory2);
 
         //when
-        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAll(TEST_ID);
+        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAll(member.getId());
 
         //then
-        verify(todoCategoryRepository).findMemberTodoCategoryAllByMember(member);
-        assertThat(responseDtos.size()).isEqualTo(memberTodoCategories.size());
-        assertThat(responseDtos.get(0).getName()).isEqualTo(memberTodoCategory1.getName());
-        assertThat(responseDtos.get(0).getStatus()).isEqualTo(Status.ACTIVE);
-    }
-
-    @DisplayName("회원 소유의 카테고리가 없을 경우, 빈 리스트를 반환해야 한다.")
-    @Test
-    void findAll_Success_Empty() {
-        //given
-        when(memberRepository.findById(TEST_ID)).thenReturn(Optional.of(member));
-
-        List<MemberTodoCategory> empties = List.of();
-        when(todoCategoryRepository.findMemberTodoCategoryAllByMember(member)).thenReturn(empties);
-
-        //when
-        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAll(TEST_ID);
-
-        //then
-        verify(memberRepository).findById(TEST_ID);
-        verify(todoCategoryRepository).findMemberTodoCategoryAllByMember(member);
-        assertThat(responseDtos.size()).isEqualTo(0);
+        assertThat(responseDtos.size()).isEqualTo(2);
+        assertThat(responseDtos.get(1).getName()).isEqualTo(memberTodoCategory2.getName());
+        assertThat(responseDtos.get(1).getStatus()).isEqualTo(Status.ACTIVE);
     }
 
     @DisplayName("회원정보가 없을 시, NON_USER Exception 을 발생시켜야 한다.")
@@ -108,63 +92,62 @@ class MemberTodoCategoryServiceTest {
     void findAll_Fail_Non_User() {
         //given
         //when
-        when(memberRepository.findById(TEST_ID)).thenReturn(Optional.empty());
-
         //then
-        assertThatThrownBy(() -> memberTodoCategoryService.findAll(TEST_ID))
-                .isInstanceOf(PlanusException.class);
+        assertThatThrownBy(() -> memberTodoCategoryService.findAll(NOT_EXIST_ID))
+                .isInstanceOf(PlanusException.class)
+                .extracting("status")
+                .isEqualTo(NONE_USER);
     }
 
     @DisplayName("회원이 속한 모든 그룹의 groupTodoCategory 를 반환해야 한다.")
     @Test
     void findAllGroupTodoCategories_Success() {
         //given
-        Group mockGroup1 = mock(Group.class);
-        Group mockGroup2 = mock(Group.class);
+        Group group1 = groupRepository.findById(1L).orElseThrow();
+        Group group2 = Group.builder()
+                .status(Status.ACTIVE)
+                .build();
 
-        GroupTodoCategory group1TodoCategory1 = GroupTodoCategory.builder()
-                .group(mockGroup1).build();
-
-        GroupTodoCategory group1TodoCategory2 = GroupTodoCategory.builder()
-                .group(mockGroup1).build();
-
-        GroupTodoCategory group2TodoCategory1 = GroupTodoCategory.builder()
-                .group(mockGroup2).build();
-
-        GroupTodoCategory group2TodoCategory2 = GroupTodoCategory.builder()
-                .group(mockGroup2).build();
+        groupRepository.save(group2);
 
         GroupMember group1Member = GroupMember.builder()
                 .member(member)
-                .group(mockGroup1).build();
+                .group(group1)
+                .build();
 
         GroupMember group2Member = GroupMember.builder()
                 .member(member)
-                .group(mockGroup2).build();
+                .group(group2)
+                .build();
 
-        List<GroupMember> groupMembers = List.of(group1Member, group2Member);
+        groupMemberRepository.saveAll(List.of(group1Member, group2Member));
 
-        List<GroupTodoCategory> groupTodoCategories =
-                List.of(group1TodoCategory1, group1TodoCategory2, group2TodoCategory1, group2TodoCategory2);
+        GroupTodoCategory group1TodoCategory2 = GroupTodoCategory.builder()
+                .group(group1)
+                .build();
 
-        when(groupMemberRepository.findAllByActiveGroupAndMemberId(TEST_ID)).thenReturn(groupMembers);
-        when(todoCategoryRepository.findAllGroupTodoCategoriesInGroups(any())).thenReturn(groupTodoCategories);
+        GroupTodoCategory group2TodoCategory1 = GroupTodoCategory.builder()
+                .group(group2)
+                .build();
+
+        GroupTodoCategory group2TodoCategory2 = GroupTodoCategory.builder()
+                .group(group2)
+                .build();
+
+        todoCategoryRepository.saveAll(List.of(group1TodoCategory2, group2TodoCategory1, group2TodoCategory2));
 
         //when
-        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAllGroupTodoCategories(TEST_ID);
+        List<TodoCategoryGetResponseDto> responseDtos =
+                memberTodoCategoryService.findAllGroupTodoCategories(member.getId());
 
         //then
-        verify(groupMemberRepository).findAllByActiveGroupAndMemberId(TEST_ID);
-        verify(todoCategoryRepository).findAllGroupTodoCategoriesInGroups(any());
-        assertThat(responseDtos.size()).isEqualTo(4);
+        assertThat(responseDtos).hasSize(4);
     }
 
     @DisplayName("회원의 카테고리를 생성할 수 있다.")
     @Test
     void createCategory_Success() {
         //given
-        when(memberRepository.findById(TEST_ID)).thenReturn(Optional.of(member));
-        when(todoCategoryRepository.save(any())).thenReturn(mockTodoCategory);
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
                 .name("카테고리")
                 .color("BLUE")
@@ -172,15 +155,14 @@ class MemberTodoCategoryServiceTest {
 
         //when
         TodoCategoryResponseDto responseDto =
-                memberTodoCategoryService.createCategory(TEST_ID, todoCategoryRequestDto);
+                memberTodoCategoryService.createCategory(member.getId(), todoCategoryRequestDto);
 
         //then
-        verify(todoCategoryRepository).save(any());
-        assertThat(responseDto.getId()).isEqualTo(mockTodoCategory.getId());
+        assertThat(responseDto.getId()).isNotNull();
     }
 
-    @Test
     @DisplayName("존재하지 않는 Color name 일 경우, Exception 을 발생시켜야 한다.")
+    @Test
     void createCategory_Fail_Invalid_Color() {
         //given
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
@@ -191,43 +173,44 @@ class MemberTodoCategoryServiceTest {
         //when
         //then
         assertThatThrownBy(() -> memberTodoCategoryService.createCategory(member.getId(), todoCategoryRequestDto))
-                .isInstanceOf(PlanusException.class);
+                .isInstanceOf(PlanusException.class)
+                .extracting("status")
+                .isEqualTo(INVALID_CATEGORY_COLOR);
     }
 
     @DisplayName("회원정보가 없을 경우, Exception 을 발생시켜야 한다.")
     @Test
     void createCategory_Fail_Non_User() {
         //given
-        //when
-        when(memberRepository.findById(TEST_ID)).thenReturn(Optional.empty());
+        TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
+                .name("그룹 카테고리")
+                .color(INVALID_COLOR)
+                .build();
 
+        //when
         //then
-        assertThatThrownBy(() -> memberTodoCategoryService.createCategory(TEST_ID, mockTodoCategoryRequestDto))
-                .isInstanceOf(PlanusException.class);
+        assertThatThrownBy(() -> memberTodoCategoryService.createCategory(NOT_EXIST_ID, todoCategoryRequestDto))
+                .isInstanceOf(PlanusException.class)
+                .extracting("status")
+                .isEqualTo(NONE_USER);
     }
 
     @DisplayName("카테고리의 name 과 color 를 변경하고 categoryId 를 반환해야 한다.")
     @Test
     void changeMemberTodoCategory_Success() {
         //given
+        MemberTodoCategory category = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
+
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
                 .name("수정된 카테고리")
                 .color("RED")
                 .build();
 
-        MemberTodoCategory category = MemberTodoCategory.builder()
-                .name("기존 카테고리")
-                .color(Color.BLUE)
-                .build();
-
-        when(todoCategoryRepository.findById(TEST_ID)).thenReturn(Optional.of(category));
-
         //when
         TodoCategoryResponseDto responseDto =
-                memberTodoCategoryService.changeCategory(TEST_ID, todoCategoryRequestDto);
+                memberTodoCategoryService.changeCategory(category.getId(), todoCategoryRequestDto);
 
         //then
-        verify(todoCategoryRepository).findById(TEST_ID);
         assertThat(responseDto.getId()).isEqualTo(category.getId());
         assertThat(category.getColor()).isEqualTo(Color.RED);
         assertThat(category.getName()).isEqualTo("수정된 카테고리");
@@ -237,11 +220,14 @@ class MemberTodoCategoryServiceTest {
     @Test
     void changeCategory_Fail_Invalid_CategoryId() {
         //given
-        when(todoCategoryRepository.findById(TEST_ID)).thenReturn(Optional.empty());
+        TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
+                .name("수정된 카테고리")
+                .color("RED")
+                .build();
 
         //when
         //then
-        assertThatThrownBy(() -> memberTodoCategoryService.changeCategory(TEST_ID, mockTodoCategoryRequestDto))
+        assertThatThrownBy(() -> memberTodoCategoryService.changeCategory(NOT_EXIST_ID, todoCategoryRequestDto))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_EXIST_CATEGORY);
@@ -251,43 +237,41 @@ class MemberTodoCategoryServiceTest {
     @Test
     void changeCategory_Fail_Invalid_Color() {
         //given
+        MemberTodoCategory category = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
+
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
                 .color(INVALID_COLOR)
                 .build();
 
-        when(todoCategoryRepository.findById(TEST_ID)).thenReturn(Optional.of(mockTodoCategory));
-
         //when
         //then
-        assertThatThrownBy(() -> memberTodoCategoryService.changeCategory(TEST_ID, todoCategoryRequestDto))
-                .isInstanceOf(PlanusException.class);
+        assertThatThrownBy(() -> memberTodoCategoryService.changeCategory(category.getId(), todoCategoryRequestDto))
+                .isInstanceOf(PlanusException.class)
+                .extracting("status")
+                .isEqualTo(INVALID_CATEGORY_COLOR);
     }
 
     @DisplayName("카테고리의 status 를 Inactive 로 변경하고 categoryId를 반환해야 한다.")
     @Test
     void deleteCategory_Success() {
         //given
-        when(todoCategoryRepository.findById(TEST_ID)).thenReturn(Optional.of(mockTodoCategory));
-        when(mockTodoCategory.getId()).thenReturn(TEST_ID);
+        MemberTodoCategory category = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
         //when
-        TodoCategoryResponseDto responseDto = memberTodoCategoryService.deleteCategory(TEST_ID);
+        TodoCategoryResponseDto responseDto = memberTodoCategoryService.deleteCategory(category.getId());
 
         //then
-        verify(todoCategoryRepository).findById(TEST_ID);
-        verify(mockTodoCategory).changeStatusToInactive();
-        assertThat(responseDto.getId()).isEqualTo(TEST_ID);
+        assertThat(responseDto.getId()).isEqualTo(category.getId());
+        assertThat(category.getStatus()).isEqualTo(Status.INACTIVE);
     }
 
     @DisplayName("존재하지 않는 Category 의 경우, Exception 을 발생시켜야 한다.")
     @Test
     void deleteCategory_Fail_Invalid_CategoryId() {
         //given
-        when(todoCategoryRepository.findById(TEST_ID)).thenReturn(Optional.empty());
-
         //when
         //then
-        assertThatThrownBy(() -> memberTodoCategoryService.changeCategory(TEST_ID, mockTodoCategoryRequestDto))
+        assertThatThrownBy(() -> memberTodoCategoryService.deleteCategory(NOT_EXIST_ID))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(NOT_EXIST_CATEGORY);
