@@ -237,7 +237,6 @@ class MemberTodoCategoryServiceTest {
     @Test
     void changeCategory_Fail_Invalid_Color() {
         //given
-        // orElseThrow 로 변경
         MemberTodoCategory category = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
