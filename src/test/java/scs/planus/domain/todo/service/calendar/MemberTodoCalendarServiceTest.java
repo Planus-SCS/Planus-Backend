@@ -35,6 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(QueryDslConfig.class)
 class MemberTodoCalendarServiceTest {
 
+    private static final int COUNT = 7;
+
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -90,16 +92,16 @@ class MemberTodoCalendarServiceTest {
         LocalDate to = LocalDate.of(2023, 1, 31);
 
         //given
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < COUNT; i++) {
             MemberTodo memberTodo = MemberTodo.builder()
-                    .startDate(from.plusDays(1))
+                    .startDate(from.plusDays(i))
                     .member(member)
                     .todoCategory(memberTodoCategory)
                     .build();
             todoRepository.save(memberTodo);
 
             GroupTodo groupTodo = GroupTodo.builder()
-                    .startDate(from.plusDays(1))
+                    .startDate(from.plusDays(i))
                     .group(group)
                     .todoCategory(groupTodoCategory)
                     .build();
@@ -111,8 +113,8 @@ class MemberTodoCalendarServiceTest {
                 = memberTodoCalendarService.getPeriodDetailTodos(member.getId(), from, to);
 
         //then
-        assertThat(periodDetailTodos.getMemberTodos().size()).isEqualTo(7);
-        assertThat(periodDetailTodos.getGroupTodos().size()).isEqualTo(7);
+        assertThat(periodDetailTodos.getMemberTodos().size()).isEqualTo(COUNT);
+        assertThat(periodDetailTodos.getGroupTodos().size()).isEqualTo(COUNT);
     }
 
     @DisplayName("가입한 모든 그룹들을 조회할 수 있어야 한다.")

@@ -43,6 +43,8 @@ import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_MEMBE
 @Slf4j
 class GroupTodoCalendarServiceTest {
 
+    private static final int COUNT = 7;
+
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -90,7 +92,7 @@ class GroupTodoCalendarServiceTest {
         LocalDate from = LocalDate.of(2023, 1,1);
         LocalDate to = LocalDate.of(2023, 1, 7);
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < COUNT; i++) {
             GroupTodo groupTodo = GroupTodo.builder()
                     .startDate(from.plusDays(i))
                     .group(group)
@@ -105,7 +107,7 @@ class GroupTodoCalendarServiceTest {
                 = groupTodoCalendarService.getPeriodGroupTodos(groupLeader.getId(), group.getId(), from, to);
 
         //then
-        assertThat(periodGroupTodos.size()).isEqualTo(7);
+        assertThat(periodGroupTodos.size()).isEqualTo(COUNT);
     }
 
     @DisplayName("일별 GroupTodo 조회시, 시간을 지정하지 않을 시, DailyTodos로 조회되어야 한다.")
@@ -114,7 +116,7 @@ class GroupTodoCalendarServiceTest {
         //given
         LocalDate date = LocalDate.of(2023, 1,1);
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < COUNT; i++) {
             GroupTodo groupTodo = GroupTodo.builder()
                     .startDate(date)
                     .group(group)
@@ -129,7 +131,7 @@ class GroupTodoCalendarServiceTest {
                 = groupTodoCalendarService.getDailyGroupTodos(groupLeader.getId(), group.getId(), date);
 
         //then
-        assertThat(dailyGroupTodos.getDailyTodos().size()).isEqualTo(7);
+        assertThat(dailyGroupTodos.getDailyTodos().size()).isEqualTo(COUNT);
         assertThat(dailyGroupTodos.getDailySchedules()).isEmpty();
     }
 
@@ -140,7 +142,7 @@ class GroupTodoCalendarServiceTest {
         LocalDate date = LocalDate.of(2023, 1,1);
         LocalTime time = LocalTime.of(11, 0);
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < COUNT; i++) {
             GroupTodo groupTodo = GroupTodo.builder()
                     .startDate(date)
                     .startTime(time)
@@ -157,7 +159,7 @@ class GroupTodoCalendarServiceTest {
                 = groupTodoCalendarService.getDailyGroupTodos(groupLeader.getId(), group.getId(), date);
 
         //then
-        assertThat(dailyGroupTodos.getDailySchedules().size()).isEqualTo(7);
+        assertThat(dailyGroupTodos.getDailySchedules().size()).isEqualTo(COUNT);
         assertThat(dailyGroupTodos.getDailyTodos()).isEmpty();
     }
 
@@ -168,7 +170,7 @@ class GroupTodoCalendarServiceTest {
         LocalDate from = LocalDate.of(2023, 1,1);
         LocalDate to = LocalDate.of(2023, 1, 7);
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < COUNT; i++) {
             GroupTodo groupTodo = GroupTodo.builder()
                     .startDate(from)
                     .group(group)
@@ -183,7 +185,7 @@ class GroupTodoCalendarServiceTest {
                 = groupTodoCalendarService.getGroupMemberPeriodTodos(groupMember.getId(), group.getId(), groupLeader.getId(), from, to);
 
         //then
-        assertThat(groupMemberPeriodTodos.size()).isEqualTo(7);
+        assertThat(groupMemberPeriodTodos.size()).isEqualTo(COUNT);
     }
 
     @DisplayName("GroupMember의 해당 Group이 지정된 MemberTodo가 제대로 조회되어야 한다.")
@@ -195,7 +197,7 @@ class GroupTodoCalendarServiceTest {
 
         MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < COUNT; i++) {
             MemberTodo memberTodo = MemberTodo.builder()
                     .startDate(from)
                     .member(groupLeader)
@@ -210,7 +212,7 @@ class GroupTodoCalendarServiceTest {
                 = groupTodoCalendarService.getGroupMemberPeriodTodos(groupMember.getId(), group.getId(), groupLeader.getId(), from, to);
 
         //then
-        assertThat(groupMemberPeriodTodos.size()).isEqualTo(7);
+        assertThat(groupMemberPeriodTodos.size()).isEqualTo(COUNT);
     }
 
     @DisplayName("Group에 속하지 않는 Member가 GroupMember의 Todo를 조회시, 예외를 던진다.")
@@ -301,7 +303,7 @@ class GroupTodoCalendarServiceTest {
 
         MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < COUNT; i++) {
             MemberTodo memberTodo = MemberTodo.builder()
                     .startDate(date)
                     .startTime(time.minusHours(i))
@@ -321,7 +323,7 @@ class GroupTodoCalendarServiceTest {
                 .collect(Collectors.toList());
 
         //then
-        assertThat(groupMemberDailyTodos.getDailySchedules().size()).isEqualTo(7);
+        assertThat(groupMemberDailyTodos.getDailySchedules().size()).isEqualTo(COUNT);
         assertThat(startTimes).isSorted();
     }
 }
