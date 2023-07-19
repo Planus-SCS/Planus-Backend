@@ -39,7 +39,7 @@ class TodoCategoryRepositoryTest {
 
         @BeforeEach
         void init() {
-            member = memberRepository.findById(1L).orElse(null);
+            member = memberRepository.findById(1L).orElseThrow();
         }
 
         @DisplayName("TodoCategoryId, Member 로 회원의 카테고리를 조회할 수 있어야 한다.")
@@ -57,7 +57,7 @@ class TodoCategoryRepositoryTest {
             //when
             MemberTodoCategory findMemberTodoCategory = todoCategoryRepository
                     .findMemberTodoCategoryByMemberIdAndId(member.getId(), testMemberTodoCategory.getId())
-                    .orElse(null);
+                    .orElseThrow();
 
             //then
             assertThat(findMemberTodoCategory.getMember().getId()).isEqualTo(testMemberTodoCategory.getMember().getId());
@@ -125,7 +125,7 @@ class TodoCategoryRepositoryTest {
 
         @BeforeEach
         void init() {
-            group = groupRepository.findById(1L).orElse(null);
+            group = groupRepository.findById(1L).orElseThrow();
         }
         @DisplayName("Group 으로 그룹의 모든 카테고리를 조회할 수 있어야 한다.")
         @Test
@@ -182,7 +182,7 @@ class TodoCategoryRepositoryTest {
             //when
             GroupTodoCategory findGroupTodoCategory = todoCategoryRepository
                     .findGroupTodoCategoryByIdAndStatus(testGroupTodoCategory.getId())
-                    .orElse(null);
+                    .orElseThrow();
 
             //then
             assertThat(findGroupTodoCategory.getGroup()).isEqualTo(testGroupTodoCategory.getGroup());
