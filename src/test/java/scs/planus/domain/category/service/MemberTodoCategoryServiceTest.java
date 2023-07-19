@@ -31,7 +31,6 @@ import static scs.planus.global.exception.CustomExceptionStatus.*;
 @Slf4j
 @ServiceTest
 class MemberTodoCategoryServiceTest {
-    private static final long MEMBER_ID = 1L;
     private static final long NOT_EXIST_ID = 0L;
     private static final String INVALID_COLOR = "invalid color";
 
@@ -80,7 +79,7 @@ class MemberTodoCategoryServiceTest {
         todoCategoryRepository.save(memberTodoCategory2);
 
         //when
-        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAll(MEMBER_ID);
+        List<TodoCategoryGetResponseDto> responseDtos = memberTodoCategoryService.findAll(member.getId());
 
         //then
         assertThat(responseDtos.size()).isEqualTo(2);
@@ -139,7 +138,7 @@ class MemberTodoCategoryServiceTest {
 
         //when
         List<TodoCategoryGetResponseDto> responseDtos =
-                memberTodoCategoryService.findAllGroupTodoCategories(MEMBER_ID);
+                memberTodoCategoryService.findAllGroupTodoCategories(member.getId());
 
         //then
         assertThat(responseDtos).hasSize(4);
@@ -156,7 +155,7 @@ class MemberTodoCategoryServiceTest {
 
         //when
         TodoCategoryResponseDto responseDto =
-                memberTodoCategoryService.createCategory(MEMBER_ID, todoCategoryRequestDto);
+                memberTodoCategoryService.createCategory(member.getId(), todoCategoryRequestDto);
 
         //then
         assertThat(responseDto.getId()).isNotNull();
