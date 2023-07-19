@@ -39,7 +39,10 @@ class TodoCategoryRepositoryTest {
 
         @BeforeEach
         void init() {
-            member = memberRepository.findById(1L).orElseThrow();
+            member = Member.builder()
+                    .build();
+
+            memberRepository.save(member);
         }
 
         @DisplayName("TodoCategoryId, Member 로 회원의 카테고리를 조회할 수 있어야 한다.")
@@ -82,11 +85,21 @@ class TodoCategoryRepositoryTest {
         @Test
         void findMemberTodoCategoryAllByMember_Exist() {
             //given
+            MemberTodoCategory memberTodoCategory1 = MemberTodoCategory.builder()
+                    .member(member)
+                    .build();
+
+            MemberTodoCategory memberTodoCategory2 = MemberTodoCategory.builder()
+                    .member(member)
+                    .build();
+
+            todoCategoryRepository.saveAll(List.of(memberTodoCategory1, memberTodoCategory2));
+
             //when
             List<MemberTodoCategory> findMemberTodoCategories = todoCategoryRepository.findMemberTodoCategoryAllByMember(member);
 
             //then
-            assertThat(findMemberTodoCategories).hasSize(1);
+            assertThat(findMemberTodoCategories).hasSize(2);
         }
     }
 
@@ -97,17 +110,30 @@ class TodoCategoryRepositoryTest {
 
         @BeforeEach
         void init() {
-            group = groupRepository.findById(1L).orElseThrow();
+            group = Group.builder()
+                    .build();
+
+            groupRepository.save(group);
         }
-        @DisplayName("Group 으로 그룹의 모든 카테고리를 조회할 수 있어야 한다.")
+        @DisplayName("GroupId 으로 그룹의 모든 카테고리를 조회할 수 있어야 한다.")
         @Test
         void findGroupTodoCategoryAllByGroup_Exist() {
             //given
+            GroupTodoCategory groupTodoCategory1 = GroupTodoCategory.builder()
+                    .group(group)
+                    .build();
+
+            GroupTodoCategory groupTodoCategory2 = GroupTodoCategory.builder()
+                    .group(group)
+                    .build();
+
+            todoCategoryRepository.saveAll(List.of(groupTodoCategory1, groupTodoCategory2));
+
             //when
             List<GroupTodoCategory> findGroupTodoCategories = todoCategoryRepository.findGroupTodoCategoryAllByGroup(group.getId());
 
             //then
-            assertThat(findGroupTodoCategories).hasSize(1);
+            assertThat(findGroupTodoCategories).hasSize(2);
         }
 
         @DisplayName("TodoCategoryId 로 그룹의 카테고리를 조회할 수 있어야 한다.")
@@ -137,13 +163,25 @@ class TodoCategoryRepositoryTest {
         @Test
         void findGroupTodoCategoryByIdAndStatus_Null() {
             //given
+            GroupTodoCategory groupTodoCategory = GroupTodoCategory.builder()
+                    .group(group)
+                    .build();
+
+            todoCategoryRepository.save(groupTodoCategory);
+            groupTodoCategory.changeStatusToInactive();
+
             //when
-            GroupTodoCategory findGroupTodoCategory = todoCategoryRepository
+            GroupTodoCategory findGroupTodoCategory1 = todoCategoryRepository
+                    .findGroupTodoCategoryByIdAndStatus(groupTodoCategory.getId())
+                    .orElse(null);
+
+            GroupTodoCategory findGroupTodoCategory2 = todoCategoryRepository
                     .findGroupTodoCategoryByIdAndStatus(NOT_EXIST_ID)
                     .orElse(null);
 
             //then
-            assertThat(findGroupTodoCategory).isNull();
+            assertThat(findGroupTodoCategory1).isNull();
+            assertThat(findGroupTodoCategory2).isNull();
         }
 
         @DisplayName("List<Group> 으로 각 그룹의 모든 카테고리를 조회할 수 있어야 한다.")
@@ -156,13 +194,15 @@ class TodoCategoryRepositoryTest {
 
             groupRepository.save(group2);
 
-            GroupTodoCategory testGroup2TodoCategory = GroupTodoCategory.builder()
-                    .group(group2)
-                    .name("그룹2카테고리")
-                    .color(Color.RED)
+            GroupTodoCategory group1TodoCategory = GroupTodoCategory.builder()
+                    .group(group)
                     .build();
 
-            todoCategoryRepository.save(testGroup2TodoCategory);
+            GroupTodoCategory group2TodoCategory = GroupTodoCategory.builder()
+                    .group(group2)
+                    .build();
+
+            todoCategoryRepository.saveAll(List.of(group1TodoCategory, group2TodoCategory));
 
             List<Group> groups = List.of(group, group2);
 
