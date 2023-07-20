@@ -14,7 +14,6 @@ import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.TodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
-import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.repository.GroupMemberRepository;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
@@ -200,27 +199,5 @@ class GroupTodoCategoryServiceTest {
         // then
         assertThat(todoCategoryResponseDto).isNotNull();
         assertThat(findCategory.getStatus()).isEqualTo(Status.INACTIVE);
-    }
-
-    @DisplayName("리더권한이 없으면 DO_NOT_HAVE_TODO_AUTHORITY 예외가 발생해야 한다.")
-    @Test
-    void 리더권한_없음() {
-        // given
-        Member member = Member.builder()
-                .build();
-
-        memberRepository.save(member);
-
-        GroupMember groupMember = GroupMember.builder()
-                .member(member)
-                .group(group)
-                .build();
-
-        groupMemberRepository.save(groupMember);
-
-        // when
-        // then
-//        assertThatThrownBy(
-//        )
     }
 }
