@@ -65,7 +65,7 @@ class MyGroupServiceTest {
         for (int i = 0; i < COUNT; i++) {
             Group group = Group.builder().status(Status.ACTIVE).build();
             groupRepository.save(group);
-            GroupMember.createGroupMember(member, group);
+            groupMemberRepository.save(GroupMember.createGroupMember(member, group));
         }
 
         //when
@@ -86,8 +86,8 @@ class MyGroupServiceTest {
         for (int i = 0; i < COUNT; i++) {
             Group group = Group.builder().status(Status.ACTIVE).build();
             groupRepository.save(group);
-            GroupMember.createGroupLeader(groupLeader, group);
-            GroupMember.createGroupMember(member, group);
+            groupMemberRepository.save(GroupMember.createGroupLeader(groupLeader, group));
+            groupMemberRepository.save(GroupMember.createGroupMember(member, group));
         }
 
         //when
@@ -102,7 +102,7 @@ class MyGroupServiceTest {
     @DisplayName("해당 그룹의 leader인 경우, Leader와 Authority가 True여야 한다.")
     @Test
     void getMyEachGroupDetail_If_Leader_Then_Leader_And_Authority_Are_True() {
-        GroupMember.createGroupLeader(member, group);
+        groupMemberRepository.save(GroupMember.createGroupLeader(member, group));
 
         //when
         MyGroupDetailResponseDto myEachGroupDetail
@@ -120,8 +120,8 @@ class MyGroupServiceTest {
         Member groupLeader = Member.builder().status(Status.ACTIVE).build();
         memberRepository.save(groupLeader);
 
-        GroupMember.createGroupLeader(groupLeader, group);
-        GroupMember.createGroupMember(member, group);
+        groupMemberRepository.save(GroupMember.createGroupLeader(groupLeader, group));
+        groupMemberRepository.save(GroupMember.createGroupMember(member, group));
 
         //when
         MyGroupDetailResponseDto myEachGroupDetail
@@ -140,8 +140,8 @@ class MyGroupServiceTest {
         Member groupLeader = Member.builder().status(Status.ACTIVE).build();
         memberRepository.save(groupLeader);
 
-        GroupMember.createGroupLeader(groupLeader, group);
-        GroupMember.createGroupMember(member, group);
+        groupMemberRepository.save(GroupMember.createGroupMember(groupLeader, group));
+        groupMemberRepository.save(GroupMember.createGroupMember(member, group));
 
         //when
         List<MyGroupGetMemberResponseDto> groupMembers
@@ -156,6 +156,7 @@ class MyGroupServiceTest {
     void changeOnlineStatus() {
         //given
         GroupMember groupMember = GroupMember.createGroupMember(member, group);
+        groupMemberRepository.save(groupMember);
 
         //when
         MyGroupOnlineStatusResponseDto myGroupOnlineStatusResponseDto
