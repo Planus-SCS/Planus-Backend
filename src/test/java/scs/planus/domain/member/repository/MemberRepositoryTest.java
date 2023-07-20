@@ -27,14 +27,15 @@ class MemberRepositoryTest {
                 .role(Role.USER)
                 .status(Status.ACTIVE)
                 .build();
+        memberRepository.save(member);
     }
 
     @DisplayName("이메일을 통해 멤버를 잘 조회할 수 있어야 한다.")
     @Test
     void findByEmail_Exist() {
         //when
-        memberRepository.save(member);
-        Member findMember = memberRepository.findByEmail(member.getEmail()).orElse(null);
+        Member findMember
+                = memberRepository.findByEmail(member.getEmail()).orElse(null);
 
         //then
         assertThat(findMember).isNotNull();
@@ -47,8 +48,8 @@ class MemberRepositoryTest {
     @Test
     void findByEmail_Null() {
         //when
-        memberRepository.save(member);
-        Member findMember = memberRepository.findByEmail("new@error").orElse(null);
+        Member findMember
+                = memberRepository.findByEmail("new@error").orElse(null);
 
         //then
         assertThat(findMember).isNull();

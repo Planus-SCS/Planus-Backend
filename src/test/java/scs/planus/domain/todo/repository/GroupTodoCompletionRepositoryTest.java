@@ -4,7 +4,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import scs.planus.domain.Status;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.repository.GroupRepository;
 import scs.planus.domain.member.entity.Member;
@@ -36,16 +35,10 @@ class GroupTodoCompletionRepositoryTest {
 
     @BeforeEach
     void init() {
-        member = memberRepository.findById(1L).orElse(null);
+        member = memberRepository.findById(1L).orElseThrow();
+        group = groupRepository.findById(1L).orElseThrow();
 
-        group = Group.builder()
-                .status(Status.ACTIVE)
-                .build();
-        groupRepository.save(group);
-
-        groupTodo = GroupTodo.builder()
-                .group(group)
-                .build();
+        groupTodo = GroupTodo.builder().group(group).build();
         todoRepository.save(groupTodo);
 
         groupTodoCompletion = GroupTodoCompletion.createGroupTodoCompletion(member, groupTodo);
@@ -56,9 +49,8 @@ class GroupTodoCompletionRepositoryTest {
     @Test
     void findByMemberIdAndTodoId(){
         //when
-        groupTodoCompletion = groupTodoCompletionRepository
-                .findByMemberIdAndTodoId(member.getId(), groupTodo.getId())
-                .orElse(null);
+        groupTodoCompletion
+                = groupTodoCompletionRepository.findByMemberIdAndTodoId(member.getId(), groupTodo.getId()).orElse(null);
 
         //then
         assertThat(groupTodoCompletion).isNotNull();
@@ -68,20 +60,19 @@ class GroupTodoCompletionRepositoryTest {
     @Test
     void findAllByMemberIdAndInGroupTodos(){
         //given
-        GroupTodo groupTodo2 = GroupTodo.builder()
-                .group(group)
-                .build();
+        GroupTodo groupTodo2 = GroupTodo.builder().group(group).build();
         todoRepository.save(groupTodo2);
 
         groupTodoCompletion = GroupTodoCompletion.createGroupTodoCompletion(member, groupTodo2);
-        List<GroupTodo> groupTodos = List.of(groupTodo, groupTodo2);
 
         //when
+        List<GroupTodo> groupTodos = List.of(groupTodo, groupTodo2);
+
         List<GroupTodoCompletion> groupTodoCompletions =
                 groupTodoCompletionRepository.findAllByMemberIdAndInGroupTodos(member.getId(), groupTodos);
 
         //then
-        assertThat(groupTodoCompletions.size()).isEqualTo(2);
+        assertThat(groupTodoCompletions).hasSize(2);
         assertThat(groupTodoCompletions.get(0).getGroupTodo()).isEqualTo(groupTodo);
         assertThat(groupTodoCompletions.get(1).getGroupTodo()).isEqualTo(groupTodo2);
     }
@@ -95,6 +86,7 @@ class GroupTodoCompletionRepositoryTest {
 
         //then
         assertThat(groupTodoCompletions).isNotEmpty();
+        assertThat(groupTodoCompletions).hasSize(1);
         assertThat(groupTodoCompletions.get(0)).isEqualTo(groupTodoCompletion);
     }
 }

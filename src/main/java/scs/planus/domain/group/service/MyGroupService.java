@@ -95,7 +95,7 @@ public class MyGroupService {
         return MyGroupDetailResponseDto.of(group, groupMember, onlineCount, groupTagResponseDtos);
     }
 
-    public List<MyGroupGetMemberResponseDto> getGroupMembersForMember(Long memberId, Long groupId) {
+    public List<MyGroupGetMemberResponseDto> getGroupMembers(Long memberId, Long groupId) {
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupId(memberId, groupId)
                 .orElseThrow(() -> {
                     groupRepository.findById(groupId)
