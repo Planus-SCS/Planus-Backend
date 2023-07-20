@@ -35,7 +35,6 @@ class GroupTodoCategoryServiceTest {
 
     private final TodoCategoryRepository todoCategoryRepository;
     private final MemberRepository memberRepository;
-    private final GroupMemberRepository groupMemberRepository;
     private final GroupRepository groupRepository;
 
     private final GroupTodoCategoryService groupTodoCategoryService;
@@ -50,7 +49,6 @@ class GroupTodoCategoryServiceTest {
                                         MemberRepository memberRepository) {
         this.todoCategoryRepository = todoCategoryRepository;
         this.groupRepository = groupRepository;
-        this.groupMemberRepository = groupMemberRepository;
         this.memberRepository = memberRepository;
 
         groupTodoCategoryService
