@@ -51,7 +51,7 @@ public class MyGroupController {
     public BaseResponse<List<MyGroupGetMemberResponseDto>> getGroupMembersForMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                                     @PathVariable("groupId") Long groupId ) {
         Long memberId = principalDetails.getId();
-        List<MyGroupGetMemberResponseDto> responseDto = myGroupService.getGroupMembersForMember(memberId, groupId);
+        List<MyGroupGetMemberResponseDto> responseDto = myGroupService.getGroupMembers(memberId, groupId);
         return new BaseResponse<>(responseDto);
     }
 

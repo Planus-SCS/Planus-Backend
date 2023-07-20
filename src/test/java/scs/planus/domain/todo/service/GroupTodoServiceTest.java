@@ -113,9 +113,8 @@ class GroupTodoServiceTest {
         TodoResponseDto responseDto =
                 groupTodoService.createGroupTodo(groupLeader.getId(), group.getId(), requestDto);
 
-        GroupTodoCompletion todoCompletion = groupTodoCompletionRepository
-                .findByMemberIdAndTodoId(groupLeader.getId(), responseDto.getTodoId())
-                .orElse(null);
+        GroupTodoCompletion todoCompletion
+                = groupTodoCompletionRepository.findByMemberIdAndTodoId(groupLeader.getId(), responseDto.getTodoId()).orElse(null);
 
         //then
         assertThat(todoCompletion).isNotNull();
