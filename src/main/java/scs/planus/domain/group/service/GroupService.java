@@ -75,9 +75,7 @@ public class GroupService {
     @Transactional
     public GroupResponseDto createGroup(Long memberId, GroupCreateRequestDto requestDto, MultipartFile multipartFile ) {
         Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> {
-                    throw new PlanusException( NONE_USER );
-                });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         String groupImageUrl = s3Uploader.upload(multipartFile, "groups");
         Group group = Group.creatGroup( requestDto.getName(), requestDto.getNotice(), requestDto.getLimitCount(), groupImageUrl );
@@ -93,15 +91,12 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    public GroupGetDetailResponseDto getGroupDetailForNonMember(Long memberId, Long groupId ) {
+    public GroupGetDetailResponseDto getGroupDetail(Long memberId, Long groupId ) {
         Group group = groupRepository.findWithGroupMemberById( groupId )
                 .orElseThrow(() ->  new PlanusException( NOT_EXIST_GROUP ));
 
-        Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> new PlanusException( NONE_USER ));
-
         // 가입한 그룹인지 검증
-        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( memberId, groupId );
 
         // 그룹 테그 조회 후 List<dto>로 변경
         List<GroupTag> groupTags = groupTagRepository.findAllByGroup( group );
@@ -113,9 +108,9 @@ public class GroupService {
         return GroupGetDetailResponseDto.of( group, groupTagResponseDtos, isJoined );
     }
 
-    public List<GroupGetMemberResponseDto> getGroupMemberForNonMember(Long groupId) {
+    public List<GroupGetMemberResponseDto> getGroupMember(Long groupId) {
         Group group = groupRepository.findByIdAndStatus( groupId )
-                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+                .orElseThrow( () -> new PlanusException(NOT_EXIST_GROUP));
 
         List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus(group);
 
@@ -127,10 +122,10 @@ public class GroupService {
     @Transactional
     public GroupResponseDto updateGroupDetail( Long memberId, Long groupId, GroupDetailUpdateRequestDto requestDto, MultipartFile multipartFile ) {
         Group group = groupRepository.findByIdAndStatus( groupId )
-                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+                .orElseThrow( () -> new PlanusException(NOT_EXIST_GROUP));
 
         Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         // 리더가 아니면 수정 불가능
         validateLeaderPermission( member, group );
@@ -154,10 +149,10 @@ public class GroupService {
     @Transactional
     public GroupResponseDto updateGroupNotice( Long memberId, Long groupId, GroupNoticeUpdateRequestDto requestDto ) {
         Group group = groupRepository.findByIdAndStatus( groupId )
-                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+                .orElseThrow( () -> new PlanusException(NOT_EXIST_GROUP));
 
         Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         // 리더가 아니면 수정 불가능
         validateLeaderPermission( member, group );
@@ -170,10 +165,10 @@ public class GroupService {
     @Transactional
     public GroupResponseDto softDeleteGroup( Long memberId, Long groupId ) {
         Group group = groupRepository.findByIdAndStatus( groupId )
-                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+                .orElseThrow( () -> new PlanusException(NOT_EXIST_GROUP));
 
         Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         // 리더가 아니면 수정 불가능
         validateLeaderPermission( member, group );
@@ -186,13 +181,13 @@ public class GroupService {
     @Transactional
     public GroupMemberResponseDto withdrawGroupMember(Long leaderId, Long memberId, Long groupId) {
         Member leader = memberRepository.findById( leaderId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         Member withdrawMember = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         Group group = groupRepository.findByIdAndStatus( groupId )
-                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+                .orElseThrow( () -> new PlanusException(NOT_EXIST_GROUP));
 
         GroupMember withdrawGroupMember = groupMemberRepository.findByMemberIdAndGroupId( withdrawMember.getId(), group.getId() )
                 .orElseThrow(() -> new PlanusException(NOT_JOINED_GROUP));
@@ -230,7 +225,7 @@ public class GroupService {
 
     private void validateLeaderPermission( Member member, Group group ) {
         GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
-                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
+                .orElseThrow( () -> new PlanusException(NOT_EXIST_LEADER));
 
         if ( !member.equals( groupLeader.getMember() ) )
             throw new PlanusException( NOT_GROUP_LEADER_PERMISSION );

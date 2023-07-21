@@ -28,28 +28,33 @@ class MyGroupServiceTest {
 
     private static final int COUNT = 7;
 
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private GroupMemberRepository groupMemberRepository;
-    @Autowired
-    private GroupTagRepository groupTagRepository;
+    private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final GroupTagRepository groupTagRepository;
 
-    private MyGroupService myGroupService;
+    private final MyGroupService myGroupService;
 
     private Member member;
     private Group group;
 
-    @BeforeEach
-    void init() {
+    @Autowired
+    public MyGroupServiceTest(MemberRepository memberRepository, GroupRepository groupRepository,
+                              GroupMemberRepository groupMemberRepository, GroupTagRepository groupTagRepository) {
+        this.memberRepository = memberRepository;
+        this.groupRepository = groupRepository;
+        this.groupMemberRepository = groupMemberRepository;
+        this.groupTagRepository = groupTagRepository;
+
         myGroupService = new MyGroupService(
                 memberRepository,
                 groupRepository,
                 groupMemberRepository,
                 groupTagRepository);
+    }
 
+    @BeforeEach
+    void init() {
         member = Member.builder().status(Status.ACTIVE).build();
         memberRepository.save(member);
 
