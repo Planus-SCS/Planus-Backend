@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.dto.MemberResponseDto;
@@ -15,41 +15,32 @@ import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.infra.redis.RedisService;
 import scs.planus.infra.s3.AmazonS3Uploader;
-
-import java.util.Optional;
+import scs.planus.support.ServiceTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
+@ServiceTest
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-    @InjectMocks
-    private MemberService memberService;
-
-    @Mock
-    private MemberRepository memberRepository;
-
-    @Mock
+    @MockBean
     private AmazonS3Uploader s3Uploader;
-
-    @Mock
+    @MockBean
     private RedisService redisService;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
+    private MemberService memberService;
     private Member member;
 
     @BeforeEach
     void init() {
-        member = Member.builder()
-                .nickname("testNick")
-                .description("testDesc")
-                .profileImageUrl("testImg")
-                .status(Status.ACTIVE)
-                .build();
-
-        given(memberRepository.findById(any())).willReturn(Optional.of(member));
+        memberService = new MemberService(redisService, s3Uploader, memberRepository);
+        member = memberRepository.findById(1L).orElseThrow();
     }
 
     @DisplayName("회원정보를 제대로 응답받아야 한다.")

@@ -1,12 +1,10 @@
 package scs.planus.domain.todo.service.calendar;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import scs.planus.domain.Status;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
@@ -24,7 +22,6 @@ import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
-import scs.planus.global.config.QueryDslConfig;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.support.ServiceTest;
 
@@ -39,46 +36,47 @@ import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_GROUP
 import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_MEMBER_IN_GROUP;
 
 @ServiceTest
-@Import(QueryDslConfig.class)
-@Slf4j
 class GroupTodoCalendarServiceTest {
 
     private static final int COUNT = 7;
 
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private TodoRepository todoRepository;
-    @Autowired
-    private TodoCategoryRepository todoCategoryRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private GroupMemberRepository groupMemberRepository;
-    @Autowired
-    private GroupTodoCompletionRepository groupTodoCompletionRepository;
-    @Autowired
-    private JPAQueryFactory queryFactory;
+    private final MemberRepository memberRepository;
+    private final TodoRepository todoRepository;
+    private final TodoCategoryRepository todoCategoryRepository;
+    private final GroupRepository groupRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
 
-    private TodoQueryRepository todoQueryRepository;
-    private GroupTodoCalendarService groupTodoCalendarService;
+    private final TodoQueryRepository todoQueryRepository;
+    private final GroupTodoCalendarService groupTodoCalendarService;
 
     private Member groupLeader;
     private Member groupMember;
     private Group group;
     private GroupTodoCategory groupTodoCategory;
 
-    @BeforeEach
-    void init() {
-        todoQueryRepository = new TodoQueryRepository(queryFactory);
+    @Autowired
+    public GroupTodoCalendarServiceTest(MemberRepository memberRepository, TodoRepository todoRepository,
+                                        TodoCategoryRepository todoCategoryRepository, GroupRepository groupRepository,
+                                        GroupMemberRepository groupMemberRepository, GroupTodoCompletionRepository groupTodoCompletionRepository,
+                                        JPAQueryFactory queryFactory) {
+        this.memberRepository = memberRepository;
+        this.todoRepository = todoRepository;
+        this.todoCategoryRepository = todoCategoryRepository;
+        this.groupRepository = groupRepository;
+        this.groupMemberRepository = groupMemberRepository;
+        this.groupTodoCompletionRepository = groupTodoCompletionRepository;
 
+        todoQueryRepository = new TodoQueryRepository(queryFactory);
         groupTodoCalendarService = new GroupTodoCalendarService(
                 todoQueryRepository,
                 groupRepository,
                 groupMemberRepository,
-                groupTodoCompletionRepository
-        );
+                groupTodoCompletionRepository);
+    }
 
+    @BeforeEach
+    void init() {
         groupLeader = memberRepository.findById(1L).orElseThrow();
         groupMember = memberRepository.findById(2L).orElseThrow();
         group = groupRepository.findById(1L).orElseThrow();

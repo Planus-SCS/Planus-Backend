@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import scs.planus.domain.Status;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
@@ -18,7 +17,6 @@ import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.todo.entity.GroupTodo;
 import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.entity.Todo;
-import scs.planus.global.config.QueryDslConfig;
 import scs.planus.support.RepositoryTest;
 
 import java.time.LocalDate;
@@ -27,31 +25,31 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-@Import(QueryDslConfig.class)
 class TodoQueryRepositoryTest {
 
     private static final int COUNT = 7;
 
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private TodoCategoryRepository todoCategoryRepository;
-    @Autowired
-    private TodoRepository todoRepository;
-    @Autowired
-    private JPAQueryFactory queryFactory;
+    private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
+    private final TodoCategoryRepository todoCategoryRepository;
+    private final TodoRepository todoRepository;
 
-    private TodoQueryRepository todoQueryRepository;
+    private final TodoQueryRepository todoQueryRepository;
 
     private Member member;
     private Todo todo;
     private Group group;
     private GroupTodoCategory groupTodoCategory;
 
-    @BeforeEach
-    void initRepository() {
+    @Autowired
+    public TodoQueryRepositoryTest(MemberRepository memberRepository, GroupRepository groupRepository,
+                                   TodoCategoryRepository todoCategoryRepository, TodoRepository todoRepository,
+                                   JPAQueryFactory queryFactory) {
+        this.memberRepository = memberRepository;
+        this.groupRepository = groupRepository;
+        this.todoCategoryRepository = todoCategoryRepository;
+        this.todoRepository = todoRepository;
+
         todoQueryRepository = new TodoQueryRepository(queryFactory);
     }
 
