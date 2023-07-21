@@ -91,7 +91,7 @@ public class GroupService {
         return GroupResponseDto.of( saveGroup );
     }
 
-    public GroupGetDetailResponseDto getGroupDetailForNonMember(Long memberId, Long groupId ) {
+    public GroupGetDetailResponseDto getGroupDetail(Long memberId, Long groupId ) {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow(() ->  new PlanusException( NOT_EXIST_GROUP ));
 
@@ -108,7 +108,7 @@ public class GroupService {
         return GroupGetDetailResponseDto.of( group, groupTagResponseDtos, isJoined );
     }
 
-    public List<GroupGetMemberResponseDto> getGroupMemberForNonMember(Long groupId) {
+    public List<GroupGetMemberResponseDto> getGroupMember(Long groupId) {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow( () -> new PlanusException(NOT_EXIST_GROUP));
 
