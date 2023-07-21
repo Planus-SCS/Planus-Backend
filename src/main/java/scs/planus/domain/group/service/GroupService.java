@@ -95,11 +95,8 @@ public class GroupService {
         Group group = groupRepository.findByIdAndStatus( groupId )
                 .orElseThrow(() ->  new PlanusException( NOT_EXIST_GROUP ));
 
-        Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
         // 가입한 그룹인지 검증
-        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
+        Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( memberId, groupId );
 
         // 그룹 테그 조회 후 List<dto>로 변경
         List<GroupTag> groupTags = groupTagRepository.findAllByGroup( group );
