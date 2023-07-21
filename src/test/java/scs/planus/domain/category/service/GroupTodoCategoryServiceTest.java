@@ -65,7 +65,7 @@ class GroupTodoCategoryServiceTest {
         group = groupRepository.findById(1L).orElseThrow();
     }
 
-    @DisplayName("리더는 그룹의 투두 카테고리를 모두 조회할 수 있다.")
+    @DisplayName("TodoAuthority 가 true 인 경우, 그룹의 투두 카테고리를 모두 조회할 수 있다.")
     @Test
     void findAll_Success() {
         // given
@@ -77,7 +77,7 @@ class GroupTodoCategoryServiceTest {
         assertThat(responseDtos).hasSize(1);
     }
 
-    @DisplayName("리더권한이 없으면 DO_NOT_HAVE_TODO_AUTHORITY 예외가 발생해야 한다.")
+    @DisplayName("TodoAuthority 가 false 인 경우, DO_NOT_HAVE_TODO_AUTHORITY 예외가 발생해야 한다.")
     @Test
     void findAll_Fail_Todo_Authority() {
         // given
@@ -91,7 +91,7 @@ class GroupTodoCategoryServiceTest {
                 .isEqualTo(DO_NOT_HAVE_TODO_AUTHORITY);
     }
 
-    @DisplayName("리더는 그룹 투두 카테고리를 생성할 수 있다.")
+    @DisplayName("TodoAuthority 가 true 인 경우, 그룹 투두 카테고리를 생성할 수 있다.")
     @Test
     void createCategory_Success() {
         // given
@@ -124,7 +124,7 @@ class GroupTodoCategoryServiceTest {
                 .isEqualTo(INVALID_CATEGORY_COLOR);
     }
 
-    @DisplayName("리더는 그룹 투두 카테고리를 수정할 수 있다.")
+    @DisplayName("TodoAuthority 가 true 인 경우, 그룹 투두 카테고리를 수정할 수 있다.")
     @Test
     void changeCategory_Success() {
         // given
@@ -178,7 +178,7 @@ class GroupTodoCategoryServiceTest {
                 .isEqualTo(NOT_EXIST_CATEGORY);
     }
 
-    @DisplayName("리더는 그룹 투두 카테고리를 삭제할 수 있다.")
+    @DisplayName("TodoAuthority 가 true 인 경우, 그룹 투두 카테고리를 삭제할 수 있다.")
     @Test
     void deleteCategory_Success() {
         // given
