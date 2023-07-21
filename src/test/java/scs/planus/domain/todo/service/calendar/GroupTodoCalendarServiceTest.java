@@ -77,8 +77,6 @@ class GroupTodoCalendarServiceTest {
 
     @BeforeEach
     void init() {
-
-
         groupLeader = memberRepository.findById(1L).orElseThrow();
         groupMember = memberRepository.findById(2L).orElseThrow();
         group = groupRepository.findById(1L).orElseThrow();
