@@ -1,36 +1,32 @@
 package scs.planus.domain.group.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import scs.planus.domain.Status;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.global.config.QueryDslConfig;
 import scs.planus.support.RepositoryTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RepositoryTest
-@Import(QueryDslConfig.class)
 class GroupMemberQueryRepositoryTest {
 
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private JPAQueryFactory queryFactory;
+    private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
 
-    private GroupMemberQueryRepository groupMemberQueryRepository;
+    private final GroupMemberQueryRepository groupMemberQueryRepository;
 
-    @BeforeEach
-    void init() {
+    @Autowired
+    public GroupMemberQueryRepositoryTest(MemberRepository memberRepository, GroupRepository groupRepository,
+                                          JPAQueryFactory queryFactory) {
+        this.memberRepository = memberRepository;
+        this.groupRepository = groupRepository;
+
         groupMemberQueryRepository = new GroupMemberQueryRepository(queryFactory);
     }
 

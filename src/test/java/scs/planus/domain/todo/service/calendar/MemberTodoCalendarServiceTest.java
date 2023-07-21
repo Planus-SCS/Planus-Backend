@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import scs.planus.domain.category.entity.GroupTodoCategory;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
@@ -23,7 +22,6 @@ import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.repository.GroupTodoCompletionRepository;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
-import scs.planus.global.config.QueryDslConfig;
 import scs.planus.support.ServiceTest;
 
 import java.time.LocalDate;
@@ -32,53 +30,55 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ServiceTest
-@Import(QueryDslConfig.class)
 class MemberTodoCalendarServiceTest {
 
     private static final int COUNT = 7;
 
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private GroupTagRepository groupTagRepository;
-    @Autowired
-    private TodoRepository todoRepository;
-    @Autowired
-    private TodoCategoryRepository todoCategoryRepository;
-    @Autowired
-    private GroupMemberRepository groupMemberRepository;
-    @Autowired
-    private GroupTodoCompletionRepository groupTodoCompletionRepository;
-    @Autowired
-    private JPAQueryFactory queryFactory;
+    private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
+    private final GroupTagRepository groupTagRepository;
+    private final TodoRepository todoRepository;
+    private final TodoCategoryRepository todoCategoryRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final GroupTodoCompletionRepository groupTodoCompletionRepository;
 
-    private TodoQueryRepository todoQueryRepository;
-    private MyGroupService myGroupService;
-    private MemberTodoCalendarService memberTodoCalendarService;
+    private final TodoQueryRepository todoQueryRepository;
+    private final MyGroupService myGroupService;
+    private final MemberTodoCalendarService memberTodoCalendarService;
 
     private Member member;
     private MemberTodoCategory memberTodoCategory;
     private Group group;
     private GroupTodoCategory groupTodoCategory;
 
-    @BeforeEach
-    void init() {
-        todoQueryRepository = new TodoQueryRepository(queryFactory);
+    @Autowired
+    public MemberTodoCalendarServiceTest(MemberRepository memberRepository, GroupRepository groupRepository,
+                                         GroupTagRepository groupTagRepository, TodoRepository todoRepository,
+                                         TodoCategoryRepository todoCategoryRepository, GroupMemberRepository groupMemberRepository,
+                                         GroupTodoCompletionRepository groupTodoCompletionRepository, JPAQueryFactory queryFactory) {
+        this.memberRepository = memberRepository;
+        this.groupRepository = groupRepository;
+        this.groupTagRepository = groupTagRepository;
+        this.todoRepository = todoRepository;
+        this.todoCategoryRepository = todoCategoryRepository;
+        this.groupMemberRepository = groupMemberRepository;
+        this.groupTodoCompletionRepository = groupTodoCompletionRepository;
 
+        todoQueryRepository = new TodoQueryRepository(queryFactory);
         myGroupService = new MyGroupService(
                 memberRepository,
                 groupRepository,
                 groupMemberRepository,
                 groupTagRepository);
-
         memberTodoCalendarService = new MemberTodoCalendarService(
                 myGroupService,
                 todoQueryRepository,
                 groupMemberRepository,
                 groupTodoCompletionRepository);
+    }
 
+    @BeforeEach
+    void init() {
         member = memberRepository.findById(1L).orElseThrow();
         memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
         group = groupRepository.findById(1L).orElseThrow();

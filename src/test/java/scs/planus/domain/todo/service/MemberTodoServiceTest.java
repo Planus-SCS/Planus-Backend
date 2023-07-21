@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import scs.planus.domain.category.entity.MemberTodoCategory;
 import scs.planus.domain.category.repository.TodoCategoryRepository;
 import scs.planus.domain.group.entity.Group;
@@ -20,7 +19,6 @@ import scs.planus.domain.todo.entity.MemberTodo;
 import scs.planus.domain.todo.entity.Todo;
 import scs.planus.domain.todo.repository.TodoQueryRepository;
 import scs.planus.domain.todo.repository.TodoRepository;
-import scs.planus.global.config.QueryDslConfig;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.support.ServiceTest;
 
@@ -31,43 +29,44 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 @ServiceTest
-@Import(QueryDslConfig.class)
 class MemberTodoServiceTest {
-    
+
     private static final Long NOT_EXISTED_ID = 0L;
 
-    @Autowired
-    private MemberRepository memberRepository;
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private GroupMemberRepository groupMemberRepository;
-    @Autowired
-    private TodoCategoryRepository todoCategoryRepository;
-    @Autowired
-    private TodoRepository todoRepository;
-    @Autowired
-    private JPAQueryFactory queryFactory;
+    private final MemberRepository memberRepository;
+    private final GroupRepository groupRepository;
+    private final GroupMemberRepository groupMemberRepository;
+    private final TodoCategoryRepository todoCategoryRepository;
+    private final TodoRepository todoRepository;
 
-    private TodoQueryRepository todoQueryRepository;
-    private MemberTodoService memberTodoService;
+    private final TodoQueryRepository todoQueryRepository;
+    private final MemberTodoService memberTodoService;
 
     private Member member;
     private MemberTodoCategory memberTodoCategory;
 
-    @BeforeEach
-    void init() {
-        todoQueryRepository = new TodoQueryRepository(queryFactory);
+    @Autowired
+    public MemberTodoServiceTest(MemberRepository memberRepository, GroupRepository groupRepository,
+                                 GroupMemberRepository groupMemberRepository, TodoCategoryRepository todoCategoryRepository,
+                                 TodoRepository todoRepository, JPAQueryFactory queryFactory) {
+        this.memberRepository = memberRepository;
+        this.groupRepository = groupRepository;
+        this.groupMemberRepository = groupMemberRepository;
+        this.todoCategoryRepository = todoCategoryRepository;
+        this.todoRepository = todoRepository;
 
+        todoQueryRepository = new TodoQueryRepository(queryFactory);
         memberTodoService = new MemberTodoService(
                 memberRepository,
                 todoCategoryRepository,
                 todoRepository,
                 todoQueryRepository,
                 groupMemberRepository,
-                groupRepository
-        );
+                groupRepository);
+    }
 
+    @BeforeEach
+    void init() {
         member = memberRepository.findById(1L).orElseThrow();
         memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
     }
