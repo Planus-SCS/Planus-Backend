@@ -12,6 +12,8 @@ import java.util.stream.IntStream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GroupTagTest {
+    private static final int TAG_COUNT = 10;
+
     private Group group;
     private List<Tag> tags;
 
@@ -20,7 +22,7 @@ class GroupTagTest {
         group = Group.builder()
                 .build();
 
-        tags = IntStream.range(0, 5)
+        tags = IntStream.range(0, TAG_COUNT)
                 .mapToObj(i -> Tag.builder()
                         .build()
                 )
@@ -35,7 +37,7 @@ class GroupTagTest {
         List<GroupTag> groupTags = GroupTag.create(group, tags);
 
         // then
-        assertThat(groupTags).hasSize(tags.size());
+        assertThat(groupTags).hasSize(TAG_COUNT);
         assertThat(groupTags.get(0).getGroup()).isEqualTo(group);
     }
 }
