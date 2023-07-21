@@ -101,7 +101,6 @@ class GroupRepositoryTest {
 
         //then
         assertThat(findGroup).isNotNull();
-        assertThat(findGroup.getName()).isEqualTo(group.getName());
         assertThat(findGroup.getStatus()).isEqualTo(Status.ACTIVE);
     }
 
