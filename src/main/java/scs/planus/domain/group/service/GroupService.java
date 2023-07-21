@@ -92,7 +92,7 @@ public class GroupService {
     }
 
     public GroupGetDetailResponseDto getGroupDetail(Long memberId, Long groupId ) {
-        Group group = groupRepository.findByIdAndStatus( groupId )
+        Group group = groupRepository.findWithGroupMemberById( groupId )
                 .orElseThrow(() ->  new PlanusException( NOT_EXIST_GROUP ));
 
         // 가입한 그룹인지 검증
