@@ -137,7 +137,7 @@ class GroupTodoCategoryServiceTest {
         todoCategoryRepository.save(groupTodoCategory);
 
         TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
-                .name("수정 괸 카테고리")
+                .name("수정 된 카테고리")
                 .color("RED")
                 .build();
 

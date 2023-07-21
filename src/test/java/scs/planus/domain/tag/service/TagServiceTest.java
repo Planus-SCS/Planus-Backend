@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ServiceTest
 class TagServiceTest {
-    private static final String TAG_NAME = "테스트 태 이름";
+    private static final String TAG_NAME = "테스트 태그 이름";
 
     private final TagRepository tagRepository;
 
