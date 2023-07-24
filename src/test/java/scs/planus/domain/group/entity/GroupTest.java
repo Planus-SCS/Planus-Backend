@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.tag.entity.Tag;
 import scs.planus.global.exception.PlanusException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,4 +119,23 @@ class GroupTest {
         assertThat(group.getStatus()).isEqualTo(Status.INACTIVE);
     }
 
+    @DisplayName("Group의 GroupTag가 삭제되어야 한다.")
+    @Test
+    void removeGroupTag(){
+        //given
+        Group group = Group.builder()
+                .status(Status.ACTIVE)
+                .build();
+
+        GroupTag groupTag = GroupTag.builder()
+                .group(group)
+                .tag(Tag.builder().build())
+                .build();
+
+        //when
+        group.removeGroupTag(groupTag);
+
+        //then
+        assertThat(group.getGroupTags()).isEmpty();
+    }
 }
