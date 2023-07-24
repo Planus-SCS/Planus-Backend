@@ -6,11 +6,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import scs.planus.domain.group.dto.*;
+import scs.planus.domain.group.dto.GroupCreateRequestDto;
+import scs.planus.domain.group.dto.GroupDetailUpdateRequestDto;
+import scs.planus.domain.group.dto.GroupGetDetailResponseDto;
+import scs.planus.domain.group.dto.GroupGetMemberResponseDto;
+import scs.planus.domain.group.dto.GroupMemberResponseDto;
+import scs.planus.domain.group.dto.GroupNoticeUpdateRequestDto;
+import scs.planus.domain.group.dto.GroupResponseDto;
+import scs.planus.domain.group.dto.GroupTagResponseDto;
+import scs.planus.domain.group.dto.GroupsGetResponseDto;
 import scs.planus.domain.group.entity.Group;
 import scs.planus.domain.group.entity.GroupMember;
 import scs.planus.domain.group.entity.GroupTag;
-import scs.planus.domain.group.repository.*;
+import scs.planus.domain.group.repository.GroupMemberQueryRepository;
+import scs.planus.domain.group.repository.GroupMemberRepository;
+import scs.planus.domain.group.repository.GroupRepository;
+import scs.planus.domain.group.repository.GroupTagRepository;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.domain.tag.dto.TagCreateRequestDto;
@@ -136,9 +147,9 @@ public class GroupService {
 
         // 그룹 테그 수정.
         validateDuplicateTagName( requestDto.getTagList() );
-        List<TagCreateRequestDto> addTagDtos = groupTagService.update( group, requestDto.getTagList() );
-        List<Tag> addTags = tagService.transformToTag( addTagDtos );
-        GroupTag.create( group, addTags );
+        List<TagCreateRequestDto> toBeUpdatedTagDtos = groupTagService.extractToBeUpdatedTags( group, requestDto.getTagList() );
+        List<Tag> tags = tagService.transformToTag( toBeUpdatedTagDtos );
+        GroupTag.create( group, tags );
 
         // 그 외 세부사항 수정
         group.updateDetail( requestDto.getLimitCount(), newGroupImageUrl );

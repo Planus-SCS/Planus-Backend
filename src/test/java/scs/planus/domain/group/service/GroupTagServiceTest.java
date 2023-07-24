@@ -82,7 +82,7 @@ class GroupTagServiceTest {
                 .collect(Collectors.toList());
 
         // when
-        List<TagCreateRequestDto> updateTags = groupTagService.update(group, tagCreateRequestDtos);
+        List<TagCreateRequestDto> updateTags = groupTagService.extractToBeUpdatedTags(group, tagCreateRequestDtos);
         List<GroupTag> findGroupTags = groupTagRepository.findAllByGroup(group);
 
         // then
