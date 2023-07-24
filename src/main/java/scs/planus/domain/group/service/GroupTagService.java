@@ -21,29 +21,25 @@ public class GroupTagService {
 
     // TODO : 리펙토링 필요할 듯
     @Transactional
-    public List<TagCreateRequestDto> update(Group group, List<TagCreateRequestDto> updateTags ) {
-        List<GroupTag> groupTags = groupTagRepository.findAllByGroup( group );
-
-        List<GroupTag> removeGroupTag = new ArrayList<>();
-        List<TagCreateRequestDto> removeUpdateTag = new ArrayList<>();
+    public List<TagCreateRequestDto> extractToBeUpdatedTags(Group group, List<TagCreateRequestDto> tagDtos) {
+        
+        List<GroupTag> groupTags = groupTagRepository.findAllByGroup(group);
+        List<TagCreateRequestDto> updatedTagsDto = new ArrayList<>(tagDtos);
 
         for (GroupTag gt : groupTags) {
-            boolean removeFlag = true;
-            for ( TagCreateRequestDto t : updateTags ) {
+            boolean isSameGroupTag = false;
+            for (TagCreateRequestDto t : tagDtos) {
                 if (gt.getTag().getName().equals(t.getName())) {
-                    removeUpdateTag.add(t);
-                    removeFlag = false;
+                    updatedTagsDto.remove(t);
+                    isSameGroupTag = true;
                     break;
                 }
             }
-            if (removeFlag) removeGroupTag.add(gt);
+            if (!isSameGroupTag) {
+                group.removeGroupTag(gt);
+            }
         }
 
-        group.getGroupTags().removeAll(removeGroupTag);
-
-        // 존재하는 태그 제외하고, 추가해야할 태그만 리턴
-        updateTags.removeAll(removeUpdateTag);
-
-        return updateTags;
+        return updatedTagsDto;
     }
 }
