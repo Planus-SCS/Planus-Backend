@@ -106,14 +106,14 @@ public class GroupJoinService {
     }
 
     @Transactional
-    public GroupJoinResponseDto rejectGroupJoin( Long memberId, Long groupJoinId ) {
-        Member member = memberRepository.findById( memberId )
+    public GroupJoinResponseDto rejectGroupJoin( Long leaderId, Long groupJoinId ) {
+        Member leader = memberRepository.findById( leaderId )
                 .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
 
         GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
 
-        validateLeaderPermission( member, groupJoin.getGroup() );
+        validateLeaderPermission( leader, groupJoin.getGroup() );
 
         groupJoinRepository.delete( groupJoin );
 
