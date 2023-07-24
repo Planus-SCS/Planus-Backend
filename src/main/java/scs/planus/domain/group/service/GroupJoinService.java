@@ -37,10 +37,10 @@ public class GroupJoinService {
     @Transactional
     public GroupJoinResponseDto joinGroup(Long memberId, Long groupId ) {
         Group group = groupRepository.findByIdAndStatus(groupId)
-                .orElseThrow(() -> { throw new PlanusException( NOT_EXIST_GROUP ); });
+                .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP ));
 
         Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException( NONE_USER ));
 
         groupJoinRepository.findByMemberIdAndGroupId(memberId, groupId)
                 .ifPresent(groupJoin -> {
@@ -61,9 +61,9 @@ public class GroupJoinService {
         return GroupJoinResponseDto.of( saveGroupJoin );
     }
 
-    public List<GroupJoinGetResponseDto> getAllGroupJoin(Long memberId ) {
+    public List<GroupJoinGetResponseDto> getAllGroupJoin(Long memberId) {
         Member member = memberRepository.findById( memberId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException( NONE_USER ));
 
         // 내가 리더인 그룹들 조회
         List<GroupMember> groupMembers = groupMemberRepository.findWithGroupByLeaderMember(member);
@@ -82,7 +82,7 @@ public class GroupJoinService {
     @Transactional
     public GroupMemberResponseDto acceptGroupJoin( Long leaderId, Long groupJoinId ) {
         Member leader = memberRepository.findById( leaderId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
@@ -108,7 +108,7 @@ public class GroupJoinService {
     @Transactional
     public GroupJoinResponseDto rejectGroupJoin( Long leaderId, Long groupJoinId ) {
         Member leader = memberRepository.findById( leaderId )
-                .orElseThrow(() -> { throw new PlanusException( NONE_USER ); });
+                .orElseThrow(() -> new PlanusException(NONE_USER));
 
         GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
@@ -130,7 +130,7 @@ public class GroupJoinService {
     // TODO GroupJoinService 내 동일 메서드 존재 -> GroupValidate Class 로 빼는것 고려
     private void validateLeaderPermission( Member member, Group group ) {
         GroupMember groupLeader = groupMemberRepository.findWithGroupAndLeaderByGroup( group )
-                .orElseThrow( () -> { throw new PlanusException( NOT_EXIST_LEADER ); });
+                .orElseThrow( () -> new PlanusException(NOT_EXIST_LEADER));
 
         if ( !member.equals( groupLeader.getMember() ) )
             throw new PlanusException( NOT_GROUP_LEADER_PERMISSION );
