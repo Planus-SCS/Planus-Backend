@@ -39,7 +39,7 @@ public class GroupTagService {
             if (removeFlag) removeGroupTag.add(gt);
         }
 
-        groupTagRepository.deleteAll(removeGroupTag);
+        group.getGroupTags().removeAll(removeGroupTag);
 
         // 존재하는 태그 제외하고, 추가해야할 태그만 리턴
         updateTags.removeAll(removeUpdateTag);
