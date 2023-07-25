@@ -1,6 +1,7 @@
 package scs.planus.domain.group.entity;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
@@ -20,6 +21,7 @@ class GroupJoinTest {
                 .build();
     }
 
+    @DisplayName("GroupJoin 이 제대로 생성되어야 한다.")
     @Test
     void createGroupJoin() {
         // when
