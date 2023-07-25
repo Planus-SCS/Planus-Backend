@@ -3,7 +3,9 @@ package scs.planus.global.auth.service;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.member.entity.Role;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.exception.PlanusException;
@@ -25,11 +27,14 @@ class PrincipalDetailsServiceTest {
         principalDetailsService = new PrincipalDetailsService(memberRepository);
     }
 
-    @DisplayName("존재하는 이메일의 회원인 경우, 그 회원에 관한 PrincipalDetail을 반환한다.")
+    @DisplayName("존재하는 이메일의 회원인 경우, 그 회원에 관한 PrincipalDetails을 반환한다.")
     @Test
     void loadUserByUsername(){
         //given
-        Member member = Member.builder().email("test@test").build();
+        Member member = Member.builder()
+                .email("test@test")
+                .role(Role.USER)
+                .build();
         memberRepository.save(member);
 
         //when
@@ -39,6 +44,9 @@ class PrincipalDetailsServiceTest {
         //then
         assertThat(principalDetails.getId()).isEqualTo(member.getId());
         assertThat(principalDetails.getUsername()).isEqualTo(member.getEmail());
+        assertThat(principalDetails.getAuthorities()).hasSize(1)
+                .extracting(GrantedAuthority::getAuthority)
+                .containsExactly(member.getRole().getRoleName());
     }
 
     @DisplayName("존재하지 않는 이메일의 회원인 경우, 예외를 던진다.")
