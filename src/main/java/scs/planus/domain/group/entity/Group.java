@@ -88,4 +88,8 @@ public class Group extends BaseTimeEntity {
     public void changeStatusToInactive() {
         this.status = Status.INACTIVE;
     }
+
+    public void removeGroupTag(GroupTag groupTag) {
+        this.getGroupTags().remove(groupTag);
+    }
 }

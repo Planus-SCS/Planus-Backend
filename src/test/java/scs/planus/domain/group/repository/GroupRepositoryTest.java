@@ -1,6 +1,5 @@
 package scs.planus.domain.group.repository;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ class GroupRepositoryTest {
 
     private final static int PAGE = 0;
     private final static int PAGE_SIZE = 5;
-    private final static int COUNT = 7;
+    private final static int COUNT = 10;
 
     @Autowired
     private GroupRepository groupRepository;
@@ -48,10 +47,10 @@ class GroupRepositoryTest {
     @Test
     void findAllByKeywordAndActiveOrderByNumOfMembersAndId() {
         //given
-        String keyword = "group1";
+        String keyword = "1";
         Pageable pageable = PageRequest.of(PAGE, PAGE_SIZE);
 
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 1; i <= COUNT; i++) {
             Group group = Group.builder()
                     .name("group" + i)
                     .status(Status.ACTIVE)
@@ -64,8 +63,9 @@ class GroupRepositoryTest {
                 = groupRepository.findAllByKeywordAndActiveOrderByNumOfMembersAndId(keyword, pageable);
 
         //then
-        assertThat(groups).hasSize(1);
-        assertThat(groups.get(0).getName()).contains("group1");
+        assertThat(groups).hasSize(2)
+                .extracting(Group::getName)
+                .allMatch(name -> name.contains(keyword));
     }
 
     @DisplayName("해당 Group에 속하는 GroupMember와 fetch join한 Group이 조회되어야 한다.")
