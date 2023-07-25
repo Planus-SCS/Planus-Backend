@@ -155,7 +155,7 @@ class GroupServiceTest {
                 .isEqualTo(EXIST_DUPLICATE_TAGS);
     }
 
-    @DisplayName("만약 가입한 Group인 경우, isJoined가 true여야 한다.")
+    @DisplayName("Group 상세정보를 조회한다. 만약 가입한 경우, isJoined가 true여야 한다.")
     @Test
     void getGroupDetail_IsJoined_Is_True_If_Joined_Group() {
         //when
@@ -170,7 +170,7 @@ class GroupServiceTest {
         assertThat(groupDetail.getIsJoined()).isTrue();
     }
 
-    @DisplayName("만약 가입하지 않은 Group인 경우, isJoined가 false여야 한다.")
+    @DisplayName("Group 상세정보를 조회한다. 만약 가입하지 않은 경우, isJoined가 false여야 한다.")
     @Test
     void getGroupDetail_IsJoined_Is_False_If_Not_Joined_Group() {
         //when
