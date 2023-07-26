@@ -8,6 +8,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,8 @@ import org.springframework.stereotype.Component;
 import scs.planus.global.auth.entity.Token;
 import scs.planus.global.exception.PlanusException;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import static scs.planus.global.exception.CustomExceptionStatus.UNAUTHORIZED_ACCESS_TOKEN;
@@ -25,14 +28,14 @@ import static scs.planus.global.exception.CustomExceptionStatus.UNAUTHORIZED_ACC
 @Slf4j
 public class JwtProvider {
 
-    private final String secretKey;
+    private final SecretKey secretKey;
     private final long accessTokenExpiredIn;
     private final long refreshTokenExpiredIn;
 
     public JwtProvider(@Value("${jwt.token.secret-key}") final String secretKey,
                        @Value("${jwt.access-token.expired-in}") final long accessTokenExpiredIn,
                        @Value("${jwt.refresh-token.expired-in}") final long refreshTokenExpiredIn) {
-        this.secretKey = secretKey;
+        this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpiredIn = accessTokenExpiredIn;
         this.refreshTokenExpiredIn = refreshTokenExpiredIn;
     }
@@ -91,7 +94,7 @@ public class JwtProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expired)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -101,7 +104,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .setIssuedAt(now)
                 .setExpiration(expired)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
