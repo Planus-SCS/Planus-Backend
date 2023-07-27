@@ -35,8 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_GROUP;
 import static scs.planus.global.exception.CustomExceptionStatus.NOT_JOINED_MEMBER_IN_GROUP;
 
-@ServiceTest
-class GroupTodoCalendarServiceTest {
+class GroupTodoCalendarServiceTest extends ServiceTest {
 
     private static final int COUNT = 7;
 

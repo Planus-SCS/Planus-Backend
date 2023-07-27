@@ -14,8 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class GroupRepositoryTest {
+class GroupRepositoryTest extends RepositoryTest {
 
     private final static int PAGE = 0;
     private final static int PAGE_SIZE = 5;

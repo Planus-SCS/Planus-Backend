@@ -46,8 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
-@ServiceTest
-class GroupServiceTest {
+class GroupServiceTest extends ServiceTest {
 
     private final static Long NOT_EXISTED_ID = 0L;
     private final static int COUNT = 7;
@@ -212,7 +211,7 @@ class GroupServiceTest {
         //then
         assertThat(groupMembers).hasSize(2);
     }
-    
+
     @DisplayName("Group 상세 정보가 변경되어야 한다.")
     @Test
     void updateGroupDetail() {

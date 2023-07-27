@@ -17,8 +17,7 @@ import static org.mockito.BDDMockito.given;
 import static scs.planus.global.exception.CustomExceptionStatus.EXPIRED_REFRESH_TOKEN;
 import static scs.planus.global.exception.CustomExceptionStatus.INVALID_REFRESH_TOKEN;
 
-@ServiceTest
-class AuthServiceTest {
+class AuthServiceTest extends ServiceTest {
 
     private static final String TEST_EMAIL = "test@test";
     private static final String ACCESS_TOKEN = "accessToken";

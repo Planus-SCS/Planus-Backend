@@ -19,8 +19,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ServiceTest
-class GroupTagServiceTest {
+class GroupTagServiceTest extends ServiceTest {
     private static final String TAG_NAME = "테스트 태그 이름";
     private static final int TAG_COUNT = 5;
 

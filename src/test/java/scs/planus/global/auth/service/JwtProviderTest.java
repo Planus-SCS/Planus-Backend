@@ -11,8 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.UNAUTHORIZED_ACCESS_TOKEN;
 
-@ServiceTest
-class JwtProviderTest {
+class JwtProviderTest extends ServiceTest {
 
     private static final String SECRET_KEY = "A".repeat(64);
     private static final int ACCESS_TOKEN_EXPIRED_IN = 3600;

@@ -16,8 +16,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class GroupTodoCompletionRepositoryTest {
+class GroupTodoCompletionRepositoryTest extends RepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;

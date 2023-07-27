@@ -21,8 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@RepositoryTest
-class TodoCategoryRepositoryTest {
+class TodoCategoryRepositoryTest extends RepositoryTest {
     private static final Long NOT_EXIST_ID = 0L;
 
     @Autowired

@@ -23,8 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ServiceTest
-class MyGroupServiceTest {
+class MyGroupServiceTest extends ServiceTest {
 
     private static final int COUNT = 7;
 

@@ -8,8 +8,7 @@ import scs.planus.support.RepositoryTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class TagRepositoryTest {
+class TagRepositoryTest extends RepositoryTest {
 
     private static final String TAG_NAME = "테스트 태그 이름";
     private final TagRepository tagRepository;
