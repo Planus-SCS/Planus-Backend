@@ -15,8 +15,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class GroupMemberRepositoryTest {
+class GroupMemberRepositoryTest extends RepositoryTest {
 
     private static final int COUNT = 7;
 
@@ -60,7 +59,7 @@ class GroupMemberRepositoryTest {
 
     @DisplayName("createGroupMember 호출시, GroupMember가 저장되어야 한다.")
     @Test
-    void createGroupMember_Then_Save_GroupMember(){
+    void createGroupMember_Then_Save_GroupMember() {
         //given
         GroupMember groupMember = GroupMember.createGroupMember(member, group);
 
@@ -77,7 +76,7 @@ class GroupMemberRepositoryTest {
 
     @DisplayName("createGroupLeader 호출시, GroupMember(leader)가 저장되어야 한다.")
     @Test
-    void createGroupLeader_Then_Save_GroupLeader(){
+    void createGroupLeader_Then_Save_GroupLeader() {
         //given
         GroupMember groupMember = GroupMember.createGroupLeader(member, group);
 

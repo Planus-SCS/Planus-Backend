@@ -13,8 +13,7 @@ import scs.planus.support.RepositoryTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class GroupMemberQueryRepositoryTest {
+class GroupMemberQueryRepositoryTest extends RepositoryTest {
 
     private final MemberRepository memberRepository;
     private final GroupRepository groupRepository;
@@ -32,7 +31,7 @@ class GroupMemberQueryRepositoryTest {
 
     @DisplayName("GroupMember가 존재하면 true를 반환한다.")
     @Test
-    void existByMemberIdAndGroupId_Return_True_If_GroupMember(){
+    void existByMemberIdAndGroupId_Return_True_If_GroupMember() {
         //given
         Member member = Member.builder().status(Status.ACTIVE).build();
         Group group = Group.builder().status(Status.ACTIVE).build();
@@ -52,7 +51,7 @@ class GroupMemberQueryRepositoryTest {
 
     @DisplayName("GroupMember가 존재하지 않다면 false를 반환한다.")
     @Test
-    void existByMemberIdAndGroupId_Return_False_If_Not_GroupMember(){
+    void existByMemberIdAndGroupId_Return_False_If_Not_GroupMember() {
         //given
         Member member = Member.builder().status(Status.ACTIVE).build();
         Group group = Group.builder().status(Status.ACTIVE).build();
@@ -70,7 +69,7 @@ class GroupMemberQueryRepositoryTest {
 
     @DisplayName("GroupMember의 status가 inactive라면 false를 반환한다.")
     @Test
-    void existByMemberIdAndGroupId_Return_False_If_GroupMember_Status_Inactive(){
+    void existByMemberIdAndGroupId_Return_False_If_GroupMember_Status_Inactive() {
         //given
         Member member = Member.builder().status(Status.ACTIVE).build();
         Group group = Group.builder().status(Status.ACTIVE).build();

@@ -24,8 +24,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class TodoQueryRepositoryTest {
+class TodoQueryRepositoryTest extends RepositoryTest {
 
     private static final int COUNT = 7;
 
@@ -84,7 +83,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("기간 내의 멤버 투두가 리스트 형식으로 조회되어야 한다.")
         @Test
-        void findAllPeriodMemberTodosByDate(){
+        void findAllPeriodMemberTodosByDate() {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
 
@@ -140,7 +139,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("기간 내의 그룹 투두가 리스트 형식으로 조회되어야 한다.")
         @Test
-        void findPeriodGroupTodosByDate(){
+        void findPeriodGroupTodosByDate() {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
 
@@ -166,7 +165,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("일별 그룹 투두가 존재한다면 리스트 형식으로 조회되어야 한다.")
         @Test
-        void findDailyGroupTodosByDate(){
+        void findDailyGroupTodosByDate() {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
 
@@ -187,7 +186,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("일별 조회시, 기간 투두의 경우 기간내에 조회하고자하는 일이 포함된다면 조회되어야 한다.")
         @Test
-        void findDailyGroupTodosByDate_Period_Todo(){
+        void findDailyGroupTodosByDate_Period_Todo() {
             //given
             LocalDate date = LocalDate.of(2022, 12, 31);
 
@@ -209,7 +208,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("기간 내의 여러 그룹의 그룹 투두들이 반환되어야 한다.")
         @Test
-        void findAllPeriodGroupTodosByDate(){
+        void findAllPeriodGroupTodosByDate() {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
 
@@ -259,7 +258,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("같은 그룹 멤버의 해당 그룹 투두가 조회되어야 한다.")
         @Test
-        void findOneGroupMemberTodoById_GroupTodo(){
+        void findOneGroupMemberTodoById_GroupTodo() {
             //given
             groupTodoCategory = GroupTodoCategory.builder()
                     .group(group)
@@ -283,7 +282,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("같은 그룹 멤버가 해당 그룹을 지정한 개인 투두가 조회되어야 한다.")
         @Test
-        void findOneGroupMemberTodoById_MemberTodo(){
+        void findOneGroupMemberTodoById_MemberTodo() {
             //given
             MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
@@ -305,7 +304,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("같은 그룹 멤버가 해당 그룹을 지정하지 않은 개인 투두는 조회되서는 안된다.")
         @Test
-        void findOneGroupMemberTodoById_MemberTodo_Fail_If_Not_Assign_Group(){
+        void findOneGroupMemberTodoById_MemberTodo_Fail_If_Not_Assign_Group() {
             //given
             MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
 
@@ -325,7 +324,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("기간 내의 그룹 멤버 투두가 리스트 형식으로 조회되어야 한다.")
         @Test
-        void findPeriodGroupTodosByDate(){
+        void findPeriodGroupTodosByDate() {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
             MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();
@@ -353,7 +352,7 @@ class TodoQueryRepositoryTest {
 
         @DisplayName("일별 그룹 멤버 투두가 존재한다면 리스트 형식으로 조회되어야 한다.")
         @Test
-        void findGroupMemberDailyTodosByDate(){
+        void findGroupMemberDailyTodosByDate() {
             //given
             LocalDate date = LocalDate.of(2023, 1, 1);
             MemberTodoCategory memberTodoCategory = (MemberTodoCategory) todoCategoryRepository.findById(1L).orElseThrow();

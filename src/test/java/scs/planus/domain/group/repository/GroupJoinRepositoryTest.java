@@ -14,8 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class GroupJoinRepositoryTest {
+class GroupJoinRepositoryTest extends RepositoryTest {
     private final MemberRepository memberRepository;
     private final GroupRepository groupRepository;
     private final GroupJoinRepository groupJoinRepository;

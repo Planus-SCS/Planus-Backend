@@ -11,8 +11,7 @@ import scs.planus.support.RepositoryTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class MemberRepositoryTest {
+class MemberRepositoryTest extends RepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;

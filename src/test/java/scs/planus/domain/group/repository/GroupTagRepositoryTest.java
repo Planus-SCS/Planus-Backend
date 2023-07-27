@@ -16,8 +16,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RepositoryTest
-class GroupTagRepositoryTest {
+class GroupTagRepositoryTest extends RepositoryTest {
     private static final String TAG_NAME = "테스트 태그 이름";
     private static final int TAG_COUNT = 10;
     private static final int GROUP_TAG_COUNT = 5;
