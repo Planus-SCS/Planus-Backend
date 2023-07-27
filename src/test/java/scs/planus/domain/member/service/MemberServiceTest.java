@@ -22,9 +22,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@ServiceTest
 @ExtendWith(MockitoExtension.class)
-class MemberServiceTest {
+class MemberServiceTest extends ServiceTest {
 
     @MockBean
     private AmazonS3Uploader s3Uploader;

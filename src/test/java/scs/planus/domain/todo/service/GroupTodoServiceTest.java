@@ -31,8 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
-@ServiceTest
-class GroupTodoServiceTest {
+class GroupTodoServiceTest extends ServiceTest {
 
     private static final Long NOT_EXIST_ID = 0L;
 

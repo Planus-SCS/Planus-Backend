@@ -29,8 +29,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ServiceTest
-class MemberTodoCalendarServiceTest {
+class MemberTodoCalendarServiceTest extends ServiceTest {
 
     private static final int COUNT = 7;
 

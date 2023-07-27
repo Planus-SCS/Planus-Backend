@@ -14,8 +14,7 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ServiceTest
-class TagServiceTest {
+class TagServiceTest extends ServiceTest {
     private static final String TAG_NAME = "테스트 태그 이름";
 
     private final TagRepository tagRepository;

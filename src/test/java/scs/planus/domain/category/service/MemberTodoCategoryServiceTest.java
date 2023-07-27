@@ -29,8 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 @Slf4j
-@ServiceTest
-class MemberTodoCategoryServiceTest {
+class MemberTodoCategoryServiceTest extends ServiceTest {
     private static final long NOT_EXIST_ID = 0L;
     private static final String INVALID_COLOR = "invalid color";
 

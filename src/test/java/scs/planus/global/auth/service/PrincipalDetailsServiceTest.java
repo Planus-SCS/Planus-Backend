@@ -15,8 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.NONE_USER;
 
-@ServiceTest
-class PrincipalDetailsServiceTest {
+class PrincipalDetailsServiceTest extends ServiceTest {
 
     private final MemberRepository memberRepository;
     private PrincipalDetailsService principalDetailsService;
