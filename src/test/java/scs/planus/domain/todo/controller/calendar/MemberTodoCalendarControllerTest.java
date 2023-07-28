@@ -78,14 +78,14 @@ class MemberTodoCalendarControllerTest extends ControllerTest {
         //given
         String path = "/app/todos/calendar/my-groups";
 
-        List<GroupBelongInResponseDto> responseDto = List.of(GroupBelongInResponseDto.builder()
+        List<GroupBelongInResponseDto> responseDtos = List.of(GroupBelongInResponseDto.builder()
                 .groupId(1L)
                 .groupName("group1")
                 .build());
 
         //when
         given(memberTodoCalendarService.getAllMyGroup(anyLong()))
-                .willReturn(responseDto);
+                .willReturn(responseDtos);
 
         //then
         mockMvc
