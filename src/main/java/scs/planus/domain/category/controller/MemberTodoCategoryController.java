@@ -57,7 +57,7 @@ public class MemberTodoCategoryController {
     @Operation(summary = "Member Todo Category 변경 API")
     public BaseResponse<TodoCategoryResponseDto> modifyMemberTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                           @PathVariable(name = "categoryId") Long categoryId,
-                                                                          @RequestBody TodoCategoryRequestDto requestDto) {
+                                                                          @Valid @RequestBody TodoCategoryRequestDto requestDto) {
 
         TodoCategoryResponseDto responseDto = memberTodoCategoryService.changeCategory( categoryId,
                                                                             requestDto);
