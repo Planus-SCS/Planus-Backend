@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MemberTodoCategoryController.class)
 class MemberTodoCategoryControllerTest extends ControllerTest {
+    private static final String INVALID_COLOR = "invalid color";
 
     @MockBean
     private MemberTodoCategoryService memberTodoCategoryService;
@@ -67,7 +68,7 @@ class MemberTodoCategoryControllerTest extends ControllerTest {
         // given
         String path = "/app/categories/groups";
 
-        List<TodoCategoryGetResponseDto> responseDto = List.of(
+        List<TodoCategoryGetResponseDto> todoCategoryGetResponseDtos = List.of(
                 TodoCategoryGetResponseDto.builder()
                         .id(1L)
                         .name("카테고리1")
@@ -81,7 +82,7 @@ class MemberTodoCategoryControllerTest extends ControllerTest {
         );
 
         given(memberTodoCategoryService.findAllGroupTodoCategories(anyLong()))
-                .willReturn(responseDto);
+                .willReturn(todoCategoryGetResponseDtos);
 
         // when
         ResultActions response = mockMvc.perform(get(path));
@@ -122,6 +123,32 @@ class MemberTodoCategoryControllerTest extends ControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("MemberTodoCategory 를 생성시, 요청값이 검증조건을 만족하지 못하면 예외를 발생시킨다." +
+            "- name: 10글자 초과" +
+            "- color: 존재하지 않는 색")
+    @Test
+    void createMemberTodoCategory_Fail_Not_Validated_Request() throws Exception  {
+        // given
+        String path = "/app/categories";
+
+        TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
+                .name("A".repeat(11))
+                .color(INVALID_COLOR)
+                .build();
+
+        // when
+        ResultActions response = mockMvc.perform(
+                post(path)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(todoCategoryRequestDto))
+                        .with(csrf())
+        );
+
+        // then
+        response.andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
     @DisplayName("MemberTodoCategory 를 수정할 수 있다.")
     @Test
     void modifyMemberTodoCategory() throws Exception  {
@@ -150,6 +177,32 @@ class MemberTodoCategoryControllerTest extends ControllerTest {
 
         // then
         response.andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("MemberTodoCategory 를 생성시, 요청값이 검증조건을 만족하지 못하면 예외를 발생시킨다." +
+            "- name: 10글자 초과" +
+            "- color: 존재하지 않는 색")
+    @Test
+    void modifyMemberTodoCategory_Fail_Not_Validated_Request() throws Exception  {
+        // given
+        String path = "/app/categories/{categoryId}";
+
+        TodoCategoryRequestDto todoCategoryRequestDto = TodoCategoryRequestDto.builder()
+                .name("A".repeat(11))
+                .color(INVALID_COLOR)
+                .build();
+
+        // when
+        ResultActions response = mockMvc.perform(
+                patch(path, categoryId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(todoCategoryRequestDto))
+                        .with(csrf())
+        );
+
+        // then
+        response.andExpect(status().isBadRequest())
                 .andDo(print());
     }
 
