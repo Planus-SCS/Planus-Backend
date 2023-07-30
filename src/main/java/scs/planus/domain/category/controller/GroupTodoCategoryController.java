@@ -49,7 +49,7 @@ public class GroupTodoCategoryController {
     public BaseResponse<TodoCategoryResponseDto> modifyGroupTodoCategory(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                                                          @PathVariable("groupId") Long groupId,
                                                                          @PathVariable("categoryId") Long categoryId,
-                                                                         @RequestBody TodoCategoryRequestDto requestDto) {
+                                                                         @Valid @RequestBody TodoCategoryRequestDto requestDto) {
         Long memberId = principalDetails.getId();
         TodoCategoryResponseDto responseDto = groupTodoCategoryService.changeCategory( memberId, groupId, categoryId, requestDto);
 
