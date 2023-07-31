@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,14 +23,17 @@ import java.util.UUID;
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class AmazonS3Uploader {
 
     private final AmazonS3Client amazonS3Client;
+    public final String bucket;
 
-    @Value("${cloud.aws.s3.bucket}")
-    public String bucket;
+    public AmazonS3Uploader(AmazonS3Client amazonS3Client,
+                            @Value("${cloud.aws.s3.bucket}") String bucket) {
+        this.amazonS3Client = amazonS3Client;
+        this.bucket = bucket;
+    }
 
     public String upload(MultipartFile multipartFile, String dirName) {
         try {
