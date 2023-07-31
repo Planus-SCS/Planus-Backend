@@ -38,14 +38,12 @@ class AmazonS3UploaderTest extends ServiceTest {
     @DisplayName("S3에 이미지가 업로드되어야 한다.")
     @Test
     void upload() throws Exception {
-
         //given
         MockMultipartFile file = new MockMultipartFile("test-image", "test.png", "image/png", "test".getBytes());
         String urlPath = BASE_URL + TEST_DIRECTORY + "/" + file.getOriginalFilename();
 
         given(amazonS3Client.putObject(any(PutObjectRequest.class)))
                 .willReturn(new PutObjectResult());
-
         given(amazonS3Client.getUrl(anyString(), anyString()))
                 .willReturn(new URL(urlPath));
 
@@ -59,7 +57,6 @@ class AmazonS3UploaderTest extends ServiceTest {
     @DisplayName("이미지 변경 시, 기존의 이미지가 제거된 후, 새로운 이미지가 S3에 업로드되어야 한다.")
     @Test
     void updateImage() throws Exception {
-
         //given
         MockMultipartFile oldFile = new MockMultipartFile("oldImage", "old-image.png", "image/png", "test".getBytes());
         String oldUrlPath = BASE_URL + TEST_DIRECTORY + "/" + oldFile.getOriginalFilename();
@@ -69,7 +66,6 @@ class AmazonS3UploaderTest extends ServiceTest {
 
         given(amazonS3Client.putObject(any(PutObjectRequest.class)))
                 .willReturn(new PutObjectResult());
-
         given(amazonS3Client.getUrl(anyString(), anyString()))
                 .willReturn(new URL(oldUrlPath))
                 .willReturn(new URL(updatedUrlPath));
@@ -94,7 +90,6 @@ class AmazonS3UploaderTest extends ServiceTest {
 
         given(amazonS3Client.putObject(any(PutObjectRequest.class)))
                 .willReturn(new PutObjectResult());
-
         given(amazonS3Client.getUrl(anyString(), anyString()))
                 .willReturn(new URL(oldUrlPath));
 
