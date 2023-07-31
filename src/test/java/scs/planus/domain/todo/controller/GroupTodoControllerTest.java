@@ -58,7 +58,10 @@ class GroupTodoControllerTest extends ControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("GroupTodo 생성시, 검증조건을 만족하지 못하면 예외를 던진다.")
+    @DisplayName("GroupTodo 생성시, 검증조건을 만족하지 못하면 예외를 던진다. " +
+            " - title 20글자 초과" +
+            " - startDate 공란" +
+            " - description 70글자 초과")
     @Test
     void createGroupTodo_Throw_Exception_If_Not_Validated_Request() throws Exception {
         //given

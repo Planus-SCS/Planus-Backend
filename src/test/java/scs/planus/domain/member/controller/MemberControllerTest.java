@@ -81,7 +81,9 @@ class MemberControllerTest extends ControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("멤버 정보 수정시, 검증조건을 만족하지 못하면 예외를 던진다.")
+    @DisplayName("멤버 정보 수정시, 검증조건을 만족하지 못하면 예외를 던진다." +
+            " - nickname 10글자 초과" +
+            " - description 50글자 초과")
     @Test
     void update_Throw_Exception_If_Not_Validated_Request() throws Exception {
         //given

@@ -65,7 +65,9 @@ class GroupControllerTest extends ControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("Group을 생성 시, 검증조건을 만족하지 못하면 예외를 던진다.")
+    @DisplayName("Group을 생성 시, 검증조건을 만족하지 못하면 예외를 던진다." +
+            " - name 20글자 초과" +
+            " - description 70글자 초과")
     @Test
     void createGroup_Throw_Exception_If_Not_Validated_Request() throws Exception {
         //given
@@ -168,7 +170,8 @@ class GroupControllerTest extends ControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("Group 상세정보를 수정시, 검증조건을 만족하지 못하면 예외를 던진다.")
+    @DisplayName("Group 상세정보를 수정시, 검증조건을 만족하지 못하면 예외를 던진다." +
+            " - limitCount 50명 초과")
     @Test
     void updateGroupDetail_Throw_Exception_If_Not_Validated_Request() throws Exception {
         //given
