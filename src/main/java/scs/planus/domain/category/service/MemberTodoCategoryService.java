@@ -37,9 +37,7 @@ public class MemberTodoCategoryService {
      */
     public List<TodoCategoryGetResponseDto> findAll(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> {
-                    throw new PlanusException(CustomExceptionStatus.NONE_USER);
-                });
+                .orElseThrow(() -> new PlanusException(CustomExceptionStatus.NONE_USER));
 
         List<MemberTodoCategory> memberTodoCategories = todoCategoryRepository.findMemberTodoCategoryAllByMember(member);
 
@@ -72,9 +70,7 @@ public class MemberTodoCategoryService {
     @Transactional
     public TodoCategoryResponseDto createCategory(Long memberId, TodoCategoryRequestDto requestDto) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> {
-                    throw new PlanusException(CustomExceptionStatus.NONE_USER);
-                });
+                .orElseThrow(() -> new PlanusException(CustomExceptionStatus.NONE_USER));
 
         Color color = Color.of(requestDto.getColor());
         TodoCategory todoCategory = requestDto.toMemberTodoCategoryEntity(member, color);
@@ -89,9 +85,7 @@ public class MemberTodoCategoryService {
     @Transactional
     public TodoCategoryResponseDto changeCategory(Long categoryId, TodoCategoryRequestDto requestDto) {
         TodoCategory findCategory = todoCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> {
-                    throw new PlanusException(CustomExceptionStatus.NOT_EXIST_CATEGORY);
-                });
+                .orElseThrow(() -> new PlanusException(CustomExceptionStatus.NOT_EXIST_CATEGORY));
 
         Color color = Color.of(requestDto.getColor());
         findCategory.change(requestDto.getName(), color);
@@ -105,9 +99,7 @@ public class MemberTodoCategoryService {
     @Transactional
     public TodoCategoryResponseDto deleteCategory(Long categoryId) {
         TodoCategory findCategory = todoCategoryRepository.findById(categoryId)
-                .orElseThrow(() -> {
-                    throw new PlanusException(CustomExceptionStatus.NOT_EXIST_CATEGORY);
-                });
+                .orElseThrow(() -> new PlanusException(CustomExceptionStatus.NOT_EXIST_CATEGORY));
 
         findCategory.changeStatusToInactive();
 
