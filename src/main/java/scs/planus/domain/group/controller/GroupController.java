@@ -58,8 +58,8 @@ public class GroupController {
 
     @GetMapping("/groups/{groupId}")
     @Operation(summary = "그룹 상세 정보 조회 API")
-    public BaseResponse<GroupGetDetailResponseDto> getGroupDetailForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                              @PathVariable("groupId") Long groupId) {
+    public BaseResponse<GroupGetDetailResponseDto> getGroupDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                  @PathVariable("groupId") Long groupId) {
 
         Long memberId = principalDetails.getId();
         GroupGetDetailResponseDto responseDto = groupService.getGroupDetail(memberId, groupId);
@@ -69,8 +69,8 @@ public class GroupController {
 
     @GetMapping("/groups/{groupId}/members")
     @Operation(summary = "그룹 회원 정보 조회 API")
-    public BaseResponse<List<GroupGetMemberResponseDto>> getGroupMemberForNonMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                                    @PathVariable("groupId") Long groupId) {
+    public BaseResponse<List<GroupGetMemberResponseDto>> getGroupMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                                                        @PathVariable("groupId") Long groupId) {
 
         List<GroupGetMemberResponseDto> responseDto = groupService.getGroupMember(groupId);
 
