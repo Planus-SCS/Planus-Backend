@@ -65,9 +65,9 @@ public class GroupTodoController {
     @PatchMapping("/my-groups/{groupId}/todos/{todoId}")
     @Operation(summary = "Group Todo 변경 API")
     public BaseResponse<TodoResponseDto> updateTodoDetail(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                                                 @PathVariable Long groupId,
-                                                                 @PathVariable Long todoId,
-                                                                 @Valid @RequestBody TodoRequestDto todoRequestDto) {
+                                                          @PathVariable Long groupId,
+                                                          @PathVariable Long todoId,
+                                                          @Valid @RequestBody TodoRequestDto todoRequestDto) {
         Long memberId = principalDetails.getId();
         TodoResponseDto responseDto = groupTodoService.updateTodo(memberId, groupId, todoId, todoRequestDto);
         return new BaseResponse<>(responseDto);
