@@ -72,6 +72,5 @@ jobs:
         script: |
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull ${{secrets.DOCKER_USERNAME}}/planus
-            ls -a .
             docker-compose up -d
-            # docker image prune -f
+            docker image prune -f
