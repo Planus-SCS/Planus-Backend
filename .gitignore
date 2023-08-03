@@ -27,11 +27,9 @@ out/
 !**/src/test/**/out/
 
 **/src/test/resources/**.yml
+**/src/main/resources/**.yml
 
 **/src/main/generated/**
-**/src/main/resources/application.yml
-**/src/main/resources/application-aws.yml
-**/src/main/resources/application-oauth.yml
 
 ### NetBeans ###
 /nbproject/private/
