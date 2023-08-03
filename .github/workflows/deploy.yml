@@ -30,21 +30,18 @@ jobs:
 
     - name: properties(yml) 생성
       run: |
-        mkdir ./src/main/resources
+        mkdir -p ./src/main/resources
         
         cd ./src/main/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
         
-        cd ./src/main/resources
         touch ./application-aws.yml
         echo "${{ secrets.APPLICATION_AWS_YML }}" > ./application-aws.yml
         
-        cd ./src/main/resources
         touch ./application-db.yml
         echo "${{ secrets.APPLICATION_DB_YML }}" > ./application-db.yml
         
-        cd ./src/main/resources
         touch ./application-oauth.yml
         echo "${{ secrets.APPLICATION_OAUTH_YML }}" > ./application-oauth.yml
       shell: bash
