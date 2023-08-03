@@ -1,0 +1,67 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Planus CI/CD
+
+on:
+  push:
+    branches: [ "develop" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    - name: 저장소 Checkout
+      uses: actions/checkout@v3
+
+    - name: properties(yml) 생성
+      run: |
+        cd ./src/main/resources
+        touch ./application.yml
+        echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+        cd ./src/main/resources
+        touch ./application-aws.yml
+        echo "${{ secrets.APPLICATION_AWS_YML }}" > ./application-aws.yml
+        
+        cd ./src/main/resources
+        touch ./application-db.yml
+        echo "${{ secrets.APPLICATION_DB_YML }}" > ./application-db.yml
+        cd ./src/main/resources
+        touch ./application-oauth.yml
+        echo "${{ secrets.APPLICATION_OAUTH_YML }}" > ./application-oauth.yml
+      shell: bash
+      
+    - name: 애플리케이션 빌드
+      uses: ./gradlew clean build
+
+    - name: Dokcer 이미지 빌드
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/planus .
+        docker push ${{secrets.DOCKER_USERNAME}}/planus
+   
+    - name: EC2 deploy
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{secrets.HOST}}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        script: |
+            docker rm -f $(docker ps -qa)
+            docker rmi ${{secrets.DOCKER_USERNAME}}/planus
+            docker pull ${{secrets.DOCKER_USERNAME}}/planus
+            docker-compose up -d
