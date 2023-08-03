@@ -29,9 +29,9 @@ jobs:
         distribution: 'temurin'
 
     - name: properties(yml) 생성
+      shell: bash
       run: |
         mkdir -p ./src/main/resources
-        
         cd ./src/main/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
@@ -44,7 +44,10 @@ jobs:
         
         touch ./application-oauth.yml
         echo "${{ secrets.APPLICATION_OAUTH_YML }}" > ./application-oauth.yml
-      shell: bash
+
+        cd ./src/test/resources
+        touch ./application.yml
+        echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application.yml
       
     - name: 애플리케이션 빌드
       run: ./gradlew clean build
