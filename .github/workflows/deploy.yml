@@ -55,13 +55,14 @@ jobs:
         docker push ${{secrets.DOCKER_USERNAME}}/planus
    
     - name: EC2 deploy
-      uses: appleboy/ssh-action@v0.1.6
+      uses: appleboy/ssh-action@master
       with:
         host: ${{secrets.HOST}}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         script: |
-            docker rm -f $(docker ps -qa)
-            docker rmi ${{secrets.DOCKER_USERNAME}}/planus
-            docker pull ${{secrets.DOCKER_USERNAME}}/planus
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{secrets.DOCKER_USERNAME}}/planus
+            ls -al
             docker-compose up -d
+            docker image prune -f
