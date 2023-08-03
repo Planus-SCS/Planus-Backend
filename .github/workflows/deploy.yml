@@ -47,7 +47,7 @@ jobs:
       shell: bash
       
     - name: 애플리케이션 빌드
-      uses: ./gradlew clean build
+      run: ./gradlew clean build
 
     - name: Dokcer 이미지 빌드
       run: |
