@@ -53,6 +53,15 @@ jobs:
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
         docker build -t ${{ secrets.DOCKER_USERNAME }}/planus .
         docker push ${{secrets.DOCKER_USERNAME}}/planus
+
+    - name: compose.yml 파일 전송
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        source: "./docker-compose.yml"
+        target: "/home/ubuntu"
    
     - name: EC2 deploy
       uses: appleboy/ssh-action@master
@@ -63,6 +72,6 @@ jobs:
         script: |
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull ${{secrets.DOCKER_USERNAME}}/planus
-            ls -al
+            ls -a .
             docker-compose up -d
-            docker image prune -f
+            # docker image prune -f
