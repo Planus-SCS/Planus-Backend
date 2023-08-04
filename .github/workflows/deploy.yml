@@ -1,0 +1,76 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
+
+name: Planus CI/CD
+
+on:
+  push:
+    branches: [ "develop" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 저장소 Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    - name: properties(yml) 생성
+      shell: bash
+      run: |
+        mkdir -p ./src/main/resources
+        cd ./src/main/resources
+        touch ./application.yml
+        echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+        
+        touch ./application-aws.yml
+        echo "${{ secrets.APPLICATION_AWS_YML }}" > ./application-aws.yml
+        
+        touch ./application-db.yml
+        echo "${{ secrets.APPLICATION_DB_YML }}" > ./application-db.yml
+        
+        touch ./application-oauth.yml
+        echo "${{ secrets.APPLICATION_OAUTH_YML }}" > ./application-oauth.yml
+      
+    - name: 애플리케이션 빌드
+      run: ./gradlew clean build -x test
+
+    - name: Dokcer 이미지 빌드
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{secrets.DOCKER_PASSWORD}}
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/planus .
+        docker push ${{secrets.DOCKER_USERNAME}}/planus
+
+    - name: compose.yml 파일 전송
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        source: "./docker-compose.yml"
+        target: "/home/ubuntu"
+   
+    - name: EC2 deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{secrets.HOST}}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        script: |
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{secrets.DOCKER_USERNAME}}/planus
+            docker-compose up -d
+            docker image prune -f
