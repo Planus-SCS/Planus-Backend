@@ -18,4 +18,8 @@ services:
     hostname: redis
     ports:
       - 6379:6379
+    volumes:
+      - /var/lib/redis:/data
+      - /etc/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
     restart: always
