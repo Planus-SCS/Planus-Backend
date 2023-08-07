@@ -33,7 +33,7 @@ jobs:
       shell: bash
       run: |
         mkdir -p ./src/test/resources
-        cd ./src/main/resources
+        cd ./src/test/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application.yml
         
