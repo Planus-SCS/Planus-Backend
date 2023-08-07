@@ -41,8 +41,14 @@ jobs:
       shell: bash
       run: chmod +x ./gradlew
 
+    - name: 애플리케이션 빌드
+      run: ./gradlew clean build -x test
+
     - name: 테스트 실행
       run: ./gradlew clean test
 
-    - name: 애플리케이션 빌드
-      run: ./gradlew clean build -x test
+    - name: 테스트 오류 표시
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: ${{ always() }}
+      with:
+        files: build/test-results/**/*.xml
