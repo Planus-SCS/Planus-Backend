@@ -34,7 +34,7 @@ jobs:
       run: |
         cd ./src/test/resources
         touch ./application.yml
-        echo "${{ secrets.APP_TEST_YML }}" > ./application.yml
+        echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
         cat ./application.yml
         
     - name: 애플리케이션 빌드
