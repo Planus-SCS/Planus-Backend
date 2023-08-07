@@ -32,7 +32,6 @@ jobs:
     - name: properties(yml) 생성
       shell: bash
       run: |
-        mkdir -p ./src/test/resources
         cd ./src/test/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application.yml
@@ -46,9 +45,3 @@ jobs:
 
     - name: 테스트 실행
       run: ./gradlew clean test
-
-    - name: 테스트 오류 표시
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: ${{ always() }}
-      with:
-        files: build/test-results/**/*.xml
