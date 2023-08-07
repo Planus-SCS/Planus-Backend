@@ -16,7 +16,6 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -35,6 +34,7 @@ jobs:
         cd ./src/test/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application.yml
+        cat ./application.yml
 
     - name: Grant execute permission for gradlew
       shell: bash
