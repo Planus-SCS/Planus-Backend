@@ -82,11 +82,7 @@ jar {
 	enabled = false
 }
 
-//tasks.named('test') {
-//	useJUnitPlatform()
-//}
-
-test {
+tasks.named('test') {
 	useJUnitPlatform()
 }
 
