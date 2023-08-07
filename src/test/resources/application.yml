@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MYSQL
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+
+  redis:
+    host: localhost
+    port: 6379
+
+cloud:
+  aws:
+    credentials:
+      access-key:
+      secret-key:
+    s3:
+      bucket: test-planus-bucket
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+jwt:
+  token:
+    secret-key: test-planus-test-planus-test-planus-test-planus-test-planus
+  access-token:
+    expired-in : 1800000
+  refresh-token:
+    expired-in : 1209600000
