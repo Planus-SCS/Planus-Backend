@@ -42,7 +42,7 @@ jobs:
       run: chmod +x ./gradlew
 
     - name: 테스트 실행
-      run: ./gradlew --debug clean test
+      run: ./gradlew clean test
 
     - name: 애플리케이션 빌드
       run: ./gradlew clean build -x test
