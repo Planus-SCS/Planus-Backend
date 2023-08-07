@@ -16,8 +16,13 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis
+#        hostname: localhost
+        ports: 6379:6379
 
     steps:
     - name: 저장소 Checkout
