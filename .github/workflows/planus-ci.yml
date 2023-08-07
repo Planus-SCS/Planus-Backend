@@ -36,6 +36,13 @@ jobs:
         cd ./src/test/resources
         touch ./application.yml
         echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application.yml
-        
+
+    - name: Grant execute permission for gradlew
+      shell: bash
+      run: chmod +x ./gradlew
+
+    - name: 테스트 실행
+      run: ./gradlew clean test
+
     - name: 애플리케이션 빌드
-      run: ./gradlew build
+      run: ./gradlew clean build -x test
