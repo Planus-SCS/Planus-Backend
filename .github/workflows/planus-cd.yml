@@ -5,7 +5,7 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
-name: Planus CI/CD
+name: Planus CD
 
 on:
   push:
@@ -44,7 +44,17 @@ jobs:
         
         touch ./application-oauth.yml
         echo "${{ secrets.APPLICATION_OAUTH_YML }}" > ./application-oauth.yml
-      
+
+    - name: Gradle Caching
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
     - name: 애플리케이션 빌드
       run: ./gradlew clean build -x test
 
@@ -62,7 +72,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         source: "./docker-compose.yml"
         target: "/home/ubuntu"
-   
+
     - name: EC2 deploy
       uses: appleboy/ssh-action@master
       with:
