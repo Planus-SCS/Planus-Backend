@@ -29,7 +29,7 @@ public class GroupGetDetailResponseDto {
                 .isJoined( isJoined )
                 .notice( group.getNotice() )
                 .groupImageUrl( group.getGroupImageUrl() )
-                .memberCount( group.getGroupMembers().size() )
+                .memberCount( group.getActiveGroupMembersSize() )
                 .limitCount( group.getLimitCount() )
                 .leaderName( group.getLeader().getNickname() )
                 .groupTags( groupTagNameList )

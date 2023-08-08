@@ -138,4 +138,25 @@ class GroupTest {
         //then
         assertThat(group.getGroupTags()).isEmpty();
     }
+
+    @DisplayName("Group의 활성상태인 회원수가 조회되어야 한다.")
+    @Test
+    void getActiveGroupMembersSize(){
+        // given
+        Group group = Group.builder()
+                .status(Status.ACTIVE)
+                .build();
+
+        GroupMember.builder()
+                .group(group)
+                .build();
+
+        GroupMember.builder()
+                .group(group)
+                .build()
+                .changeStatusToInactive();
+
+        // when & then
+        assertThat(group.getActiveGroupMembersSize()).isEqualTo(1);
+    }
 }

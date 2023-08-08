@@ -35,7 +35,7 @@ public class MyGroupDetailResponseDto {
                 .hasTodoAuthority(groupMember.isTodoAuthority())
                 .isOnline(groupMember.isOnlineStatus())
                 .onlineCount(onlineCount)
-                .memberCount(group.getGroupMembers().size()) // 추가쿼리 발생
+                .memberCount(group.getActiveGroupMembersSize()) // 추가쿼리 발생
                 .limitCount(group.getLimitCount())
                 .leaderName(group.getLeader().getNickname()) // 추가쿼리 발생
                 .notice(group.getNotice())

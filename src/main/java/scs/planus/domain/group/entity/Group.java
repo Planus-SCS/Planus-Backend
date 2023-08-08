@@ -92,4 +92,10 @@ public class Group extends BaseTimeEntity {
     public void removeGroupTag(GroupTag groupTag) {
         this.getGroupTags().remove(groupTag);
     }
+
+    public int getActiveGroupMembersSize() {
+        return (int) this.getGroupMembers().stream()
+                .filter(gm -> gm.getStatus().equals(Status.ACTIVE))
+                .count();
+    }
 }

@@ -28,7 +28,7 @@ public class MyGroupResponseDto {
                 .groupName(group.getName())
                 .isOnline(onlineStatus)
                 .onlineCount(onlineCount)
-                .memberCount(group.getGroupMembers().size()) // 추가쿼리 발생
+                .memberCount(group.getActiveGroupMembersSize()) // 추가쿼리 발생
                 .limitCount(group.getLimitCount())
                 .leaderName(group.getLeader().getNickname()) // 추가쿼리 발생
                 .groupTags(eachGroupTagDtos)
