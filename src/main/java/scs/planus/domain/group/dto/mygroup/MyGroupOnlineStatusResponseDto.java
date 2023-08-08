@@ -8,11 +8,11 @@ import scs.planus.domain.group.entity.GroupMember;
 @Builder
 public class MyGroupOnlineStatusResponseDto {
 
-    private Long groupMemberId;
+    private Long memberId;
 
     public static MyGroupOnlineStatusResponseDto of(GroupMember groupMember) {
         return MyGroupOnlineStatusResponseDto.builder()
-                .groupMemberId(groupMember.getId())
+                .memberId(groupMember.getMember().getId())
                 .build();
     }
 }
