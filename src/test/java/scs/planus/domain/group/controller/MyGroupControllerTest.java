@@ -109,7 +109,7 @@ class MyGroupControllerTest extends ControllerTest {
         Long groupId = 1L;
 
         given(myGroupService.changeOnlineStatus(anyLong(), anyLong()))
-                .willReturn(MyGroupOnlineStatusResponseDto.builder().groupMemberId(1L).build());
+                .willReturn(MyGroupOnlineStatusResponseDto.builder().memberId(1L).build());
 
         //when & then
         mockMvc

@@ -167,7 +167,7 @@ class MyGroupServiceTest extends ServiceTest {
                 = myGroupService.changeOnlineStatus(member.getId(), group.getId());
 
         //then
-        assertThat(myGroupOnlineStatusResponseDto.getGroupMemberId()).isEqualTo(groupMember.getId());
+        assertThat(myGroupOnlineStatusResponseDto.getMemberId()).isEqualTo(member.getId());
         assertThat(groupMember.isOnlineStatus()).isTrue();
     }
 }
