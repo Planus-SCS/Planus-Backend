@@ -71,7 +71,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         source: "./docker-compose.yml"
-        target: "/home/ubuntu"
+        target: ${{ secrets.COMPOSE_PATH}}
 
     - name: EC2 deploy
       uses: appleboy/ssh-action@master
