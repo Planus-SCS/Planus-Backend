@@ -11,19 +11,22 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import scs.planus.domain.Status;
+import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.global.auth.dto.OAuth2TokenResponseDto;
 import scs.planus.global.auth.dto.OAuthLoginResponseDto;
-import scs.planus.global.auth.entity.Token;
-import scs.planus.infra.redis.RedisService;
 import scs.planus.global.auth.entity.MemberProfile;
 import scs.planus.global.auth.entity.OAuthAttributes;
-import scs.planus.domain.member.entity.Member;
-import scs.planus.domain.Status;
-import scs.planus.domain.member.repository.MemberRepository;
+import scs.planus.global.auth.entity.Token;
+import scs.planus.global.exception.PlanusException;
+import scs.planus.infra.redis.RedisService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
+
+import static scs.planus.global.exception.CustomExceptionStatus.ALREADY_EXIST_SOCIAL_ACCOUNT;
 
 @Service
 @RequiredArgsConstructor
@@ -96,6 +99,10 @@ public class OAuthService {
         if (member == null) {
             member = memberRepository.save(profile.toEntity());
             return member;
+        }
+
+        if (!member.getSocialType().equals(profile.getSocialType())) {
+            throw new PlanusException(ALREADY_EXIST_SOCIAL_ACCOUNT);
         }
 
         if (member.getStatus().equals(Status.INACTIVE)) {
