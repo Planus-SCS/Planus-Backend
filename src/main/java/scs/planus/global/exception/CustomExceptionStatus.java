@@ -20,12 +20,20 @@ public enum CustomExceptionStatus implements ResponseStatus {
     DUPLICATED_EMAIL(CONFLICT, 2100, "중복된 이메일이 존재합니다."),
     NONE_USER(BAD_REQUEST, 2110, "존재하지 않는 회원입니다."),
     NONE_SOCIAL_TYPE(BAD_REQUEST, 2200, "존재하지 않는 소셜 로그인 타입입니다."),
+    ALREADY_EXIST_SOCIAL_ACCOUNT(BAD_REQUEST, 2201, "이미 가입된 소셜 계정이 존재합니다."),
 
     // jwt exception
     UNAUTHORIZED_ACCESS_TOKEN(UNAUTHORIZED, 2300, "인증되지 않거나 만료된 토큰입니다."),
     FORBIDDEN_ACCESS_TOKEN(FORBIDDEN, 2301, "권한이 없는 토큰입니다."),
     EXPIRED_REFRESH_TOKEN(BAD_REQUEST, 2302, "Refresh Token 이 만료되어 재로그인이 필요합니다."),
     INVALID_REFRESH_TOKEN(BAD_REQUEST, 2303, "잘못된 Refresh Token 입니다."),
+
+    // apple identity token exception
+    INVALID_APPLE_IDENTITY_TOKEN(BAD_REQUEST, 2310, "Apple OAuth Identity Token 형식이 올바르지 않습니다."),
+    INVALID_ALG_KID_INFO(BAD_REQUEST, 2311, "Apple JWT 값의 alg, kid 정보가 올바르지 않습니다."),
+    INVALID_CLAIMS_VALUE(BAD_REQUEST, 2312, "Apple OAuth Claims 값이 올바르지 않습니다."),
+    APPLE_PUBLIC_KEY_GENERATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, 2313, "Apple OAuth 로그인 중 public key 생성에 문제가 발생했습니다."),
+    INVALID_USER_NAME(BAD_REQUEST, 2314, "Apple 사용자의 이름이 비어있습니다."),
 
     // category exception
     NOT_EXIST_CATEGORY(BAD_REQUEST, 2400, "존재하지 않는 카테고리 입니다."),

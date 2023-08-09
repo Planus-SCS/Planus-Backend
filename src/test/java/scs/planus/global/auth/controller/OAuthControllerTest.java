@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import scs.planus.global.auth.dto.OAuthLoginResponseDto;
+import scs.planus.global.auth.service.apple.AppleOAuthService;
 import scs.planus.global.auth.service.OAuthService;
 import scs.planus.support.ControllerTest;
 
@@ -20,6 +21,8 @@ class OAuthControllerTest extends ControllerTest {
 
     @MockBean
     private OAuthService oAuthService;
+    @MockBean
+    private AppleOAuthService appleOAuthService;
 
     @DisplayName("소셜로그인이 정상적으로 작동되어야 한다.")
     @Test
