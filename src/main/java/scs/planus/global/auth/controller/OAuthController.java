@@ -42,7 +42,7 @@ public class OAuthController {
         return new BaseResponse<>(loginResponseDto);
     }
 
-    @GetMapping("/oauth/logout/apple/client-secret")
+    @GetMapping("/oauth/apple/client-secret")
     @Operation(summary = "Get Apple client_secret API")
     public BaseResponse<AppleClientSecretResponseDto> getAppleClientSecret(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
