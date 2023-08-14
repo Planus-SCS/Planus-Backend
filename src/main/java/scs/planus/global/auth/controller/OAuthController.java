@@ -26,7 +26,7 @@ public class OAuthController {
     private final OAuthService oAuthService;
     private final AppleOAuthService appleOAuthService;
 
-    @GetMapping("/oauth/{provider}")
+    @GetMapping("/oauth/login/{provider}")
     @Operation(summary = "OAuth API")
     public BaseResponse<OAuthLoginResponseDto> socialLogin(@PathVariable String provider,
                                                            @RequestParam String code) {
@@ -34,7 +34,7 @@ public class OAuthController {
         return new BaseResponse<>(loginResponseDto);
     }
 
-    @PostMapping("/oauth/apple/login")
+    @PostMapping("/oauth/login/apple")
     @Operation(summary = "Apple OAuth API")
     public BaseResponse<OAuthLoginResponseDto> appleLogin(@Valid @RequestBody AppleAuthRequestDto appleAuthRequestDto) {
 
@@ -42,7 +42,7 @@ public class OAuthController {
         return new BaseResponse<>(loginResponseDto);
     }
 
-    @GetMapping("/oauth2/apple/client-secret")
+    @GetMapping("/oauth/logout/apple/client-secret")
     @Operation(summary = "Get Apple client_secret API")
     public BaseResponse<AppleClientSecretResponseDto> getAppleClientSecret(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 
