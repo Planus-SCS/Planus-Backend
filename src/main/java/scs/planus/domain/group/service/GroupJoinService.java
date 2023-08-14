@@ -46,10 +46,8 @@ public class GroupJoinService {
                 .ifPresent(groupJoin -> {
                     throw new PlanusException(ALREADY_APPLY_JOINED_GROUP);});
 
-        List<GroupMember> allGroupMembers = groupMemberRepository.findAllWithMemberByGroupAndStatus( group );
-
         // 제한 인원 초과 검증
-        validateExceedLimit( group, allGroupMembers );
+        validateExceedLimit(group);
 
         // 가입 여부 검증
         Boolean isJoined = groupMemberQueryRepository.existByMemberIdAndGroupId( member.getId(), groupId );
@@ -87,10 +85,12 @@ public class GroupJoinService {
         GroupJoin groupJoin = groupJoinRepository.findWithGroupById( groupJoinId )
                 .orElseThrow(() -> new PlanusException( NOT_EXIST_GROUP_JOIN ));
 
-        validateLeaderPermission( leader, groupJoin.getGroup() );
+        Group group = groupJoin.getGroup();
+        validateLeaderPermission(leader, group);
+        validateExceedLimit(group);
 
         GroupMember groupMember = groupMemberRepository.findByMemberIdAndGroupIdAndInactive( groupJoin.getMember().getId(),
-                                                                                             groupJoin.getGroup().getId() )
+                                                                                             group.getId() )
                 .map(existedGroupMember -> {
                     existedGroupMember.changeStatusToActive();
                     return existedGroupMember;
@@ -120,10 +120,10 @@ public class GroupJoinService {
         return GroupJoinResponseDto.of( groupJoin );
     }
 
-    private void validateExceedLimit( Group group, List<GroupMember> allGroupMembers ) {
+    private void validateExceedLimit(Group group) {
         // 제한 인원을 초과하지 않았는지
-        if ( allGroupMembers.size() >= group.getLimitCount() ) {
-            throw new PlanusException( EXCEED_GROUP_LIMIT_COUNT );
+        if (group.getActiveGroupMembersSize() >= group.getLimitCount()) {
+            throw new PlanusException(EXCEED_GROUP_LIMIT_COUNT);
         }
     }
 

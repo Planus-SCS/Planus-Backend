@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import scs.planus.domain.Status;
 import scs.planus.domain.group.dto.GroupTagResponseDto;
 import scs.planus.domain.group.dto.mygroup.GroupBelongInResponseDto;
 import scs.planus.domain.group.dto.mygroup.MyGroupDetailResponseDto;
@@ -49,10 +50,7 @@ public class MyGroupService {
     }
 
     public List<MyGroupResponseDto> getMyAllGroups(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new PlanusException(NONE_USER));
-
-        List<GroupMember> myGroupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(member.getId());
+        List<GroupMember> myGroupMembers = groupMemberRepository.findAllByActiveGroupAndMemberId(memberId);
         List<Group> myGroups = myGroupMembers.stream()
                 .map(GroupMember::getGroup)
                 .collect(Collectors.toList());
@@ -141,7 +139,7 @@ public class MyGroupService {
 
     private int getOnlineCount(Group group, List<GroupMember> allGroupMembers) {
         return (int) allGroupMembers.stream()
-                .filter(groupMember -> groupMember.getGroup().equals(group))
+                .filter(groupMember -> groupMember.getGroup().equals(group) && groupMember.getStatus().equals(Status.ACTIVE))
                 .filter(GroupMember::isOnlineStatus)
                 .count();
     }
