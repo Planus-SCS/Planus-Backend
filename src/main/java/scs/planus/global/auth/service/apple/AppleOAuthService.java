@@ -9,15 +9,17 @@ import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.entity.Role;
 import scs.planus.domain.member.entity.SocialType;
 import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
-import scs.planus.global.auth.dto.apple.FullName;
 import scs.planus.global.auth.dto.OAuthLoginResponseDto;
-import scs.planus.global.auth.entity.apple.ApplePublicKeys;
+import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
+import scs.planus.global.auth.dto.apple.AppleClientSecretResponseDto;
+import scs.planus.global.auth.dto.apple.FullName;
 import scs.planus.global.auth.entity.Token;
+import scs.planus.global.auth.entity.apple.ApplePublicKeys;
 import scs.planus.global.auth.service.JwtProvider;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.infra.redis.RedisService;
 
+import javax.transaction.Transactional;
 import java.security.PublicKey;
 import java.util.Map;
 
@@ -36,9 +38,11 @@ public class AppleOAuthService {
 
     private final AppleJwtParser appleJwtParser;
     private final AppleAuthClient appleAuthClient;
+    private final AppleJwtProvider appleJwtProvider;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
     private final AppleClaimsValidator appleClaimsValidator;
 
+    @Transactional
     public OAuthLoginResponseDto login(AppleAuthRequestDto appleAuthRequestDto) {
         String email = getAppleEmail(appleAuthRequestDto.getIdentityToken());
 
@@ -53,6 +57,14 @@ public class AppleOAuthService {
                 .memberId(member.getId())
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
+                .build();
+    }
+
+    public AppleClientSecretResponseDto getClientSecret() {
+        String clientSecret = appleJwtProvider.createClientSecret();
+
+        return AppleClientSecretResponseDto.builder()
+                .clientSecret(clientSecret)
                 .build();
     }
 
