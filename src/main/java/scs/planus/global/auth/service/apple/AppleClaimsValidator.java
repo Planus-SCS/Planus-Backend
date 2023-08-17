@@ -3,10 +3,7 @@ package scs.planus.global.auth.service.apple;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.encryptor.Encryptor;
-
-import static scs.planus.global.exception.CustomExceptionStatus.INVALID_APPLE_IDENTITY_TOKEN;
 
 @Component
 public class AppleClaimsValidator {
@@ -24,13 +21,9 @@ public class AppleClaimsValidator {
         this.nonce = Encryptor.encryptWithSHA256(nonce);
     }
 
-    public void validation(Claims claims) {
-        boolean result = claims.getIssuer().contains(iss) &&
+    public boolean validation(Claims claims) {
+        return claims.getIssuer().contains(iss) &&
                 claims.getAudience().equals(clientId) &&
                 claims.get(NONCE_KEY, String.class).equals(nonce);
-
-        if (!result) {
-            throw new PlanusException(INVALID_APPLE_IDENTITY_TOKEN);
-        }
     }
 }

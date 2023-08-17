@@ -23,8 +23,7 @@ import javax.transaction.Transactional;
 import java.security.PublicKey;
 import java.util.Map;
 
-import static scs.planus.global.exception.CustomExceptionStatus.ALREADY_EXIST_SOCIAL_ACCOUNT;
-import static scs.planus.global.exception.CustomExceptionStatus.INVALID_USER_NAME;
+import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +75,8 @@ public class AppleOAuthService {
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, applePublicKey);
 
         Claims claims = appleJwtParser.parseClaimWithPublicKey(identityToken, publicKey);
-        appleClaimsValidator.validation(claims);
+
+        validateClaims(claims);
 
         return claims.get(EMAIL_KEY, String.class);
     }
@@ -110,5 +110,11 @@ public class AppleOAuthService {
             member.init(member.getNickname());
         }
         return member;
+    }
+
+    private void validateClaims(Claims claims) {
+        if (!appleClaimsValidator.validation(claims)) {
+            throw new PlanusException(INVALID_APPLE_IDENTITY_TOKEN);
+        }
     }
 }
