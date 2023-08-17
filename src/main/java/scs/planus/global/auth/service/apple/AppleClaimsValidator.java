@@ -21,7 +21,7 @@ public class AppleClaimsValidator {
         this.nonce = Encryptor.encryptWithSHA256(nonce);
     }
 
-    public boolean validation(Claims claims) {
+    public boolean isValid(Claims claims) {
         return claims.getIssuer().contains(iss) &&
                 claims.getAudience().equals(clientId) &&
                 claims.get(NONCE_KEY, String.class).equals(nonce);
