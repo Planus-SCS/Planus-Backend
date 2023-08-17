@@ -113,7 +113,7 @@ public class AppleOAuthService {
     }
 
     private void validateClaims(Claims claims) {
-        if (!appleClaimsValidator.validation(claims)) {
+        if (!appleClaimsValidator.isValid(claims)) {
             throw new PlanusException(INVALID_APPLE_IDENTITY_TOKEN);
         }
     }
