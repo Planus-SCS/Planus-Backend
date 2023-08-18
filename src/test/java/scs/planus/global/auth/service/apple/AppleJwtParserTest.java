@@ -1,8 +1,10 @@
 package scs.planus.global.auth.service.apple;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import scs.planus.global.exception.PlanusException;
@@ -16,45 +18,53 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.*;
 
 class AppleJwtParserTest {
+    private static final String ALG_KEY = "alg";
+    private static final String KID_KEY = "kid";
+    private static final String KID = "kid";
+    private static final String EMAIL_KEY = "email";
+    private static final String EMAIL = "email";
     private static final String INVALID_TOKEN = "invalidToken";
-    private static final String KID = "fh6Bs8C";
-    private static final String TEST_EMAIL = "planus@planus";
 
     private final AppleJwtParser appleJwtParser;
+
+    private JwtBuilder DEFAULT_JWT_BUILDER;
+    private String identityToken;
+    private KeyPair keyPair;
 
     public AppleJwtParserTest() {
         this.appleJwtParser = new AppleJwtParser();
     }
 
-    @DisplayName("Apple 의 identityToken 으로 부터 headers 를 파싱할 수 있다.")
-    @Test
-    void parseHeaders_Success() throws NoSuchAlgorithmException {
-        // given
+    @BeforeEach
+    void init() {
         Date now = new Date();
         long expirationTime = 24 * 60 * 60 * 1000;
 
-        KeyPair keyPair = KeyPairGenerator.getInstance("RSA")
-                .generateKeyPair();
+        keyPair = generateKeyPair();
 
-        PrivateKey privateKey = keyPair.getPrivate();
-
-        String identityToken = Jwts.builder()
-                .setHeaderParam("kid", KID)
-                .claim("email", TEST_EMAIL)
+        DEFAULT_JWT_BUILDER = Jwts.builder()
+                .setHeaderParam(KID_KEY, KID)
+                .claim(EMAIL_KEY, EMAIL)
                 .setIssuer("iss")
                 .setIssuedAt(now)
                 .setAudience("aud")
                 .setExpiration(new Date(now.getTime() + expirationTime))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
-                .compact();
+                .signWith(keyPair.getPrivate(), SignatureAlgorithm.RS256);
 
+        identityToken = DEFAULT_JWT_BUILDER
+                .compact();
+    }
+
+    @DisplayName("Apple 의 identityToken 으로 부터 headers 를 파싱할 수 있다.")
+    @Test
+    void parseHeaders_Success() {
         // when
         Map<String, String> headers = appleJwtParser.parseHeaders(identityToken);
 
         // then
-        assertThat(headers).containsKeys("alg", "kid");
-        assertThat(headers.get("alg")).isEqualTo("RS256");
-        assertThat(headers.get("kid")).isEqualTo(KID);
+        assertThat(headers).containsKeys(ALG_KEY, KID_KEY);
+        assertThat(headers.get(ALG_KEY)).isEqualTo("RS256");
+        assertThat(headers.get(KID_KEY)).isEqualTo(KID);
     }
 
     @DisplayName("올바르지 않은 형식의 identityToken 으로 헤더를 파싱할 경우," +
@@ -70,60 +80,28 @@ class AppleJwtParserTest {
 
     @DisplayName("Apple 의 PublicKey 로부터 identityToken 의 claim 을 파싱할 수 있다.")
     @Test
-    void parseClaimWithPublicKey() throws NoSuchAlgorithmException {
-        // given
-        Date now = new Date();
-        long expirationTime = 24 * 60 * 60 * 1000;
-
-        KeyPair keyPair = KeyPairGenerator.getInstance("RSA")
-                .generateKeyPair();
-
-        PrivateKey privateKey = keyPair.getPrivate();
-        PublicKey publicKey = keyPair.getPublic();
-
-        String identityToken = Jwts.builder()
-                .setHeaderParam("kid", KID)
-                .claim("email", TEST_EMAIL)
-                .setIssuer("iss")
-                .setIssuedAt(now)
-                .setAudience("aud")
-                .setExpiration(new Date(now.getTime() + expirationTime))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
-                .compact();
-
+    void parseClaimWithPublicKey() {
         // when
-        Claims claims = appleJwtParser.parseClaimWithPublicKey(identityToken, publicKey);
+        Claims claims = appleJwtParser.parseClaimWithPublicKey(identityToken, keyPair.getPublic());
 
         // then
-        assertThat(claims.get("email", String.class)).isEqualTo(TEST_EMAIL);
+        assertThat(claims.get(EMAIL_KEY, String.class)).isEqualTo(EMAIL);
     }
 
     @DisplayName("만료된 Apple identityToken 을 PublicKey 로 파싱할 경우," +
                 "UNAUTHORIZED_ACCESS_TOKEN 예외를 발생 시킨다.")
     @Test
-    void parseClaimWithPublicKey_Fail_Expired() throws NoSuchAlgorithmException {
+    void parseClaimWithPublicKey_Fail_Expired() {
         // given
         Date now = new Date();
         long expirationTime = -1L;
 
-        KeyPair keyPair = KeyPairGenerator.getInstance("RSA")
-                .generateKeyPair();
-
-        PrivateKey privateKey = keyPair.getPrivate();
-        PublicKey publicKey = keyPair.getPublic();
-
-        String identityToken = Jwts.builder()
-                .setHeaderParam("kid", KID)
-                .claim("email", TEST_EMAIL)
-                .setIssuer("iss")
-                .setIssuedAt(now)
-                .setAudience("aud")
+        String expiredToken = DEFAULT_JWT_BUILDER
                 .setExpiration(new Date(now.getTime() + expirationTime))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
                 .compact();
 
         // when & then
-        assertThatThrownBy(() -> appleJwtParser.parseClaimWithPublicKey(identityToken, publicKey))
+        assertThatThrownBy(() -> appleJwtParser.parseClaimWithPublicKey(expiredToken, keyPair.getPublic()))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(UNAUTHORIZED_ACCESS_TOKEN);
@@ -132,14 +110,9 @@ class AppleJwtParserTest {
     @DisplayName("올바르지 않은 형식의 identityToken 으로 헤더를 파싱할 경우," +
                 "INVALID_APPLE_IDENTITY_TOKEN 예외를 발생 시킨다.")
     @Test
-    void parseClaimWithPublicKey_Fail_Invalid_IdentityToken() throws NoSuchAlgorithmException {
-        // given
-        PublicKey publicKey = KeyPairGenerator.getInstance("RSA")
-                .generateKeyPair()
-                .getPublic();
-
+    void parseClaimWithPublicKey_Fail_Invalid_IdentityToken() {
         // when & then
-        assertThatThrownBy(() -> appleJwtParser.parseClaimWithPublicKey(INVALID_TOKEN, publicKey))
+        assertThatThrownBy(() -> appleJwtParser.parseClaimWithPublicKey(INVALID_TOKEN, keyPair.getPublic()))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(INVALID_APPLE_IDENTITY_TOKEN);
@@ -148,33 +121,23 @@ class AppleJwtParserTest {
     @DisplayName("잘못된 PublicKey 로 Apple identityToken 를 파싱할 경우," +
                 "INTERNAL_SERVER_ERROR 예외를 발생 시킨다.")
     @Test
-    void parseClaimWithPublicKey_Fail_Invalid_PublicKey() throws NoSuchAlgorithmException {
+    void parseClaimWithPublicKey_Fail_Invalid_PublicKey() {
         // given
-        Date now = new Date();
-        long expirationTime = 24 * 60 * 60 * 1000;
-
-        PrivateKey privateKey = KeyPairGenerator.getInstance("RSA")
-                .generateKeyPair()
-                .getPrivate();
-
-        PublicKey invalidPublicKey = KeyPairGenerator.getInstance("RSA")
-                .generateKeyPair()
-                .getPublic();
-
-        String identityToken = Jwts.builder()
-                .setHeaderParam("kid", KID)
-                .claim("email", TEST_EMAIL)
-                .setIssuer("iss")
-                .setIssuedAt(now)
-                .setAudience("aud")
-                .setExpiration(new Date(now.getTime() + expirationTime))
-                .signWith(privateKey, SignatureAlgorithm.RS256)
-                .compact();
+        PublicKey invalidPublicKey = generateKeyPair().getPublic();
 
         // when & then
         assertThatThrownBy(() -> appleJwtParser.parseClaimWithPublicKey(identityToken, invalidPublicKey))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    private KeyPair generateKeyPair() {
+        try {
+            return KeyPairGenerator.getInstance("RSA")
+                    .generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            throw new PlanusException(NO_SUCH_ALGORITHM);
+        }
     }
 }
