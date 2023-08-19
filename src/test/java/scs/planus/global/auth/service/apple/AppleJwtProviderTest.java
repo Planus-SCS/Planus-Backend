@@ -21,7 +21,7 @@ class AppleJwtProviderTest {
 
     @DisplayName("ClientSecretKey 로 부터 ClientSecret 토큰이 정상적으로 생성 되어야 한다.")
     @Test
-    void createClientSecret() throws NoSuchAlgorithmException {
+    void createClientSecret() {
         // given
         appleJwtProvider = new AppleJwtProvider(
                 "clientId",
