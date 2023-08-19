@@ -13,6 +13,7 @@ import java.util.Base64;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static scs.planus.global.exception.CustomExceptionStatus.INTERNAL_SERVER_ERROR;
+import static scs.planus.global.exception.CustomExceptionStatus.NO_SUCH_ALGORITHM;
 
 class AppleJwtProviderTest {
     private static final String KEY_FACTORY_INSTANCE_ALGO = "EC";
@@ -59,11 +60,15 @@ class AppleJwtProviderTest {
                 .isEqualTo(INTERNAL_SERVER_ERROR);
     }
 
-    private String createClientSecretKey() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_FACTORY_INSTANCE_ALGO);
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        PrivateKey privateKey = keyPair.getPrivate();
-        byte[] privateKeyEncoded = privateKey.getEncoded();
-        return Base64.getEncoder().encodeToString(privateKeyEncoded);
+    private String createClientSecretKey() {
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_FACTORY_INSTANCE_ALGO);
+            KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            PrivateKey privateKey = keyPair.getPrivate();
+            byte[] privateKeyEncoded = privateKey.getEncoded();
+            return Base64.getEncoder().encodeToString(privateKeyEncoded);
+        } catch (NoSuchAlgorithmException e) {
+            throw new PlanusException(NO_SUCH_ALGORITHM);
+        }
     }
 }
