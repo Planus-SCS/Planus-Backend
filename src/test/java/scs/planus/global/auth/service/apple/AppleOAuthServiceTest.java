@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.entity.SocialType;
@@ -31,7 +30,6 @@ import static org.mockito.Mockito.verify;
 import static scs.planus.global.exception.CustomExceptionStatus.ALREADY_EXIST_SOCIAL_ACCOUNT;
 import static scs.planus.global.exception.CustomExceptionStatus.INVALID_USER_NAME;
 
-@Import(AppleJwtProvider.class)
 @Slf4j
 class AppleOAuthServiceTest extends ServiceTest {
     private static final String IDENTITY_TOKEN = "identityToken";
@@ -75,8 +73,8 @@ class AppleOAuthServiceTest extends ServiceTest {
     @BeforeEach
     void init() {
         FullName fullName = FullName.builder()
-                .familyName("플")
-                .givenName("래너스")
+                .familyName("성")
+                .givenName("이름")
                 .build();
 
         appleAuthRequestDto = AppleAuthRequestDto.builder()
