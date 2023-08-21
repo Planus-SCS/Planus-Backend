@@ -27,7 +27,7 @@ class AppleJwtParserTest {
 
     private final AppleJwtParser appleJwtParser;
 
-    private JwtBuilder DEFAULT_JWT_BUILDER;
+    private JwtBuilder defaultJwtBuilder;
     private String identityToken;
     private KeyPair keyPair;
 
@@ -42,7 +42,7 @@ class AppleJwtParserTest {
 
         keyPair = generateKeyPair();
 
-        DEFAULT_JWT_BUILDER = Jwts.builder()
+        defaultJwtBuilder = Jwts.builder()
                 .setHeaderParam(KID_KEY, KID)
                 .claim(EMAIL_KEY, EMAIL)
                 .setIssuer("iss")
@@ -51,7 +51,7 @@ class AppleJwtParserTest {
                 .setExpiration(new Date(now.getTime() + expirationTime))
                 .signWith(keyPair.getPrivate(), SignatureAlgorithm.RS256);
 
-        identityToken = DEFAULT_JWT_BUILDER
+        identityToken = defaultJwtBuilder
                 .compact();
     }
 
@@ -96,7 +96,7 @@ class AppleJwtParserTest {
         Date now = new Date();
         long expirationTime = -1L;
 
-        String expiredToken = DEFAULT_JWT_BUILDER
+        String expiredToken = defaultJwtBuilder
                 .setExpiration(new Date(now.getTime() + expirationTime))
                 .compact();
 
