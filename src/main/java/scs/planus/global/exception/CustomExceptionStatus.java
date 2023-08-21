@@ -67,7 +67,7 @@ public enum CustomExceptionStatus implements ResponseStatus {
     INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요."),
 
     // key Algorithm exception
-    NO_SUCH_ALGORITHM(HttpStatus.INTERNAL_SERVER_ERROR, 6000, "잘못되거나 존재하지 않는 파일입니다.");
+    NO_SUCH_ALGORITHM(HttpStatus.INTERNAL_SERVER_ERROR, 6000, "존재하지 않는 알고리즘 입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;
