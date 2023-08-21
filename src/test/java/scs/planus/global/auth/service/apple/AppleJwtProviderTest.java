@@ -42,7 +42,7 @@ class AppleJwtProviderTest {
     @DisplayName("유효하지 않은 ClientSecretKey 일 경우," +
                 "INTERNAL_SERVER_ERROR 예외를 발생시켜야 한다.")
     @Test
-    void createClientSecret_f() {
+    void createClientSecret_Fail_Invalid_ClientSecretKey() {
         // given
         appleJwtProvider = new AppleJwtProvider(
                 "clientId",
