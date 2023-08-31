@@ -30,7 +30,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/", "/app/oauth/login/**", "/app/auth/**",
-                        "/swagger-ui/**", "/api-docs/**").permitAll()
+                        "/swagger-ui/**", "/api-docs/**",
+                        "/.well-known/**", "/apple-app-site-association").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
