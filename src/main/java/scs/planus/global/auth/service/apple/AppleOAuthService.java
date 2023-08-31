@@ -1,6 +1,5 @@
 package scs.planus.global.auth.service.apple;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,14 +13,11 @@ import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
 import scs.planus.global.auth.dto.apple.AppleClientSecretResponseDto;
 import scs.planus.global.auth.dto.apple.FullName;
 import scs.planus.global.auth.entity.Token;
-import scs.planus.global.auth.entity.apple.ApplePublicKeys;
 import scs.planus.global.auth.service.JwtProvider;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.infra.redis.RedisService;
 
 import javax.transaction.Transactional;
-import java.security.PublicKey;
-import java.util.Map;
 
 import static scs.planus.global.exception.CustomExceptionStatus.ALREADY_EXIST_SOCIAL_ACCOUNT;
 import static scs.planus.global.exception.CustomExceptionStatus.INVALID_USER_NAME;
@@ -30,25 +26,20 @@ import static scs.planus.global.exception.CustomExceptionStatus.INVALID_USER_NAM
 @RequiredArgsConstructor
 @Slf4j
 public class AppleOAuthService {
-    private static final String EMAIL_KEY = "email";
-
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
 
-    private final AppleJwtParser appleJwtParser;
-    private final AppleAuthClient appleAuthClient;
+    private final AppleOAuthUserProvider appleOAuthUserProvider;
     private final AppleJwtProvider appleJwtProvider;
-    private final ApplePublicKeyGenerator applePublicKeyGenerator;
-    private final AppleClaimsValidator appleClaimsValidator;
 
     @Transactional
     public OAuthLoginResponseDto login(AppleAuthRequestDto appleAuthRequestDto) {
-        String email = getAppleEmail(appleAuthRequestDto.getIdentityToken());
+        String email = appleOAuthUserProvider.getAppleEmail(appleAuthRequestDto.getIdentityToken());
 
         Member member  = memberRepository.findByEmail(email)
                 .map(this::validateMember)
-                .orElseGet(() -> saveNewMember(appleAuthRequestDto, email));
+                .orElseGet(() -> saveNewMember(appleAuthRequestDto.getFullName(), email));
 
         Token token = jwtProvider.generateToken(member.getEmail());
         redisService.saveValue(member.getEmail(), token);
@@ -68,21 +59,8 @@ public class AppleOAuthService {
                 .build();
     }
 
-    public String getAppleEmail(String identityToken) {
-        Map<String, String> headers = appleJwtParser.parseHeaders(identityToken);
-
-        ApplePublicKeys applePublicKey = appleAuthClient.getApplePublicKey();
-
-        PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(headers, applePublicKey);
-
-        Claims claims = appleJwtParser.parseClaimWithPublicKey(identityToken, publicKey);
-        appleClaimsValidator.validation(claims);
-
-        return claims.get(EMAIL_KEY, String.class);
-    }
-
-    public Member saveNewMember(AppleAuthRequestDto appleAuthRequestDto, String email) {
-        String nickName = getName(appleAuthRequestDto.getFullName());
+    private Member saveNewMember(FullName fullName, String email) {
+        String nickName = getName(fullName);
         return memberRepository.save(
                 Member.builder()
                         .nickname(nickName)
@@ -94,14 +72,14 @@ public class AppleOAuthService {
         );
     }
 
-    public String getName(FullName fullName) {
+    private String getName(FullName fullName) {
         if (fullName == null) {
             throw new PlanusException(INVALID_USER_NAME);
         }
         return fullName.getFamilyName() + fullName.getGivenName();
     }
 
-    public Member validateMember(Member member) {
+    private Member validateMember(Member member) {
         if (!member.getSocialType().equals(SocialType.APPLE)) {
             throw new PlanusException(ALREADY_EXIST_SOCIAL_ACCOUNT);
         }

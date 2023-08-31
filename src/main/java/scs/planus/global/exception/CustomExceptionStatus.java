@@ -55,7 +55,7 @@ public enum CustomExceptionStatus implements ResponseStatus {
     ALREADY_APPLY_JOINED_GROUP(BAD_REQUEST, 2607, "이미 가입 신청한 그룹입니다."),
     CANNOT_WITHDRAW(BAD_REQUEST, 2608, "탈퇴가 불가능합니다."),
 
-    // groupMember excepion
+    // groupMember exception
     NOT_JOINED_GROUP(BAD_REQUEST, 2700, "가입하지 않은 그룹 입니다."),
     NOT_JOINED_MEMBER_IN_GROUP(BAD_REQUEST, 2701, "그룹에 가입되어 있지 않은 회원입니다."),
 
@@ -64,7 +64,10 @@ public enum CustomExceptionStatus implements ResponseStatus {
 
     // s3 exception
     INVALID_FILE(BAD_REQUEST, 5000, "잘못되거나 존재하지 않는 파일입니다."),
-    INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요.");
+    INVALID_FILE_EXTENSION(BAD_REQUEST, 5001, "잘못된 확장자입니다. jpeg / jpg / png / heic 파일을 선택해주세요."),
+
+    // key Algorithm exception
+    NO_SUCH_ALGORITHM(HttpStatus.INTERNAL_SERVER_ERROR, 6000, "존재하지 않는 알고리즘 입니다.");
 
     private final HttpStatus httpStatus;
     private final int code;

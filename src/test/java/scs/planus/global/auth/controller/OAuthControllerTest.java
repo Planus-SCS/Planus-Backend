@@ -7,6 +7,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import scs.planus.global.auth.dto.OAuthLoginResponseDto;
 import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
+import scs.planus.global.auth.dto.apple.AppleClientSecretResponseDto;
 import scs.planus.global.auth.dto.apple.FullName;
 import scs.planus.global.auth.service.apple.AppleOAuthService;
 import scs.planus.global.auth.service.OAuthService;
@@ -49,6 +50,92 @@ class OAuthControllerTest extends ControllerTest {
                 .perform(get(path, provider)
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("code", code))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+    @DisplayName("Apple 로그인이 정상적으로 작동되어야 한다.")
+    @Test
+    void appleLogin_Success() throws Exception {
+        // given
+        String path = "/app/oauth/login/apple";
+
+        FullName fullName = FullName.builder()
+                .givenName("창재")
+                .familyName("이")
+                .build();
+
+        AppleAuthRequestDto appleAuthRequestDto = AppleAuthRequestDto.builder()
+                .identityToken("identityToken")
+                .fullName(fullName)
+                .build();
+
+        given(appleOAuthService.login(any(AppleAuthRequestDto.class)))
+                .willReturn(OAuthLoginResponseDto.builder()
+                        .memberId(1L)
+                        .accessToken("accessToken")
+                        .refreshToken("refreshToken")
+                        .build());
+
+        //when & then
+        mockMvc
+                .perform(post(path)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(appleAuthRequestDto))
+                        .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("Apple 로그인시, identityToken 값이 비어 있으면 예외를 발생시킨다.")
+    @Test
+    void appleLogin_Fail() throws Exception {
+        // given
+        String path = "/app/oauth/login/apple";
+
+        FullName fullName = FullName.builder()
+                .givenName("창재")
+                .familyName("이")
+                .build();
+
+        AppleAuthRequestDto appleAuthRequestDto = AppleAuthRequestDto.builder()
+                .fullName(fullName)
+                .build();
+
+        given(appleOAuthService.login(any(AppleAuthRequestDto.class)))
+                .willReturn(OAuthLoginResponseDto.builder()
+                        .memberId(1L)
+                        .accessToken("accessToken")
+                        .refreshToken("refreshToken")
+                        .build());
+
+        //when & then
+        mockMvc
+                .perform(post(path)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(appleAuthRequestDto))
+                        .with(csrf())
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("Apple Client Secret 토큰이 정상적으로 조회 되어야 한다.")
+    @Test
+    void getAppleClientSecret() throws Exception {
+        // given
+        String path = "/app/oauth/apple/client-secret";
+
+        AppleClientSecretResponseDto appleClientSecretResponseDto = AppleClientSecretResponseDto.builder()
+                .clientSecret("test_client_secret")
+                .build();
+
+        given(appleOAuthService.getClientSecret())
+                .willReturn(appleClientSecretResponseDto);
+
+        //when & then
+        mockMvc
+                .perform(get(path))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
