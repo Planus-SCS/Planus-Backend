@@ -5,7 +5,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import scs.planus.global.auth.dto.OAuthLoginResponseDto;
 import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
 import scs.planus.global.auth.dto.apple.AppleClientSecretResponseDto;
@@ -26,18 +31,21 @@ public class OAuthController {
     private final OAuthService oAuthService;
     private final AppleOAuthService appleOAuthService;
 
-    @GetMapping("/oauth/login/{provider}")
-    @Operation(summary = "OAuth API")
-    public BaseResponse<OAuthLoginResponseDto> socialLogin(@PathVariable String provider,
-                                                           @RequestParam String code) {
-        OAuthLoginResponseDto loginResponseDto = oAuthService.login(provider, code);
+    @GetMapping("/oauth/login/kakao")
+    public BaseResponse<OAuthLoginResponseDto> kakaoLogin(@RequestParam String code) {
+        OAuthLoginResponseDto loginResponseDto = oAuthService.kakaoLogin(code);
+        return new BaseResponse<>(loginResponseDto);
+    }
+
+    @GetMapping("/oauth/login/google")
+    public BaseResponse<OAuthLoginResponseDto> googleLogin(@RequestParam String code) {
+        OAuthLoginResponseDto loginResponseDto = oAuthService.googleLogin(code);
         return new BaseResponse<>(loginResponseDto);
     }
 
     @PostMapping("/oauth/login/apple")
     @Operation(summary = "Apple OAuth API")
     public BaseResponse<OAuthLoginResponseDto> appleLogin(@Valid @RequestBody AppleAuthRequestDto appleAuthRequestDto) {
-
         OAuthLoginResponseDto loginResponseDto = appleOAuthService.login(appleAuthRequestDto);
         return new BaseResponse<>(loginResponseDto);
     }
