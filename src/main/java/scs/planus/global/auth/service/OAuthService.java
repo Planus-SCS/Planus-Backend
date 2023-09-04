@@ -51,7 +51,7 @@ public class OAuthService {
                     validateDuplicatedEmail(findMember, profile);
                     return getExistedMember(findMember, profile);
                 })
-                .orElse(memberRepository.save(profile.toEntity()));
+                .orElseGet(() -> memberRepository.save(profile.toEntity()));
         return member;
     }
 
