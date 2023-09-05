@@ -3,7 +3,7 @@
 
 ### 함께 일정 관리하는 서비스, Planus☁️
 
-[<img src="https://img.shields.io/badge/-Swagger-green?style=flat-square&logo=swagger&logoColor=white"/>](https://www.planus.shop/swagger-ui/index.html) [<img src="https://img.shields.io/badge/-Appstore-blue?style=flat&logo=app-store&logoColor=white" />](https://apps.apple.com/kr/app/%ED%94%8C%EB%9E%98%EB%84%88%EC%8A%A4/id6459008318) [<img src="https://img.shields.io/badge/Release-v1.0.0-critical?style=flat&logo=icloud&logoColor=white" />](https://github.com/Planus-SCS/Planus-Backend/releases/tag/v1.0.0)
+[<img src="https://img.shields.io/badge/-Swagger-green?style=flat&logo=swagger&logoColor=white"/>](https://www.planus.shop/swagger-ui/index.html) [<img src="https://img.shields.io/badge/-Appstore-blue?style=flat&logo=app-store&logoColor=white" />](https://apps.apple.com/kr/app/%ED%94%8C%EB%9E%98%EB%84%88%EC%8A%A4/id6459008318) [<img src="https://img.shields.io/badge/Release-v1.0.0-critical?style=flat&logo=icloud&logoColor=white" />](https://github.com/Planus-SCS/Planus-Backend/releases/tag/v1.0.0)
 
 </div>
 
