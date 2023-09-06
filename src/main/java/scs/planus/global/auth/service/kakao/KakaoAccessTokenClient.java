@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import scs.planus.global.auth.dto.OAuth2TokenResponseDto;
+import scs.planus.global.auth.dto.OAuthTokenResponseDto;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -29,7 +29,7 @@ public class KakaoAccessTokenClient {
         this.redirectUri = redirectUri;
     }
 
-    public OAuth2TokenResponseDto getToken(String code) {
+    public OAuthTokenResponseDto getToken(String code) {
         return WebClient.create()
                 .post()
                 .uri(kakaoTokenUri)
@@ -39,7 +39,7 @@ public class KakaoAccessTokenClient {
                 })
                 .bodyValue(accessTokenRequest(code))
                 .retrieve()
-                .bodyToMono(OAuth2TokenResponseDto.class)
+                .bodyToMono(OAuthTokenResponseDto.class)
                 .block();
     }
 

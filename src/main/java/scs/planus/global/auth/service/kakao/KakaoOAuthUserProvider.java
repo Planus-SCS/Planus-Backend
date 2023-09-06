@@ -3,7 +3,7 @@ package scs.planus.global.auth.service.kakao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import scs.planus.global.auth.dto.OAuth2TokenResponseDto;
+import scs.planus.global.auth.dto.OAuthTokenResponseDto;
 import scs.planus.global.auth.entity.KakaoUserInfo;
 import scs.planus.global.auth.entity.OAuthUserInfo;
 
@@ -18,7 +18,7 @@ public class KakaoOAuthUserProvider {
     private final KakaoUserInfoClient kakaoUserInfoClient;
 
     public OAuthUserInfo getUserInfo(String code) {
-        OAuth2TokenResponseDto token = kakaoAccessTokenClient.getToken(code);
+        OAuthTokenResponseDto token = kakaoAccessTokenClient.getToken(code);
         KakaoUserInfo kakaoUserInfo = kakaoUserInfoClient.getUserAttributes(token.getAccessToken());
         return kakaoUserInfo;
     }
