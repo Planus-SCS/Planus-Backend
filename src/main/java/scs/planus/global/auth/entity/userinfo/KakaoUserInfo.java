@@ -1,4 +1,4 @@
-package scs.planus.global.auth.entity;
+package scs.planus.global.auth.entity.userinfo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

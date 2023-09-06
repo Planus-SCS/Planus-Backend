@@ -10,8 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import scs.planus.global.auth.entity.apple.ApplePublicKey;
-import scs.planus.global.auth.entity.apple.ApplePublicKeys;
+import scs.planus.global.auth.entity.ApplePublicKey;
+import scs.planus.global.auth.entity.ApplePublicKeys;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.encryptor.Encryptor;
 

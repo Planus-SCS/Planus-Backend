@@ -1,4 +1,4 @@
-package scs.planus.global.auth.entity;
+package scs.planus.global.auth.entity.userinfo;
 
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.entity.SocialType;

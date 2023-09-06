@@ -3,7 +3,7 @@ package scs.planus.global.auth.service.kakao;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import scs.planus.global.auth.entity.KakaoUserInfo;
+import scs.planus.global.auth.entity.userinfo.KakaoUserInfo;
 
 @Component
 public class KakaoUserInfoClient {

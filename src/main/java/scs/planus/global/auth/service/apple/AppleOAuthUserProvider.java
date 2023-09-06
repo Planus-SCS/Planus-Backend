@@ -3,9 +3,9 @@ package scs.planus.global.auth.service.apple;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import scs.planus.global.auth.entity.AppleUserInfo;
-import scs.planus.global.auth.entity.OAuthUserInfo;
-import scs.planus.global.auth.entity.apple.ApplePublicKeys;
+import scs.planus.global.auth.entity.userinfo.AppleUserInfo;
+import scs.planus.global.auth.entity.userinfo.OAuthUserInfo;
+import scs.planus.global.auth.entity.ApplePublicKeys;
 import scs.planus.global.exception.PlanusException;
 
 import java.security.PublicKey;

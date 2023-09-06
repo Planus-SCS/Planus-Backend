@@ -1,18 +1,18 @@
-package scs.planus.global.auth.entity;
+package scs.planus.global.auth.entity.userinfo;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.entity.Role;
 import scs.planus.domain.member.entity.SocialType;
 
-@AllArgsConstructor
-public class GoogleUserInfo implements OAuthUserInfo {
+public class AppleUserInfo implements OAuthUserInfo {
 
-    private String email;
-    @JsonProperty("name")
     private String nickname;
+    private String email;
+
+    public AppleUserInfo(String email) {
+        this.email = email;
+    }
 
     @Override
     public String getEmail() {
@@ -26,7 +26,7 @@ public class GoogleUserInfo implements OAuthUserInfo {
 
     @Override
     public SocialType getSocialType() {
-        return SocialType.GOOGLE;
+        return SocialType.APPLE;
     }
 
     @Override
@@ -40,4 +40,7 @@ public class GoogleUserInfo implements OAuthUserInfo {
                 .build();
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

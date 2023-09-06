@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import scs.planus.global.auth.dto.OAuthTokenResponseDto;
-import scs.planus.global.auth.entity.OAuthUserInfo;
+import scs.planus.global.auth.entity.userinfo.OAuthUserInfo;
 
 @Component
 @RequiredArgsConstructor
