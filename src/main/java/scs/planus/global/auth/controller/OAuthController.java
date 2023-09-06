@@ -16,7 +16,6 @@ import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
 import scs.planus.global.auth.dto.apple.AppleClientSecretResponseDto;
 import scs.planus.global.auth.entity.PrincipalDetails;
 import scs.planus.global.auth.service.OAuthService;
-import scs.planus.global.auth.service.apple.AppleOAuthService;
 import scs.planus.global.common.response.BaseResponse;
 
 import javax.validation.Valid;
@@ -29,15 +28,16 @@ import javax.validation.Valid;
 public class OAuthController {
 
     private final OAuthService oAuthService;
-    private final AppleOAuthService appleOAuthService;
 
     @GetMapping("/oauth/login/kakao")
+    @Operation(summary = "Kakao OAuth API")
     public BaseResponse<OAuthLoginResponseDto> kakaoLogin(@RequestParam String code) {
         OAuthLoginResponseDto loginResponseDto = oAuthService.kakaoLogin(code);
         return new BaseResponse<>(loginResponseDto);
     }
 
     @GetMapping("/oauth/login/google")
+    @Operation(summary = "Google OAuth API")
     public BaseResponse<OAuthLoginResponseDto> googleLogin(@RequestParam String code) {
         OAuthLoginResponseDto loginResponseDto = oAuthService.googleLogin(code);
         return new BaseResponse<>(loginResponseDto);
@@ -46,15 +46,14 @@ public class OAuthController {
     @PostMapping("/oauth/login/apple")
     @Operation(summary = "Apple OAuth API")
     public BaseResponse<OAuthLoginResponseDto> appleLogin(@Valid @RequestBody AppleAuthRequestDto appleAuthRequestDto) {
-        OAuthLoginResponseDto loginResponseDto = appleOAuthService.login(appleAuthRequestDto);
+        OAuthLoginResponseDto loginResponseDto = oAuthService.appleLogin(appleAuthRequestDto);
         return new BaseResponse<>(loginResponseDto);
     }
 
     @GetMapping("/oauth/apple/client-secret")
     @Operation(summary = "Get Apple client_secret API")
     public BaseResponse<AppleClientSecretResponseDto> getAppleClientSecret(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
-        AppleClientSecretResponseDto appleClientSecretResponseDto = appleOAuthService.getClientSecret();
+        AppleClientSecretResponseDto appleClientSecretResponseDto = oAuthService.getClientSecret();
         return new BaseResponse<>(appleClientSecretResponseDto);
     }
 }
