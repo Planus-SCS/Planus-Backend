@@ -1,9 +1,14 @@
 package scs.planus.global.auth.entity;
 
-public interface OAuth2UserInfo {
-    String getRegistrationId();
+import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.member.entity.SocialType;
 
+public interface OAuthUserInfo {
     String getEmail();
 
-    String getNickName();
+    String getNickname();
+
+    SocialType getSocialType();
+
+    Member toMember();
 }
