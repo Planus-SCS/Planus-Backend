@@ -1,11 +1,9 @@
 package scs.planus.global.auth.service.kakao;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Map;
+import scs.planus.global.auth.entity.KakaoUserInfo;
 
 @Component
 public class KakaoUserInfoClient {
@@ -16,7 +14,7 @@ public class KakaoUserInfoClient {
         this.kakaoUserInfoUri = kakaoUserInfoUri;
     }
 
-    public Map<String, Object> getUserAttributes(String accessToken) {
+    public KakaoUserInfo getUserAttributes(String accessToken) {
         return WebClient.create()
                 .post()
                 .uri(kakaoUserInfoUri)
@@ -24,8 +22,7 @@ public class KakaoUserInfoClient {
                     header.setBearerAuth(accessToken);
                 })
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
+                .bodyToMono(KakaoUserInfo.class)
                 .block();
     }
 }

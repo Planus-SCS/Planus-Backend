@@ -1,11 +1,10 @@
 package scs.planus.global.auth.service.google;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.util.Map;
+import scs.planus.global.auth.entity.GoogleUserInfo;
+import scs.planus.global.auth.entity.OAuthUserInfo;
 
 @Component
 public class GoogleUserInfoClient {
@@ -16,7 +15,7 @@ public class GoogleUserInfoClient {
         this.googleUserInfoUri = googleUserInfoUri;
     }
 
-    public Map<String, Object> getUserAttributes(String accessToken) {
+    public OAuthUserInfo getUserAttributes(String accessToken) {
         return WebClient.create()
                 .post()
                 .uri(googleUserInfoUri)
@@ -24,8 +23,7 @@ public class GoogleUserInfoClient {
                     header.setBearerAuth(accessToken);
                 })
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
+                .bodyToMono(GoogleUserInfo.class)
                 .block();
     }
 }
