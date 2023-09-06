@@ -3,6 +3,8 @@ package scs.planus.global.auth.service.apple;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import scs.planus.global.auth.entity.AppleUserInfo;
+import scs.planus.global.auth.entity.OAuthUserInfo;
 import scs.planus.global.auth.entity.apple.ApplePublicKeys;
 import scs.planus.global.exception.PlanusException;
 
@@ -21,7 +23,7 @@ public class AppleOAuthUserProvider {
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
     private final AppleClaimsValidator appleClaimsValidator;
 
-    public String getAppleEmail(String identityToken) {
+    public OAuthUserInfo getUserInfo(String identityToken) {
         Map<String, String> headers = appleJwtParser.parseHeaders(identityToken);
 
         ApplePublicKeys applePublicKey = appleAuthClient.getApplePublicKey();
@@ -32,7 +34,8 @@ public class AppleOAuthUserProvider {
 
         validateClaims(claims);
 
-        return claims.get(EMAIL_KEY, String.class);
+        String email = claims.get(EMAIL_KEY, String.class);
+        return new AppleUserInfo(email);
     }
 
     private void validateClaims(Claims claims) {
