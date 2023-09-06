@@ -7,7 +7,7 @@ import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
 import scs.planus.global.auth.dto.OAuthLoginResponseDto;
-import scs.planus.global.auth.entity.MemberProfile;
+import scs.planus.global.auth.entity.OAuthUserInfo;
 import scs.planus.global.auth.entity.Token;
 import scs.planus.global.auth.service.google.GoogleOAuthUserProvider;
 import scs.planus.global.auth.service.kakao.KakaoOAuthUserProvider;
@@ -28,8 +28,8 @@ public class OAuthService {
     private final GoogleOAuthUserProvider googleOAuthUserProvider;
 
     public OAuthLoginResponseDto kakaoLogin(String code) {
-        MemberProfile profile = kakaoOAuthUserProvider.getUserInfo(code);
-        Member member = saveOrGetExistedMember(profile);
+        OAuthUserInfo kakaoMember = kakaoOAuthUserProvider.getUserInfo(code);
+        Member member = saveOrGetExistedMember(kakaoMember);
         Token token = jwtProvider.generateToken(member.getEmail());
         redisService.saveValue(member.getEmail(), token);
 
@@ -37,34 +37,33 @@ public class OAuthService {
     }
 
     public OAuthLoginResponseDto googleLogin(String code) {
-        MemberProfile profile = googleOAuthUserProvider.getUserInfo(code);
-        Member member = saveOrGetExistedMember(profile);
+        OAuthUserInfo googleMember = googleOAuthUserProvider.getUserInfo(code);
+        Member member = saveOrGetExistedMember(googleMember);
         Token token = jwtProvider.generateToken(member.getEmail());
         redisService.saveValue(member.getEmail(), token);
 
         return OAuthLoginResponseDto.of(member, token);
     }
 
-    private Member saveOrGetExistedMember(MemberProfile profile) {
-        Member member = memberRepository.findByEmail(profile.getEmail())
+    private Member saveOrGetExistedMember(OAuthUserInfo userInfo) {
+        return memberRepository.findByEmail(userInfo.getEmail())
                 .map(findMember -> {
-                    validateDuplicatedEmail(findMember, profile);
-                    return getExistedMember(findMember, profile);
+                    validateDuplicatedEmail(findMember, userInfo);
+                    return getExistedMember(findMember, userInfo);
                 })
-                .orElseGet(() -> memberRepository.save(profile.toEntity()));
-        return member;
+                .orElseGet(() -> memberRepository.save(userInfo.toMember()));
     }
 
-    private void validateDuplicatedEmail(Member member, MemberProfile profile) {
-        if (!member.getSocialType().equals(profile.getSocialType())) {
+    private void validateDuplicatedEmail(Member findMember, OAuthUserInfo userInfo) {
+        if (!findMember.getSocialType().equals(userInfo.getSocialType())) {
             throw new PlanusException(ALREADY_EXIST_SOCIAL_ACCOUNT);
         }
     }
 
-    private Member getExistedMember(Member member, MemberProfile profile) {
-        if (member.getStatus().equals(Status.INACTIVE)) {
-            member.init(profile.getNickname());
+    private Member getExistedMember(Member findMember, OAuthUserInfo userInfo) {
+        if (findMember.getStatus().equals(Status.INACTIVE)) {
+            findMember.init(userInfo.getNickname());
         }
-        return member;
+        return findMember;
     }
 }
