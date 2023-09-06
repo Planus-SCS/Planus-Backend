@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import scs.planus.global.auth.entity.ApplePublicKey;
 import scs.planus.global.auth.entity.ApplePublicKeys;
+import scs.planus.global.auth.entity.userinfo.AppleUserInfo;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.global.util.encryptor.Encryptor;
 
@@ -98,17 +99,18 @@ class AppleOAuthUserProviderTest {
         given(appleJwtParser.parseClaimWithPublicKey(anyString(), any(PublicKey.class))).willReturn(claims);
     }
 
-    @DisplayName("identityToken 으로 부터 사용자 email 을 얻을 수 있다.")
+    @DisplayName("identityToken 으로 부터 사용자 email 을 얻은 후, AppleUserInfo를 반환한다.")
     @Test
     void getAppleEmail() {
         // given
         given(appleClaimsValidator.isValid(any(Claims.class))).willReturn(true);
 
         // when
-        String appleEmail = appleOAuthUserProvider.getAppleEmail(identityToken);
+        AppleUserInfo appleUserInfo = (AppleUserInfo) appleOAuthUserProvider.getUserInfo(identityToken);
 
         // then
-        assertThat(appleEmail).isEqualTo(EMAIL);
+        assertThat(appleUserInfo.getEmail()).isEqualTo(EMAIL);
+
 
         verify(appleJwtParser).parseHeaders(anyString());
         verify(appleAuthClient).getApplePublicKey();
@@ -125,7 +127,7 @@ class AppleOAuthUserProviderTest {
         given(appleClaimsValidator.isValid(any(Claims.class))).willReturn(false);
 
         // when & then
-        Assertions.assertThatThrownBy(() -> appleOAuthUserProvider.getAppleEmail(identityToken))
+        Assertions.assertThatThrownBy(() -> appleOAuthUserProvider.getUserInfo(identityToken))
                 .isInstanceOf(PlanusException.class)
                 .extracting("status")
                 .isEqualTo(INVALID_APPLE_IDENTITY_TOKEN);
