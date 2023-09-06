@@ -1,38 +1,66 @@
 package scs.planus.global.auth.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-
-import java.util.Map;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import scs.planus.domain.Status;
+import scs.planus.domain.member.entity.Member;
+import scs.planus.domain.member.entity.Role;
+import scs.planus.domain.member.entity.SocialType;
 
 @AllArgsConstructor
-public class KakaoUserInfo implements OAuth2UserInfo {
+public class KakaoUserInfo implements OAuthUserInfo {
 
-    private Map<String, Object> attributes;
-
-    @Override
-    public String getRegistrationId() {
-        return String.valueOf(attributes.get("id"));
-    }
+    @JsonProperty("kakao_account")
+    private KakaoAccount kakaoAccount;
 
     @Override
     public String getEmail() {
-        return (String) getKakaoAccount().get("email");
+        return kakaoAccount.getEmail();
     }
 
     @Override
-    public String getNickName() {
-        return (String) getProfile().get("nickname");
+    public String getNickname() {
+        return kakaoAccount.getNickname();
     }
 
-    public String getDefaultProfileImage() {
-        return (String) attributes.get("default_profile_image");
+    @Override
+    public SocialType getSocialType() {
+        return SocialType.KAKAO;
     }
 
-    public Map<String, Object> getKakaoAccount() {
-        return (Map<String, Object>) attributes.get("kakao_account");
+    @Override
+    public Member toMember() {
+        return Member.builder()
+                .nickname(getNickname())
+                .email(getEmail())
+                .socialType(getSocialType())
+                .role(Role.USER)
+                .status(Status.ACTIVE)
+                .build();
     }
 
-    public Map<String, Object> getProfile() {
-        return (Map<String, Object>) getKakaoAccount().get("profile");
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class KakaoAccount {
+
+        private String email;
+        private Profile profile;
+
+        public String getNickname() {
+            return profile.getNickname();
+        }
+
+        @Builder
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Profile {
+            String nickname;
+        }
     }
 }
