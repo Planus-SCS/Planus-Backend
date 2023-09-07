@@ -3,6 +3,7 @@ package scs.planus.global.auth.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
@@ -24,6 +25,7 @@ import static scs.planus.global.exception.CustomExceptionStatus.ALREADY_EXIST_SO
 import static scs.planus.global.exception.CustomExceptionStatus.INVALID_USER_NAME;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class OAuthService {
@@ -102,6 +104,7 @@ public class OAuthService {
 
     private Member getExistedMember(Member findMember, OAuthUserInfo userInfo) {
         if (findMember.getStatus().equals(Status.INACTIVE)) {
+            log.info("userInfo.getNickname={}, findMember.getNickname={}", userInfo.getNickname(), findMember.getNickname());
             findMember.init(userInfo.getNickname());
         }
         return findMember;
