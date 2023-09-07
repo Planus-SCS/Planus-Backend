@@ -1,6 +1,7 @@
 package scs.planus.global.auth.entity.userinfo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,10 @@ import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.entity.Role;
 import scs.planus.domain.member.entity.SocialType;
 
+@Builder
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class KakaoUserInfo implements OAuthUserInfo {
 
     @JsonProperty("kakao_account")
