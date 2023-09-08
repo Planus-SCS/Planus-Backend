@@ -104,7 +104,6 @@ public class OAuthService {
 
     private Member getExistedMember(Member findMember, OAuthUserInfo userInfo) {
         if (findMember.getStatus().equals(Status.INACTIVE)) {
-            log.info("userInfo.getNickname={}, findMember.getNickname={}", userInfo.getNickname(), findMember.getNickname());
             findMember.init(userInfo.getNickname());
         }
         return findMember;
