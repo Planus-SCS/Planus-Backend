@@ -2,8 +2,8 @@ package scs.planus.global.auth.service.apple;
 
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
-import scs.planus.global.auth.entity.apple.ApplePublicKey;
-import scs.planus.global.auth.entity.apple.ApplePublicKeys;
+import scs.planus.global.auth.entity.ApplePublicKey;
+import scs.planus.global.auth.entity.ApplePublicKeys;
 import scs.planus.global.exception.PlanusException;
 
 import java.math.BigInteger;

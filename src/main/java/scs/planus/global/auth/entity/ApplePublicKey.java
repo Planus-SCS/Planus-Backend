@@ -1,4 +1,4 @@
-package scs.planus.global.auth.entity.apple;
+package scs.planus.global.auth.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

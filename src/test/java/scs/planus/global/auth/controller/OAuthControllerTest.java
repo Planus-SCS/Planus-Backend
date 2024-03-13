@@ -9,7 +9,6 @@ import scs.planus.global.auth.dto.OAuthLoginResponseDto;
 import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
 import scs.planus.global.auth.dto.apple.AppleClientSecretResponseDto;
 import scs.planus.global.auth.dto.apple.FullName;
-import scs.planus.global.auth.service.apple.AppleOAuthService;
 import scs.planus.global.auth.service.OAuthService;
 import scs.planus.support.ControllerTest;
 
@@ -27,18 +26,15 @@ class OAuthControllerTest extends ControllerTest {
 
     @MockBean
     private OAuthService oAuthService;
-    @MockBean
-    private AppleOAuthService appleOAuthService;
 
     @DisplayName("소셜로그인이 정상적으로 작동되어야 한다.")
     @Test
     void socialLogin() throws Exception {
         //given
-        String path = "/app/oauth/login/{provider}";
-        String provider = "kakao";
+        String path = "/app/oauth/login/kakao";
         String code = "authorizationCode";
 
-        given(oAuthService.login(anyString(), anyString()))
+        given(oAuthService.kakaoLogin(anyString()))
                 .willReturn(OAuthLoginResponseDto.builder()
                         .memberId(1L)
                         .accessToken("accessToken")
@@ -47,12 +43,13 @@ class OAuthControllerTest extends ControllerTest {
 
         //when & then
         mockMvc
-                .perform(get(path, provider)
+                .perform(get(path)
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("code", code))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+
     @DisplayName("Apple 로그인이 정상적으로 작동되어야 한다.")
     @Test
     void appleLogin_Success() throws Exception {
@@ -69,7 +66,7 @@ class OAuthControllerTest extends ControllerTest {
                 .fullName(fullName)
                 .build();
 
-        given(appleOAuthService.login(any(AppleAuthRequestDto.class)))
+        given(oAuthService.appleLogin(any(AppleAuthRequestDto.class)))
                 .willReturn(OAuthLoginResponseDto.builder()
                         .memberId(1L)
                         .accessToken("accessToken")
@@ -102,7 +99,7 @@ class OAuthControllerTest extends ControllerTest {
                 .fullName(fullName)
                 .build();
 
-        given(appleOAuthService.login(any(AppleAuthRequestDto.class)))
+        given(oAuthService.appleLogin(any(AppleAuthRequestDto.class)))
                 .willReturn(OAuthLoginResponseDto.builder()
                         .memberId(1L)
                         .accessToken("accessToken")
@@ -130,7 +127,7 @@ class OAuthControllerTest extends ControllerTest {
                 .clientSecret("test_client_secret")
                 .build();
 
-        given(appleOAuthService.getClientSecret())
+        given(oAuthService.getClientSecret())
                 .willReturn(appleClientSecretResponseDto);
 
         //when & then

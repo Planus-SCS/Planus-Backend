@@ -2,112 +2,117 @@ package scs.planus.global.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
 import scs.planus.domain.Status;
 import scs.planus.domain.member.entity.Member;
 import scs.planus.domain.member.repository.MemberRepository;
-import scs.planus.global.auth.dto.OAuth2TokenResponseDto;
 import scs.planus.global.auth.dto.OAuthLoginResponseDto;
-import scs.planus.global.auth.entity.MemberProfile;
-import scs.planus.global.auth.entity.OAuthAttributes;
+import scs.planus.global.auth.dto.apple.AppleAuthRequestDto;
+import scs.planus.global.auth.dto.apple.AppleClientSecretResponseDto;
+import scs.planus.global.auth.dto.apple.FullName;
+import scs.planus.global.auth.entity.userinfo.AppleUserInfo;
+import scs.planus.global.auth.entity.userinfo.OAuthUserInfo;
 import scs.planus.global.auth.entity.Token;
+import scs.planus.global.auth.service.apple.AppleJwtProvider;
+import scs.planus.global.auth.service.apple.AppleOAuthUserProvider;
+import scs.planus.global.auth.service.google.GoogleOAuthUserProvider;
+import scs.planus.global.auth.service.kakao.KakaoOAuthUserProvider;
 import scs.planus.global.exception.PlanusException;
 import scs.planus.infra.redis.RedisService;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.Map;
-
 import static scs.planus.global.exception.CustomExceptionStatus.ALREADY_EXIST_SOCIAL_ACCOUNT;
+import static scs.planus.global.exception.CustomExceptionStatus.INVALID_USER_NAME;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class OAuthService {
 
-    private final InMemoryClientRegistrationRepository clientRegistrations;
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final RedisService redisService;
+    private final KakaoOAuthUserProvider kakaoOAuthUserProvider;
+    private final GoogleOAuthUserProvider googleOAuthUserProvider;
+    private final AppleOAuthUserProvider appleOAuthUserProvider;
+    private final AppleJwtProvider appleJwtProvider;
 
-    @Transactional
-    public OAuthLoginResponseDto login(String providerName, String code) {
-        ClientRegistration client = clientRegistrations.findByRegistrationId(providerName);
-        Map<String, Object> attributes = getUserAttributes(client, code);
-        MemberProfile profile = OAuthAttributes.extract(providerName, attributes);
-
-        Member member = saveOrGetMember(profile);
+    public OAuthLoginResponseDto kakaoLogin(String code) {
+        OAuthUserInfo kakaoMember = kakaoOAuthUserProvider.getUserInfo(code);
+        Member member = saveOrGetExistedMember(kakaoMember);
         Token token = jwtProvider.generateToken(member.getEmail());
         redisService.saveValue(member.getEmail(), token);
 
-        return OAuthLoginResponseDto.builder()
-                .memberId(member.getId())
-                .accessToken(token.getAccessToken())
-                .refreshToken(token.getRefreshToken())
+        return OAuthLoginResponseDto.of(member, token);
+    }
+
+    public OAuthLoginResponseDto googleLogin(String code) {
+        OAuthUserInfo googleMember = googleOAuthUserProvider.getUserInfo(code);
+        Member member = saveOrGetExistedMember(googleMember);
+        Token token = jwtProvider.generateToken(member.getEmail());
+        redisService.saveValue(member.getEmail(), token);
+
+        return OAuthLoginResponseDto.of(member, token);
+    }
+
+    public OAuthLoginResponseDto appleLogin(AppleAuthRequestDto appleAuthRequestDto) {
+        OAuthUserInfo appleMember = appleOAuthUserProvider.getUserInfo(appleAuthRequestDto.getIdentityToken());
+        Member member = saveOrGetExistedAppleMember(appleMember, appleAuthRequestDto.getFullName());
+        Token token = jwtProvider.generateToken(member.getEmail());
+        redisService.saveValue(member.getEmail(), token);
+
+        return OAuthLoginResponseDto.of(member, token);
+    }
+
+    public AppleClientSecretResponseDto getClientSecret() {
+        String clientSecret = appleJwtProvider.createClientSecret();
+
+        return AppleClientSecretResponseDto.builder()
+                .clientSecret(clientSecret)
                 .build();
     }
 
-    private Map<String, Object> getUserAttributes(ClientRegistration client, String code) {
-        OAuth2TokenResponseDto token = getToken(client, code);
-        return WebClient.create()
-                .post()
-                .uri(client.getProviderDetails().getUserInfoEndpoint().getUri())
-                .headers(header -> {
-                    header.setBearerAuth(token.getAccessToken());
+    private Member saveOrGetExistedMember(OAuthUserInfo userInfo) {
+        return memberRepository.findByEmail(userInfo.getEmail())
+                .map(findMember -> {
+                    validateDuplicatedEmail(findMember, userInfo);
+                    return getExistedMember(findMember, userInfo);
                 })
-                .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
-                })
-                .block();
+                .orElseGet(() -> memberRepository.save(userInfo.toMember()));
     }
 
-    private OAuth2TokenResponseDto getToken(ClientRegistration client, String code) {
-        log.info("client=[{}], client.TokenUri=[{}]", client.getRegistrationId(), client.getProviderDetails().getTokenUri());
-        return WebClient.create()
-                .post()
-                .uri(client.getProviderDetails().getTokenUri())
-                .headers(header -> {
-                    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                    header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+    private Member saveOrGetExistedAppleMember(OAuthUserInfo userInfo, FullName fullName) {
+        return memberRepository.findByEmail(userInfo.getEmail())
+                .map(findMember -> {
+                    validateDuplicatedEmail(findMember, userInfo);
+                    return getExistedMember(findMember, userInfo);
                 })
-                .bodyValue(accessTokenRequest(client, code))
-                .retrieve()
-                .bodyToMono(OAuth2TokenResponseDto.class)
-                .block();
+                .orElseGet(() -> {
+                    String nickname = getNicknameFromFullName(fullName);
+                    AppleUserInfo appleUserInfo = (AppleUserInfo) userInfo;
+                    appleUserInfo.updateNickname(nickname);
+                    return memberRepository.save(appleUserInfo.toMember());
+                });
     }
 
-    private MultiValueMap<String, String> accessTokenRequest(ClientRegistration client, String code) {
-        LinkedMultiValueMap<String, String> data = new LinkedMultiValueMap<>();
-        data.add("code", code);
-        data.add("client_id", client.getClientId());
-        data.add("client_secret", client.getClientSecret());
-        data.add("redirect_uri", client.getRedirectUri());
-        data.add("grant_type", "authorization_code");
-        return data;
-    }
-
-    private Member saveOrGetMember(MemberProfile profile) {
-        Member member = memberRepository.findByEmail(profile.getEmail()).orElse(null);
-        if (member == null) {
-            member = memberRepository.save(profile.toEntity());
-            return member;
-        }
-
-        if (!member.getSocialType().equals(profile.getSocialType())) {
+    private void validateDuplicatedEmail(Member findMember, OAuthUserInfo userInfo) {
+        if (!findMember.getSocialType().equals(userInfo.getSocialType())) {
             throw new PlanusException(ALREADY_EXIST_SOCIAL_ACCOUNT);
         }
+    }
 
-        if (member.getStatus().equals(Status.INACTIVE)) {
-            member.init(profile.getNickname());
+    private Member getExistedMember(Member findMember, OAuthUserInfo userInfo) {
+        if (findMember.getStatus().equals(Status.INACTIVE)) {
+            findMember.init(userInfo.getNickname());
         }
-        return member;
+        return findMember;
+    }
+
+    private String getNicknameFromFullName(FullName fullName) {
+        if (fullName == null) {
+            throw new PlanusException(INVALID_USER_NAME);
+        }
+        return fullName.getFamilyName() + fullName.getGivenName();
     }
 }
