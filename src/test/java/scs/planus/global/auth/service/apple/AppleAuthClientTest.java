@@ -2,8 +2,8 @@ package scs.planus.global.auth.service.apple;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import scs.planus.global.auth.entity.apple.ApplePublicKey;
-import scs.planus.global.auth.entity.apple.ApplePublicKeys;
+import scs.planus.global.auth.entity.ApplePublicKey;
+import scs.planus.global.auth.entity.ApplePublicKeys;
 
 import java.util.Objects;
 

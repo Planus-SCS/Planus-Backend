@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import scs.planus.global.auth.entity.apple.ApplePublicKey;
-import scs.planus.global.auth.entity.apple.ApplePublicKeys;
+import scs.planus.global.auth.entity.ApplePublicKey;
+import scs.planus.global.auth.entity.ApplePublicKeys;
 
 import java.security.PublicKey;
 import java.util.HashMap;
