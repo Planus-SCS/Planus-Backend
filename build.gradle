@@ -68,6 +68,9 @@ dependencies {
 	// FCM
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
 
+	// AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
