@@ -71,6 +71,8 @@ public class ExceptionLogAspect {
 
             ExceptionLog exceptionLog = exceptionLogService.save(exceptionLogDto);
 
+            slackAlarmGenerator.sendExceptionLog(exceptionLog);
+
             throw new PlanusException(INTERNAL_SERVER_ERROR);
         }
     }
