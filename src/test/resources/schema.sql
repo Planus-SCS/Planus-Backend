@@ -7,6 +7,7 @@ drop table if exists todo;
 drop table if exists todo_category;
 drop table if exists _group;
 drop table if exists member;
+drop table if exists exception_log;
 
 create table member
 (
@@ -132,4 +133,20 @@ create table group_todo_completion
     member_id                bigint null,
     foreign key (member_id) references member (member_id),
     foreign key (todo_id) references todo (todo_id)
+);
+
+create table exception_log
+(
+    id             bigint auto_increment primary key,
+    created_at     datetime(6)  null,
+    updated_at     datetime(6)  null,
+    exception_type varchar(255) null,
+    message        varchar(255) null,
+    class_name     varchar(255) null,
+    method_name    varchar(255) null,
+    line_number    int          null,
+    requesturi     varchar(255) null,
+    http_method    varchar(255) null,
+    parameter      varchar(50000) null,
+    email          varchar(255) null
 );
