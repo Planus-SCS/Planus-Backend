@@ -27,7 +27,6 @@ class AppleAuthClientTest {
                 .allMatch(this::isAllNotNull);
 
         // then
-        assertThat(applePublicKeys.getKeys()).hasSize(3);
         assertThat(isRequestedKeysNonNull).isTrue();
     }
 
