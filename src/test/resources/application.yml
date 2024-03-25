@@ -68,3 +68,7 @@ oauth:
     redirect-uri: test
     token-uri: test
     user-info-uri: test
+
+slack:
+  webhook:
+    url: test

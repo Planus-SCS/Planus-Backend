@@ -65,6 +65,18 @@ dependencies {
 	// swagger
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
+	// FCM
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+	// AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	// slack
+	implementation 'com.slack.api:slack-api-client:1.38.0'
+
+	// gson
+	implementation 'com.google.code.gson:gson:2.7'
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
