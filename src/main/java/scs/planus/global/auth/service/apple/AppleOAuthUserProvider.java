@@ -44,6 +44,7 @@ public class AppleOAuthUserProvider {
     private void validateClaims(Claims claims) {
         if (!appleClaimsValidator.isValid(claims)) {
             log.info("AppleOAuthUserProvider");
+            log.info("claims = [{}]", claims);
             throw new PlanusException(INVALID_APPLE_IDENTITY_TOKEN);
         }
     }
