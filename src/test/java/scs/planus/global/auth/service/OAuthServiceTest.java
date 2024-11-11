@@ -37,7 +37,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.verify;
 import static scs.planus.global.exception.CustomExceptionStatus.ALREADY_EXIST_SOCIAL_ACCOUNT;
-import static scs.planus.global.exception.CustomExceptionStatus.INVALID_USER_NAME;
 
 @Slf4j
 class OAuthServiceTest extends ServiceTest {
@@ -363,8 +362,7 @@ class OAuthServiceTest extends ServiceTest {
             verify(redisService).saveValue(anyString(), any(Token.class));
         }
 
-        @DisplayName("회원가입 시 FullName 이 null 인 경우," +
-                "INVALID_USER_NAME 예외가 발생해야 한다.")
+        @DisplayName("회원가입 시 FullName 이 null 인 경우, user# 로 시작하는 임의의 이름이 설정된다.")
         @Test
         void login_Fail_INVALID_USER_NAME() {
             // given
@@ -373,14 +371,21 @@ class OAuthServiceTest extends ServiceTest {
                     .build();
 
             given(appleOAuthUserProvider.getUserInfo(anyString())).willReturn(appleUserInfo);
+            given(jwtProvider.generateToken(anyString())).willReturn(token);
+            willDoNothing().given(redisService).saveValue(anyString(), any(Token.class));
 
-            // when & then
-            assertThatThrownBy(() -> oAuthService.appleLogin(appleAuthRequestDto))
-                    .isInstanceOf(PlanusException.class)
-                    .extracting("status")
-                    .isEqualTo(INVALID_USER_NAME);
+            // when
+            OAuthLoginResponseDto oAuthLoginResponseDto = oAuthService.appleLogin(appleAuthRequestDto);
+            Member member = memberRepository.findById(oAuthLoginResponseDto.getMemberId()).orElse(null);
+
+            // then
+            assertThat(oAuthLoginResponseDto).hasNoNullFieldsOrProperties();
+            assertThat(member).isNotNull();
+            assertThat(member.getNickname()).startsWith("user#");
 
             verify(appleOAuthUserProvider).getUserInfo(anyString());
+            verify(jwtProvider).generateToken(anyString());
+            verify(redisService).saveValue(anyString(), any(Token.class));
         }
 
         @DisplayName("다른 SNS 계정으로 가입된 이메일인 경우," +
